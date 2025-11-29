@@ -1,0 +1,55 @@
+* { 
+	font-family: "JetBrainsMono Nerd Font", monospace;
+	font-size: 11px;
+	color: #f5f1e8;
+	border: none;
+	box-shadow: none;
+  }
+
+
+  window#waybar {
+	background: #050505;
+	color: #f5f1e8;
+	border: none;
+  }
+
+  #waybar > box {
+	  margin: 0;
+	  padding: 0 6px;
+  }
+
+  #workspaces,
+  #custom-disk,
+  #memory,
+  #cpu,
+  #temperature,
+  #clock,
+  #custom-hostname,
+  #window {
+	  background: transparent;
+  }
+
+  #window {
+	  padding-left: 8px;
+  }
+
+  #custom-disk,
+  #memory,
+  #cpu,
+  #temperature {
+	  padding: 0 8px;
+  }
+
+  #custom-hostname,
+  #clock {
+	  padding: 0 6px;
+  }
+
+  #custom-disk:hover,
+  #memory:hover,
+  #cpu:hover,
+  #temperature:hover,
+  #custom-hostname:hover,
+  #clock:hover {
+	  background: transparent;
+  }

@@ -1,0 +1,70 @@
+{
+	"layer": "top",
+	"position": "top",
+	"height": 22,
+	"margin-top": 8,
+	"margin-left": 8,
+	"margin-right": 8,
+	"margin-bottom": 0,
+
+	"modules-left": ["hyprland/window"],
+
+	"modules-center": [
+		"custom/disk",
+		"memory",
+		"cpu",
+		"temperature"
+	],
+
+	"modules-right": [
+		"custom/hostname",
+		"clock"
+	],
+
+	"hyprland/window": {
+		"format": "{title}",
+		"max-length": 60,
+		"separe-outputs": false
+	},
+
+	"custom/disk": {
+		"exec": "~/.config/waybar/scripts/disk.sh",
+		"interval": 30,
+		"foramt": "{icon} {text}",
+		"tooltip": "false"
+	},
+
+	"memory": {
+		"interval": 5,
+		"format": " {used} / {total} GiB",
+		"tooltip": false
+	},
+
+	"cpu": {
+		"interval": 3,
+		"format": " {usage}%",
+		"tooltip": false
+	},
+
+	"temperature": {
+		"hwmon-path": "/sys/class/hwmon/hwmon0/temp1_input",
+		"critical-threshold": 80,
+		"interval": 5,
+		"format": " {temperatureC} C",
+		"tooltip": false
+	},
+
+	"custom/hostname": {
+		"exec": "hostnamectl --static",
+		"interval": 3600,
+		"format": "{icon} {text}",
+		"format-icons": [""],
+		"tooltip": false
+	},
+
+	"clock": {
+		"interval": 1,
+		"format": "{:%H:%M}",
+		"tooltip-format": "{:%A, %d %b %Y}"
+	}
+}
