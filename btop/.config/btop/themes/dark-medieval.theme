@@ -1,0 +1,91 @@
+# Theme: Dark Medieval Keep
+#
+# Colors in "#RRGGBB"
+# Mesma paleta do teu rice (Waybar / Wofi / Kitty)
+
+# Main background (deixe vazio se quiser fundo transparente)
+theme[main_bg]="#15120f"
+
+# Main text color (pergaminho gasto)
+theme[main_fg]="#dcd4c4"
+
+# Title color for boxes (ouro envelhecido)
+theme[title]="#c2a35a"
+
+# Highlight color for keyboard shortcuts (teal caribenho)
+theme[hi_fg]="#1e9fb4"
+
+# Background color of selected item in processes box
+theme[selected_bg]="#2a231d"
+
+# Foreground color of selected item in processes box
+theme[selected_fg]="#f4f0e6"
+
+# Color of inactive/disabled text (pedra gasta)
+theme[inactive_fg]="#6f6559"
+
+# Color of text appearing on top of graphs (uptime, net scale, etc.)
+theme[graph_text]="#dcd4c4"
+
+# Misc colors for processes box including mini cpu graphs, details memory graph and details status text
+theme[proc_misc]="#8b6f9b"   # roxo realeza
+
+# Box outlines (cpu/mem/net/proc): madeira escura
+theme[cpu_box]="#3a3127"
+theme[mem_box]="#3a3127"
+theme[net_box]="#3a3127"
+theme[proc_box]="#3a3127"
+
+# Box divider line and small boxes line color
+theme[div_line]="#2a231d"
+
+# ────────────────────────────────────────────────────────────
+# GRADIENTES (start → mid → end)
+# ────────────────────────────────────────────────────────────
+
+# Temperature graph colors (musgo → ouro → sangue)
+theme[temp_start]="#4f6b4a"  # verde musgo
+theme[temp_mid]="#c2a35a"    # ouro envelhecido
+theme[temp_end]="#b04b4b"    # sangue seco
+
+# CPU graph colors (teal → céu tempestuoso → ouro)
+theme[cpu_start]="#3a8f8f"   # teal profundo
+theme[cpu_mid]="#1e6a88"     # céu tempestuoso
+theme[cpu_end]="#c2a35a"     # ouro
+
+# Mem/Disk free meter (mais frio, sensação de folga)
+theme[free_start]="#3a8f8f"  # teal
+theme[free_mid]="#4f6b4a"    # musgo
+theme[free_end]="#c2a35a"    # ouro suave
+
+# Mem/Disk cached meter (roxo realeza + ouro)
+theme[cached_start]="#8b6f9b"  # roxo
+theme[cached_mid]="#c2a35a"    # ouro
+theme[cached_end]="#f4f0e6"    # marfim claro
+
+# Mem/Disk available meter (verde → ouro → marfim)
+theme[available_start]="#4f6b4a"
+theme[available_mid]="#c2a35a"
+theme[available_end]="#f4f0e6"
+
+# Mem/Disk used meter (ouro → sangue → sangue mais escuro)
+theme[used_start]="#c2a35a"
+theme[used_mid]="#b04b4b"
+theme[used_end]="#5b2222"
+
+# Download graph colors (água fria do fosso do castelo)
+theme[download_start]="#1e9fb4"  # caribbean blue
+theme[download_mid]="#3a8f8f"
+theme[download_end]="#4f6b4a"
+
+# Upload graph colors (dreno de energia: ouro → sangue)
+theme[upload_start]="#c2a35a"
+theme[upload_mid]="#b04b4b"
+theme[upload_end]="#5b2222"
+
+# Process box color gradient for threads, mem and cpu usage
+# (vida do castelo subindo: musgo → ouro → sangue)
+theme[process_start]="#4f6b4a"
+theme[process_mid]="#c2a35a"
+theme[process_end]="#b04b4b"
+

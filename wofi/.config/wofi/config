@@ -1,0 +1,30 @@
+# ~/.config/wofi/config
+
+mode=drun
+term=ghostty
+
+prompt=invoke spell...
+allow_images=false
+insensitive=true
+no_actions=true
+
+# Centralizado na tela
+location=center
+anchor=center
+
+# Tamanho da janela (ajusta se quiser)
+width=720
+height=420
+
+# Mostrar ícones do desktop (.desktop)
+show=drun
+hide_scroll=true
+
+# Ordem: apps mais usados primeiro
+matching=fuzzy
+sorting=default
+
+# Enter executa, Esc fecha
+key=Return:accept
+key=Escape:cancel
+

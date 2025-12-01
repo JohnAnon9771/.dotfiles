@@ -1,0 +1,120 @@
+/* Fonte consistente com o resto do rice */
+* {
+  font-family: "JetBrainsMono Nerd Font", monospace;
+  font-size: 12px;
+}
+
+/* Janela principal: moldura de madeira escura */
+window {
+  margin: 0;
+  padding: 0;
+  border: 2px solid #2a231d;
+  border-radius: 6px;
+  background-color: rgba(21, 18, 15, 0.96); /* #15120f */
+}
+
+/* Box externo: borda interna tipo pergaminho */
+#outer-box {
+  padding: 10px;
+  background:
+    linear-gradient(to bottom, rgba(42, 35, 29, 0.9), rgba(21,18,15,0.95));
+}
+
+/* Linha do input + lista */
+#input,
+#inner-box {
+  margin: 0;
+}
+
+/* Prompt + input: barra de pesquisa como runa dourada */
+#input {
+  padding: 6px 9px;
+  margin-bottom: 8px;
+  border-radius: 4px;
+  border: 1px solid #3a3127;
+  background-color: #1b1813;
+  color: #f4f0e6;
+}
+
+#prompt {
+  margin-right: 6px;
+  color: #8b6f9b;          /* roxo realeza */
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-size: 11px;         /* prompt um tiquinho menor fica bonito */
+}
+
+/* Texto digitado / texto dos itens */
+#entry-text,
+#text {
+  color: #dcd4c4;          /* pergaminho gasto */
+}
+
+/* Lista de entradas */
+#scroll {
+  margin: 0;
+  padding: 4px 0;
+}
+
+/* Cada item da lista (app/comando) */
+#entry {
+  padding: 5px 9px;
+  margin: 2px 0;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+/* Ícone do app (se tiver) */
+#img {
+  margin-right: 6px;
+}
+
+/* Estado normal: texto neutro */
+#entry #text {
+  color: #b6b0a4;
+}
+
+/* SELECIONADO: agora com VERDE MUSGO de verdade (#4f6b4a) */
+#entry:selected {
+  /* faixa musgo vindo da esquerda, morrendo no fundo escuro */
+  background:
+    linear-gradient(
+      90deg,
+      rgba(79, 107, 74, 0.70) 0%,     /* verde musgo forte */
+      rgba(79, 107, 74, 0.30) 35%,
+      rgba(21, 18, 15, 0.98) 70%
+    );
+  border: 1px solid #4f6b4a;         /* musgo na parede */
+  box-shadow: 0 0 8px rgba(79, 107, 74, 0.75);
+}
+
+/* Texto do item selecionado: claro, em cima do musgo */
+#entry:selected #text {
+  color: #f4f0e6;
+}
+
+/* Barra de scroll fininha, quase invisível */
+#scrollbar {
+  background-color: transparent;
+}
+
+#scrollbar slider {
+  background-color: #3a3127;
+  border-radius: 999px;
+}
+
+/* Foco sem borda azul estranha */
+#entry:focus,
+#input:focus {
+  outline: none;
+  border-color: #c2a35a; /* leve toque dourado */
+}
+
+/* Tooltip (se usar) */
+tooltip {
+  border-radius: 4px;
+  border: 1px solid #2a231d;
+  background-color: #1b1813;
+  color: #dcd4c4;
+}
+

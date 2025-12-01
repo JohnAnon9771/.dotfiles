@@ -1,0 +1,10 @@
+[Unit]
+Description=Hyprpaper wallpaper daemon
+After=graphical-session.target
+
+[Service]
+ExecStart=hyprpaper
+Restart=on-failure
+
+[Install]
+WantedBy=graphical-session.target

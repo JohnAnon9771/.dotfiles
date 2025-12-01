@@ -1,55 +1,91 @@
-* { 
-	font-family: "JetBrainsMono Nerd Font", monospace;
-	font-size: 11px;
-	color: #f5f1e8;
-	border: none;
-	box-shadow: none;
-  }
+* {
+  font-family: "JetBrainsMono Nerd Font", monospace;
+  font-size: 12px;
+  color: #dcd4c4; /* pergaminho gasto */
+  border: none;
+  box-shadow: none;
+}
 
+/* Barra = moldura de ferro */
+window#waybar {
+  background: #15120f;
+  border: 1px solid #808080;
+}
 
-  window#waybar {
-	background: #050505;
-	color: #f5f1e8;
-	border: none;
-  }
+/* Layout geral */
+#waybar > box {
+  margin: 0;
+  padding: 0 6px;
+}
 
-  #waybar > box {
-	  margin: 0;
-	  padding: 0 6px;
-  }
+/* Banner à esquerda */
+#custom-banner {
+  color: #8b6f9b;            /* roxo realeza */
+  padding: 0 10px 0 6px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-shadow: 0 0 4px rgba(0, 0, 0, 0.7);
+}
 
-  #workspaces,
-  #custom-disk,
-  #memory,
-  #cpu,
-  #temperature,
-  #clock,
-  #custom-hostname,
-  #window {
-	  background: transparent;
-  }
+/* Workspaces: botões com números romanos */
+#workspaces {
+  padding: 0 4px;
+}
 
-  #window {
-	  padding-left: 8px;
-  }
+#workspaces button {
+  padding: 0 2px;
+  margin: 0 2px;
+  background: transparent;
+  color: #6f6559;                /* pedra gasta */
+  border-radius: 0px;
+  border: 1px solid transparent; /* pra não “pular” layout */
+}
 
-  #custom-disk,
-  #memory,
-  #cpu,
-  #temperature {
-	  padding: 0 8px;
-  }
+#workspaces button.active {
+  color: #e1c97a;                  /* letra escura em ouro */
+  border-color: #e1c97a;
+  box-shadow: 0 0 3.3px rgba(194, 163, 90, 0.8);
+}
 
-  #custom-hostname,
-  #clock {
-	  padding: 0 6px;
-  }
+/* Título da janela */
+#window {
+  color: #dcd4c4;
+}
 
-  #custom-disk:hover,
-  #memory:hover,
-  #cpu:hover,
-  #temperature:hover,
-  #custom-hostname:hover,
-  #clock:hover {
-	  background: transparent;
-  }
+/* Métricas no centro */
+#custom-disk,
+#memory,
+#cpu,
+#temperature {
+  padding: 0 8px;
+}
+
+/* Relógio = runa dourada de tempo */
+#clock {
+  padding: 0 10px 0 4px;
+  letter-spacing: 0.16em;
+}
+
+/* Botão de power: escudo vermelho */
+#custom-power {
+  padding: 0 12px 0 10px;
+  font-size: 13px;
+  color: #b04b4b;
+}
+
+#custom-power:hover {
+  background: rgba(176, 75, 75, 0.22);
+  color: #f4f0e6;
+}
+
+/* Sem hovers aleatórios no resto */
+#custom-disk:hover,
+#memory:hover,
+#cpu:hover,
+#temperature:hover,
+#custom-banner:hover,
+#clock:hover,
+#window:hover {
+  background: transparent;
+}
+
