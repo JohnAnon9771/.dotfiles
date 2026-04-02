@@ -25,7 +25,12 @@ fi
 NODE_FILE="$DOTFILES_DIR/nodes/$(hostname).rb"
 
 if [[ ! -f "$NODE_FILE" ]]; then
-  log "No node file found for '$(hostname)'. Using base.rb directly."
+  NODE_FILE="$DOTFILES_DIR/nodes/archlinux.rb"
+  log "No node file for '$(hostname)'. Using archlinux.rb fallback."
+fi
+
+if [[ ! -f "$NODE_FILE" ]]; then
+  log "No node file found. Using base.rb."
   NODE_FILE="$DOTFILES_DIR/base.rb"
 fi
 

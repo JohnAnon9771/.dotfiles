@@ -26,6 +26,7 @@ PACMAN_PACKAGES = %w[
   ttf-jetbrains-mono-nerd
   noto-fonts
   noto-fonts-emoji
+  distrobox
 ]
 
 PACMAN_PACKAGES.each do |pkg|

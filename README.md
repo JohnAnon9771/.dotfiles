@@ -11,6 +11,7 @@ Configs gerenciadas com [mitamae](https://github.com/itamae-kitchen/mitamae) + [
 - **Starship** — prompt do shell
 - **btop** — monitor de recursos
 - **systemd** — serviços de usuário
+- **Distrobox** — containers de desenvolvimento
 
 ## Instalação
 
@@ -34,28 +35,39 @@ MITAMAE_LOG_LEVEL=debug ./install.sh
 ```
 .dotfiles/
 ├── install.sh          # Entry point — baixa mitamae e roda
-├── base.rb             # Inclui todas as recipes
-├── bin/                # Binário do mitamae (gerado pelo install.sh)
+├── base.rb             # Inclui todas as recipes base
+├── nodes/              # Node files por máquina
+│   └── archlinux.rb   # Node para máquinas Arch Linux
 ├── recipes/            # Uma recipe por categoria
-│   ├── packages.rb     # Pacotes base (pacman + stow)
+│   ├── packages.rb     # Pacotes base (pacman)
 │   ├── stow.rb         # Gerencia symlinks dos dotfiles (automático)
 │   ├── systemd.rb      # Serviços systemd do usuário
-│   └── scripts.rb      # Diretório de scripts (instalado via stow)
-├── hypr/.config/hypr/         # Configs do Hyprland (instaladas via stow)
-├── waybar/.config/waybar/     # Configs do Waybar (instaladas via stow)
-├── kitty/.config/kitty/       # Configs do Kitty (instaladas via stow)
-├── wofi/.config/wofi/         # Configs do Wofi (instaladas via stow)
-├── starship/.config/          # starship.toml (instalado via stow)
-├── btop/.config/btop/         # Configs do btop (instaladas via stow)
-├── systemd/.config/systemd/user/  # Serviços systemd
-└── scripts/                   # Scripts em ~/.local/bin (instalados via stow)
+│   └── scripts.rb      # Scripts (via stow)
+├── hypr/.config/hypr/         # Configs do Hyprland (via stow)
+├── waybar/.config/waybar/     # Configs do Waybar (via stow)
+├── kitty/.config/kitty/       # Configs do Kitty (via stow)
+├── wofi/.config/wofi/         # Configs do Wofi (via stow)
+├── starship/.config/          # starship.toml (via stow)
+├── btop/.config/btop/         # Configs do btop (via stow)
+└── systemd/.config/systemd/user/  # Serviços systemd
+```
+
+## Node Files
+
+Omitamae detecta o hostname da máquina e usa o node file correspondente:
+- `nodes/<hostname>.rb` — configuração específica da máquina
+- Se não encontrar, usa `nodes/archlinux.rb` como fallback
+
+Para criar um node file específico:
+```bash
+cp nodes/archlinux.rb nodes/<seu-hostname>.rb
 ```
 
 ## Como funciona
 
 ### 1. Instalação Automática de Pacotes
 A recipe `recipes/packages.rb` instala todos os pacotes necessários via pacman, incluindo:
-- Hyprland, Waybar, Kitty, Wofi, Starship, btop
+- Hyprland, Waybar, Kitty, Wofi, Starship, btop, Distrobox
 - Dependências: pipewire, bluez, networkmanager, etc.
 - **GNU Stow** (gerenciador de dotfiles)
 
@@ -65,17 +77,8 @@ A recipe `recipes/stow.rb` executa:
 stow --no-folding -t ~/ hypr waybar kitty wofi starship btop scripts
 ```
 
-Isso cria symlinks inteligentes:
-- `hypr/.config/hypr` → `~/.config/hypr`
-- `waybar/.config/waybar` → `~/.config/waybar`
-- `kitty/.config/kitty` → `~/.config/kitty`
-- `scripts/` → `~/.local/bin`
-- etc.
-
-**Tudo completamente automático!**
-
 ### 3. Serviços de Usuário
-A recipe `recipes/systemd.rb` ativa serviços systemd do usuário (hypridle, etc)
+A recipe `recipes/systemd.rb` ativa serviços systemd do usuário
 
 ## Remover Configs (se precisar)
 
@@ -84,12 +87,3 @@ Para desfazer stow:
 cd ~/.dotfiles
 stow --no-folding -t ~/ -D hypr waybar kitty wofi starship btop scripts
 ```
-
-## Adicionando uma Nova Máquina
-
-Crie um node file baseado no hostname:
-```bash
-mkdir -p nodes
-# Seu node file aqui se precisar de customizações por máquina
-```
-
