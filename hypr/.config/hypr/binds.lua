@@ -11,6 +11,14 @@ local mod = "SUPER"
 local terminal = "kitty"
 local browser = "firefox"
 
+-- Os scripts do torreão moram em ~/.local/bin. O caminho vai inteiro
+-- de propósito: o environment.d põe essa pasta no PATH da sessão, mas
+-- um bind que não acha o binário falha calado — nada no log, nada na
+-- tela, a tecla simplesmente não faz nada. Caro demais para depender
+-- de uma variável. O kitty, o firefox e o btop ficam pelo nome: vêm
+-- de /usr/bin, que está no PATH de qualquer sessão.
+local bin = os.getenv("HOME") .. "/.local/bin/"
+
 local function keep(name)
     return hl.dsp.global("quickshell:" .. name)
 end
@@ -19,7 +27,7 @@ end
 hl.bind(mod .. " + T", hl.dsp.exec_cmd(terminal))
 hl.bind(mod .. " + B", hl.dsp.exec_cmd(browser))
 hl.bind(mod .. " + M", hl.dsp.exec_cmd(terminal .. " -e btop"))
-hl.bind(mod .. " + G", hl.dsp.exec_cmd("gamer-vt"))
+hl.bind(mod .. " + G", hl.dsp.exec_cmd(bin .. "gamer-vt"))
 
 -- ── O torreão ──────────────────────────────────────────────────
 hl.bind(mod .. " + SPACE",       keep("grimoire"))   -- era wofi
@@ -87,9 +95,9 @@ hl.bind(mod .. " + SHIFT + S", hl.dsp.window.move({ workspace = "special:magic" 
 -- A lógica vive em scripts/.local/bin/keep-shot: escrever isso dentro
 -- de uma string Lua dentro de uma string de shell era um ninho de
 -- aspas esperando para quebrar.
-hl.bind("F8",         hl.dsp.exec_cmd("keep-shot region"))
-hl.bind("SHIFT + F8", hl.dsp.exec_cmd("keep-shot full"))
-hl.bind("CTRL + F8",  hl.dsp.exec_cmd("keep-shot window"))
+hl.bind("F8",         hl.dsp.exec_cmd(bin .. "keep-shot region"))
+hl.bind("SHIFT + F8", hl.dsp.exec_cmd(bin .. "keep-shot full"))
+hl.bind("CTRL + F8",  hl.dsp.exec_cmd(bin .. "keep-shot window"))
 
 -- ── Som e mídia ────────────────────────────────────────────────
 -- Passam pelo torreão para a Lápide aparecer: antes o volume mudava

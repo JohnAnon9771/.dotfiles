@@ -32,12 +32,13 @@ o que antes eram quatro programas:
 
 ```
 btop/        tema dark-medieval do monitor de recursos
+environment.d/ o PATH da sessão gráfica
 fonts/       Cinzel e UnifrakturMaguntia (SIL OFL), versionadas
 hypr/        Hyprland, em Lua (0.55+)
 kitty/       terminal
 opencode/    tema do agente de código
 quickshell/  o torreão
-scripts/     gamer-vt, gamer-mode, keep-shot
+scripts/     gamer-vt, gamer-mode, keep-shot, keep-session
 starship/    prompt
 tools/       lint e testes — não é pacote stow
 ```
@@ -59,7 +60,8 @@ sudo pacman -S --needed quickshell hyprland uwsm kitty btop starship stow \
 
 # Links
 stow -t "$HOME" --no-folding \
-    btop fonts hypr kitty opencode quickshell scripts starship systemd
+    btop environment.d fonts hypr kitty opencode quickshell scripts \
+    starship systemd
 
 fc-cache -f
 ```

@@ -16,6 +16,13 @@ Column {
 
     signal action(string what)
 
+    //  Os scripts do torreão moram em ~/.local/bin, e o torreão sobe
+    //  como unit do systemd: herda o PATH do gerenciador de usuário,
+    //  não o do seu shell. O environment.d põe a pasta lá, mas o
+    //  caminho inteiro dispensa a aposta — um execDetached que não
+    //  acha o binário não devolve erro nenhum, o botão só não faz nada.
+    readonly property string bin: Quickshell.env("HOME") + "/.local/bin/"
+
     Section {
         title: "Sigilos"
 
@@ -81,14 +88,14 @@ Column {
             width: parent.width
             text: "Capturar uma região"
             glyph: Theme.glyph.fleuron
-            onPicked: Quickshell.execDetached(["keep-shot", "region"])
+            onPicked: Quickshell.execDetached([root.bin + "keep-shot", "region"])
         }
 
         Choice {
             width: parent.width
             text: "Modo jogo"
             glyph: Theme.glyph.keep
-            onPicked: Quickshell.execDetached(["gamer-vt"])
+            onPicked: Quickshell.execDetached([root.bin + "gamer-vt"])
         }
 
         Choice {
