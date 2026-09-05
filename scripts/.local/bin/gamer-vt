@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# Vai para o TTY 3, onde mora o modo jogo.
+#
+# Não derruba a sessão do desktop: ela fica de pé no TTY dela, e
+# voltar é só trocar de TTY. Era isto que o switch_to_gamemode.sh
+# antigo fazia de forma mais bruta, com loginctl terminate-user.
+exec sudo /usr/bin/chvt 3

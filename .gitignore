@@ -1,0 +1,6 @@
+# O fontconfig carimba um .uuid em cada pasta de fonte que indexa, e as
+# pastas do pacote fonts/ são as próprias — o repositório é a config
+# viva, então o fc-cache escreve aqui dentro. É estado da máquina, um
+# UUID por pasta, não configuração: reaparece a cada fc-cache e não
+# significa nada em outra máquina.
+.uuid

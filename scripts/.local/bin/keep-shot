@@ -1,0 +1,62 @@
+#!/usr/bin/env bash
+# Captura de tela do torreão.
+#
+#   keep-shot region   — arrastar um retângulo
+#   keep-shot full     — a tela inteira
+#   keep-shot window   — a janela em foco
+#
+# Vai para a área de transferência e, se houver onde, também para o
+# disco. Escrever isto dentro de uma string Lua dentro de uma string
+# de shell era um ninho de aspas esperando para quebrar.
+
+set -uo pipefail
+
+mode="${1:-region}"
+stamp="$(date +%Y%m%d-%Hh%Mm%Ss)"
+dir="${XDG_PICTURES_DIR:-$HOME/Pictures}/capturas"
+
+geometry() {
+    case "$mode" in
+        region) slurp ;;
+        full)   printf '' ;;   # sem -g o grim pega tudo
+        window)
+            # O hyprctl já imprime "at:" e "size:" em texto. Depender
+            # do jq só para recortar um retângulo seria exagero.
+            hyprctl activewindow | awk -F'[ ,]+' '
+                /^\tat:/   { x = $2; y = $3 }
+                /^\tsize:/ { w = $2; h = $3 }
+                END        { if (w) printf "%d,%d %dx%d", x, y, w, h }'
+            ;;
+        *)
+            echo "modo desconhecido: $mode (use region, full ou window)" >&2
+            exit 2
+            ;;
+    esac
+}
+
+geom="$(geometry)" || exit 1
+
+# Cancelar o slurp não é erro: é uma decisão.
+if [ "$mode" != "full" ] && [ -z "$geom" ]; then
+    exit 0
+fi
+
+png="$(mktemp -t keep-shot-XXXXXX.png)"
+trap 'rm -f "$png"' EXIT
+
+if [ -n "$geom" ]; then
+    grim -g "$geom" "$png" || exit 1
+else
+    grim "$png" || exit 1
+fi
+
+wl-copy --type image/png < "$png"
+
+if mkdir -p "$dir" 2>/dev/null; then
+    cp "$png" "$dir/$stamp.png"
+    notify-send -a "O Torreão" -i "$dir/$stamp.png" \
+        "A imagem foi selada" "$stamp.png" 2>/dev/null || true
+else
+    notify-send -a "O Torreão" "A imagem foi selada" \
+        "Copiada — sem lugar para guardar" 2>/dev/null || true
+fi

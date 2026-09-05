@@ -1,0 +1,55 @@
+# O Torreão, como serviço da sessão gráfica.
+#
+# Este sistema usa uwsm, que monta uma sessão systemd de verdade em
+# volta do Hyprland. Nela, componente de sessão sobe por unit e não
+# por exec-once: assim herda o ambiente que o uwsm exportou, cai
+# dentro da fatia certa, reinicia sozinho se morrer, e é encerrado
+# junto com a sessão em vez de virar processo órfão.
+#
+# É o mesmo caminho que a waybar usava enquanto existiu, com a unit que
+# o pacote dela instalava em /usr/lib/systemd/user/.
+
+[Unit]
+Description=O Torreão — barra, lançador, notificações e bloqueio
+Documentation=https://quickshell.org/docs/
+
+PartOf=graphical-session.target
+After=graphical-session.target
+# Não tenta subir fora de uma sessão gráfica.
+Requisite=graphical-session.target
+
+[Service]
+Type=exec
+# Sem -d: quem cuida do ciclo de vida é o systemd, então o processo
+# fica em primeiro plano e o journal recebe o log.
+ExecStart=/usr/bin/qs -c keep
+
+# Recarrega a configuração sem derrubar a sessão.
+ExecReload=/usr/bin/qs ipc --pid $MAINPID call keep reload
+
+# O backend de render: Vulkan (RADV) em vez do OpenGL (radeonsi).
+# Medido nesta máquina, processos novos e mesmo tempo de vida:
+#
+#   RssAnon   207 → 190 MB    o privado, que é o que conta
+#   RssFile   208 → 162 MB    o libLLVM de 163 MB do radeonsi sai do mapa
+#   VmRSS     415 → 357 MB
+#
+# Boa parte do RssFile é página compartilhada com o Hyprland e o kitty,
+# então o que volta de RAM ao sistema é mais perto dos 17 MB privados
+# que dos 58 MB da soma. Ainda assim é o maior corte de uma linha.
+#
+# O RADV imprime "not a conformant Vulkan implementation" em todo
+# arranque: é boilerplate do Mesa por não ter a certificação paga da
+# Khronos, não sintoma. Comente a linha para voltar ao OpenGL.
+Environment=QSG_RHI_BACKEND=vulkan
+
+Restart=on-failure
+RestartSec=2
+
+# Fatia de fundo do uwsm: é onde moram barra, daemon de notificação e
+# afins. A session.slice é do compositor; a app.slice, dos programas
+# que você abre.
+Slice=background-graphical.slice
+
+[Install]
+WantedBy=graphical-session.target
