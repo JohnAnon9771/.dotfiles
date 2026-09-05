@@ -5,6 +5,7 @@
 import QtQml
 import "../quickshell/.config/quickshell/keep/services/parsers.js" as P
 import "../quickshell/.config/quickshell/keep/services/fuzzy.js" as F
+import "../quickshell/.config/quickshell/keep/grimoire/spells.js" as C
 
 QtObject {
     property int failures: 0
@@ -151,6 +152,32 @@ QtObject {
            F.frecency(10, tNow - 14 * 86400000, tNow));
         ok("relogio para tras nao amplifica",
            F.frecency(10, tNow + 86400000, tNow) <= 10);
+
+        console.log("\naritmancia");
+        ok("soma", C.calc("2+2").text === "4");
+        ok("precedencia", C.calc("2+3*4").text === "14");
+        ok("parenteses", C.calc("(2+3)*4").text === "20");
+        ok("potencia com ^", C.calc("2^10").text === "1024");
+        ok("raiz", C.calc("sqrt(144)").text === "12");
+        ok("pi", C.calc("pi*2").ok && Math.abs(C.calc("pi*2").value - 6.2831853) < 0.001);
+        ok("virgula decimal", C.calc("1,5*2").text === "3");
+        ok("porcentagem", C.calc("200*20%").text === "40", C.calc("200*20%").text);
+        ok("porcentagem sozinha", C.calc("50%+1").text === "1.5", C.calc("50%+1").text);
+        ok("modulo continua modulo", C.calc("10%3").text === "1", C.calc("10%3").text);
+        ok("decimal enxuto", C.calc("1/8").text === "0.125");
+        ok("numero solto nao e conta", !C.calc("42").ok);
+        ok("texto nao e conta", !C.calc("firefox").ok);
+        ok("vazio nao e conta", !C.calc("").ok);
+        ok("divisao por zero rejeitada", !C.calc("1/0").ok);
+
+        // A lista branca e o ponto sensivel: nada de codigo arbitrario.
+        ok("nada de acesso a objeto", !C.calc("Qt.quit()").ok);
+        ok("nada de constructor", !C.calc("(1).constructor").ok);
+        ok("nada de funcao anonima", !C.calc("(function(){return 1})()").ok);
+        ok("nada de global", !C.calc("globalThis").ok);
+        ok("nada de string", !C.calc('"a"+"b"').ok);
+        ok("nada de colchete", !C.calc("[1,2][0]").ok);
+        ok("Math direto barrado", !C.calc("Math.random()").ok);
 
         console.log(failures === 0
             ? "\n── As pedras estao assentadas."

@@ -17,6 +17,7 @@ import qs
 import qs.services
 import qs.mist
 import qs.rampart
+import qs.grimoire
 import qs.scrolls
 import qs.tablet
 
@@ -63,6 +64,11 @@ ShellRoot {
 
     NightVeil {}
 
+    Grimoire {
+        id: grimoire
+        onAction: what => shell.open(what, "")
+    }
+
     ScrollLayer {}
 
     Tablet {
@@ -84,6 +90,8 @@ ShellRoot {
             case "osd:mic":     tablet.instances[0].showMic(); break;
             case "osd:dnd":     tablet.instances[0].showDnd(); break;
             case "osd:inhibit": tablet.instances[0].showInhibit(); break;
+
+            case "grimoire": grimoire.toggle(); break;
 
             default:
                 console.log("[keep] ainda não erguido:", what, arg);

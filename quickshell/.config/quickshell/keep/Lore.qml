@@ -119,7 +119,7 @@ Singleton {
         "media":     "Silêncio no salão.",
         "windows":   "Nenhuma aparição por aqui.",
         "files":     "O arquivo não guarda esse nome.",
-        "apps":      "Nenhum feitiço com esse nome.",
+        "apps":      "O grimório aguarda.",
         "process":   "As forjas estão frias."
     })
 
