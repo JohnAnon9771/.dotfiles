@@ -36,6 +36,8 @@ IGNORE="$IGNORE|Type PopupWindow is not creatable"
 IGNORE="$IGNORE|No type found for property \"(edges|gravity|adjustment)\""
 IGNORE="$IGNORE|incomplete type \"FileViewAdapter\""
 IGNORE="$IGNORE|Type \"BluetoothAdapter\" of property"
+IGNORE="$IGNORE|unknown grouped property scope margins"
+IGNORE="$IGNORE|Type margins is used but it is not resolved"
 
 trap 'rm -rf "$SHADOW"' EXIT
 

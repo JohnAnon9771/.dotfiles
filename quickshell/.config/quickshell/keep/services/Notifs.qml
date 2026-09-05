@@ -71,7 +71,9 @@ Singleton {
         const critical = n.urgency === NotificationUrgency.Critical;
         if (root.dnd && !critical) return;
 
-        n.closed.connect(() => root.drop(n));
+        // Quem tira o pergaminho da tela é o próprio pergaminho, depois
+        // de rolar para fora. Se removêssemos aqui, no sinal `closed`,
+        // o objeto morreria no meio da animação de saída.
         root.popups = root.popups.concat([n]);
     }
 

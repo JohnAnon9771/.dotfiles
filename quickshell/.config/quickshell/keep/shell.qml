@@ -17,6 +17,8 @@ import qs
 import qs.services
 import qs.mist
 import qs.rampart
+import qs.scrolls
+import qs.tablet
 
 ShellRoot {
     id: shell
@@ -61,6 +63,12 @@ ShellRoot {
 
     NightVeil {}
 
+    ScrollLayer {}
+
+    Tablet {
+        id: tablet
+    }
+
     Ipc {
         onRequested: what => shell.open(what, "")
     }
@@ -71,6 +79,12 @@ ShellRoot {
 
     function open(what, arg) {
         switch (what) {
+            // A Lápide: aviso rápido, sem painel.
+            case "osd:volume":  tablet.instances[0].showVolume(); break;
+            case "osd:mic":     tablet.instances[0].showMic(); break;
+            case "osd:dnd":     tablet.instances[0].showDnd(); break;
+            case "osd:inhibit": tablet.instances[0].showInhibit(); break;
+
             default:
                 console.log("[keep] ainda não erguido:", what, arg);
         }
