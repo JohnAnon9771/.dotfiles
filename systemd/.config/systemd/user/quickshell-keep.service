@@ -1,0 +1,39 @@
+# O Torreão, como serviço da sessão gráfica.
+#
+# Este sistema usa uwsm, que monta uma sessão systemd de verdade em
+# volta do Hyprland. Nela, componente de sessão sobe por unit e não
+# por exec-once: assim herda o ambiente que o uwsm exportou, cai
+# dentro da fatia certa, reinicia sozinho se morrer, e é encerrado
+# junto com a sessão em vez de virar processo órfão.
+#
+# É o mesmo caminho que a waybar já usava — /usr/lib/systemd/user/
+# waybar.service, ligada em graphical-session.target.wants.
+
+[Unit]
+Description=O Torreão — barra, lançador, notificações e bloqueio
+Documentation=https://quickshell.org/docs/
+
+PartOf=graphical-session.target
+After=graphical-session.target
+# Não tenta subir fora de uma sessão gráfica.
+Requisite=graphical-session.target
+
+[Service]
+Type=exec
+# Sem -d: quem cuida do ciclo de vida é o systemd, então o processo
+# fica em primeiro plano e o journal recebe o log.
+ExecStart=/usr/bin/qs -c keep
+
+# Recarrega a configuração sem derrubar a sessão.
+ExecReload=/usr/bin/qs ipc --pid $MAINPID call keep reload
+
+Restart=on-failure
+RestartSec=2
+
+# Fatia de fundo do uwsm: é onde moram barra, daemon de notificação e
+# afins. A session.slice é do compositor; a app.slice, dos programas
+# que você abre.
+Slice=background-graphical.slice
+
+[Install]
+WantedBy=graphical-session.target

@@ -50,7 +50,7 @@ arquivo aqui muda o sistema na hora.
 
 ```sh
 # Pacotes
-sudo pacman -S --needed quickshell hyprland kitty btop starship stow \
+sudo pacman -S --needed quickshell hyprland uwsm kitty btop starship stow \
     grim slurp wl-clipboard playerctl \
     pipewire pipewire-pulse wireplumber \
     networkmanager bluez bluez-utils \
@@ -58,7 +58,8 @@ sudo pacman -S --needed quickshell hyprland kitty btop starship stow \
     xdg-desktop-portal-hyprland
 
 # Links
-stow -t "$HOME" --no-folding btop fonts hypr kitty opencode quickshell scripts starship
+stow -t "$HOME" --no-folding \
+    btop fonts hypr kitty opencode quickshell scripts starship systemd
 
 fc-cache -f
 ```
@@ -68,13 +69,46 @@ O `quickshell` está no repositório **extra** — não precisa de AUR.
 Saem da lista: `waybar`, `wofi`, `hyprpaper`, `polkit-gnome`. O torreão
 faz o trabalho dos quatro.
 
+### A sessão
+
+Este sistema usa **uwsm**, que monta uma sessão systemd de verdade em
+volta do Hyprland. Nela, componente de sessão sobe por *unit* — não por
+`exec-once`. Assim herda o ambiente que o uwsm exportou, cai na fatia
+certa, reinicia sozinho se morrer, e é encerrado junto com a sessão em
+vez de virar processo órfão.
+
+```sh
+systemctl --user daemon-reload
+systemctl --user enable --now quickshell-keep.service
+
+# A barra e o papel de parede antigos saem de cena
+systemctl --user disable --now waybar.service hyprpaper.service
+```
+
+O `hyprpaper` **precisa sair**: a Névoa desenha o papel de parede na
+mesma camada de fundo, e os dois juntos brigam pelo espaço.
+
+O compositor só dá a partida, em `autostart.lua`: chama `keep-session`,
+que decide entre `uwsm finalize` — é ele que libera o
+`graphical-session.target`, e com isso as units — e subir o torreão à
+mão, quando não há systemd por trás.
+
+```sh
+systemctl --user status quickshell-keep    # como está
+journalctl --user -fu quickshell-keep      # o log
+systemctl --user reload quickshell-keep    # recarrega sem derrubar
+```
+
 ## Rodar
 
 ```sh
-qs -c keep          # em primeiro plano, com log no terminal
-qs -c keep -d       # como daemon (é o que o autostart.lua faz)
-qs log -f           # seguir o log de uma instância viva
-qs -c keep ipc show # o que dá para pedir ao shell
+qs -c keep            # em primeiro plano, com log no terminal
+qs list --all         # instâncias vivas
+qs log -f             # seguir o log de uma delas
+qs -c keep ipc show   # o que dá para pedir ao shell
+
+# Com mais de uma instância no ar, escolha a sua:
+qs ipc --pid 12345 call keep hall
 ```
 
 O shell recarrega sozinho ao salvar um arquivo.
@@ -165,6 +199,8 @@ da pasta devolve a configuração antiga, que continua ali de propósito.
 Para o shell:
 
 ```sh
+systemctl --user disable --now quickshell-keep.service
+systemctl --user enable  --now waybar.service hyprpaper.service
 stow -D -t "$HOME" quickshell
 stow    -t "$HOME" waybar wofi
 ```

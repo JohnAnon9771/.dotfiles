@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+# Sobe o torreão do jeito certo para esta sessão.
+#
+# Sob uwsm existe uma sessão systemd de verdade: o papel do compositor
+# é só chamar `uwsm finalize`, que exporta WAYLAND_DISPLAY,
+# HYPRLAND_INSTANCE_SIGNATURE e companhia para o gerenciador de
+# usuário e, com isso, libera graphical-session.target. É esse alvo
+# que sobe quickshell-keep.service — e também a waybar, o hyprpaper e
+# o que mais estiver ligado nele.
+#
+# Sem uwsm não há sessão systemd para pendurar nada, então o torreão
+# sobe direto, como filho do compositor.
+
+set -uo pipefail
+
+under_uwsm() {
+    # O uwsm põe esta variável no ambiente do compositor. Testar por
+    # ela é mais honesto que testar se o binário existe: o uwsm pode
+    # estar instalado e a sessão ter sido aberta de outro jeito.
+    [ -n "${UWSM_FINALIZE_VARNAMES:-}" ] && command -v uwsm >/dev/null 2>&1
+}
+
+if under_uwsm; then
+    exec uwsm finalize
+fi
+
+exec qs -c keep -d -n
