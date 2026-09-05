@@ -18,7 +18,10 @@ import qs.services
 import qs.mist
 import qs.rampart
 import qs.grimoire
+import qs.gate
+import qs.ossuary
 import qs.scrolls
+import qs.seal
 import qs.tablet
 
 ShellRoot {
@@ -58,7 +61,7 @@ ShellRoot {
         id: rampart
 
         onOpenHall: page => shell.open("hall", page)
-        onOpenOssuary: shell.open("ossuary", "")
+        onOpenOssuary: ossuary.show()
         onOpenAlmanac: shell.open("almanac", "")
     }
 
@@ -69,6 +72,17 @@ ShellRoot {
         onAction: what => shell.open(what, "")
     }
 
+    Ossuary {
+        id: ossuary
+        onLockRequested: shell.open("lock", "")
+    }
+
+    Portcullis {
+        id: gate
+    }
+
+    Seal {}
+
     ScrollLayer {}
 
     Tablet {
@@ -77,6 +91,21 @@ ShellRoot {
 
     Ipc {
         onRequested: what => shell.open(what, "")
+    }
+
+    // ═══ A VIGÍLIA ═════════════════════════════════════════════
+    // Ninguém precisa lembrar de trancar o portão.
+
+    Connections {
+        target: Idle
+
+        function onShouldLock() { gate.lock(); }
+        function onShouldSleep() {
+            if (gate.locked) Wm.send("dpms off");
+        }
+        function onAwoke() {
+            Wm.send("dpms on");
+        }
     }
 
     // ═══ ROTEAMENTO ════════════════════════════════════════════
@@ -92,6 +121,9 @@ ShellRoot {
             case "osd:inhibit": tablet.instances[0].showInhibit(); break;
 
             case "grimoire": grimoire.toggle(); break;
+            case "ossuary":  ossuary.toggle(); break;
+            case "sleep":    Quickshell.execDetached(["systemctl", "suspend"]); break;
+            case "lock":     gate.lock(); break;
 
             default:
                 console.log("[keep] ainda não erguido:", what, arg);

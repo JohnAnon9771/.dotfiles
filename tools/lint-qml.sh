@@ -35,7 +35,9 @@ IGNORE="$IGNORE|Type PanelWindow is not creatable"
 IGNORE="$IGNORE|Type PopupWindow is not creatable"
 IGNORE="$IGNORE|No type found for property \"(edges|gravity|adjustment)\""
 IGNORE="$IGNORE|incomplete type \"FileViewAdapter\""
-IGNORE="$IGNORE|Type \"BluetoothAdapter\" of property"
+# Tipos que existem mas nao sao exportados declarativamente
+# (BluetoothAdapter, AuthFlow, ...). O runtime resolve; o qmltypes nao.
+IGNORE="$IGNORE|not being exposed declaratively"
 IGNORE="$IGNORE|unknown grouped property scope margins"
 IGNORE="$IGNORE|Type margins is used but it is not resolved"
 
