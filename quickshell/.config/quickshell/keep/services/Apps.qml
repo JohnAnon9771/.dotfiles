@@ -20,7 +20,7 @@ Singleton {
     readonly property var entries: DesktopEntries.applications.values
 
     /// id → { n: vezes usado, t: última vez (ms) }
-    readonly property alias uses: habit.uses
+    property alias uses: habit.uses
 
     // ═══ BUSCA ═════════════════════════════════════════════════
 
@@ -69,7 +69,7 @@ Singleton {
     }
 
     function habitOf(id, now) {
-        const u = habit.uses[id];
+        const u = root.uses[id];
         return u ? F.frecency(u.n, u.t, now) : 0;
     }
 
@@ -109,19 +109,19 @@ Singleton {
 
     function remember(id) {
         if (!id) return;
-        const u = habit.uses;
+        const u = root.uses;
         const prev = u[id];
         // Reatribui o objeto inteiro: mutar em lugar não notifica.
         const next = Object.assign({}, u);
         next[id] = { n: (prev ? prev.n : 0) + 1, t: Date.now() };
-        habit.uses = next;
+        root.uses = next;
         saveSoon.restart();
     }
 
     function forget(id) {
-        const next = Object.assign({}, habit.uses);
+        const next = Object.assign({}, root.uses);
         delete next[id];
-        habit.uses = next;
+        root.uses = next;
         saveSoon.restart();
     }
 

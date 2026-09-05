@@ -64,7 +64,7 @@ Singleton {
     }
 
     // Conveniências de escrita — evitam Settings.data.x = y espalhado.
-    function toggleDnd()        { adapter.dnd = !adapter.dnd }
-    function toggleNightLight() { adapter.nightLight = !adapter.nightLight }
-    function toggleFog()        { adapter.fog = !adapter.fog }
+    function toggleDnd()        { root.data.dnd = !root.data.dnd; }
+    function toggleNightLight() { root.data.nightLight = !root.data.nightLight; }
+    function toggleFog()        { root.data.fog = !root.data.fog; }
 }

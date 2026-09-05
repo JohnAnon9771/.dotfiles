@@ -107,10 +107,15 @@ Singleton {
     /// Intensidade do brilho de tocha: pulsa mais forte sob carga.
     readonly property real glowStrength: 0.55 + heat * 0.45
 
-    // ═══ TIPOGRAFIA ════════════════════════════════════════════════
+    // ═══ TIPOGRAFIA ════════════════════════════════════════════
     // Três vozes: pedra esculpida, mão do escriba, livro-razão.
+    //
+    // Os grupos abaixo são componentes inline, não QtObject solto:
+    // assim o qmllint enxerga cada campo e um erro de digitação em
+    // Theme.size.smal aparece no lint em vez de virar `undefined`
+    // silencioso na tela.
 
-    readonly property QtObject font: QtObject {
+    component FontSet: QtObject {
         /// Cinzel — capitulares romanas. Títulos, algarismos, relógio.
         readonly property string carved: "Cinzel"
 
@@ -118,47 +123,37 @@ Singleton {
         /// nunca em texto corrido. Só capitulares e brasões.
         readonly property string scribe: "UnifrakturMaguntia"
 
-        /// JetBrains Mono Nerd Font — todo o resto. Dados, corpo, listas.
+        /// JetBrains Mono Nerd Font — todo o resto: dados, corpo, listas.
         readonly property string mono: "JetBrainsMono Nerd Font"
     }
 
-    readonly property QtObject size: QtObject {
-        readonly property int tiny:    10
-        readonly property int small:   11
-        readonly property int base:    12
-        readonly property int large:   14
-        readonly property int title:   16
-        readonly property int display: 22
-        readonly property int huge:    44
+    component SizeSet: QtObject {
+        readonly property int tiny:     10
+        readonly property int small:    11
+        readonly property int base:     12
+        readonly property int large:    14
+        readonly property int title:    16
+        readonly property int display:  22
+        readonly property int huge:     44
         readonly property int colossal: 72
     }
 
-    /// Espaçamento rúnico — o letter-spacing largo das inscrições.
-    /// QML mede em px, não em em; converta a partir do tamanho.
-    function runic(px)  { return px * 0.18 }
-    function graven(px) { return px * 0.10 }
-
-    // ═══ MÉTRICA ═══════════════════════════════════════════════════
-    // Pedra não tem canto arredondado. Raio 0 em tudo.
-
-    readonly property int radius: 0
-
-    readonly property QtObject pad: QtObject {
-        readonly property int hair: 2
+    component PadSet: QtObject {
+        readonly property int hair:  2
         readonly property int tight: 4
-        readonly property int snug: 6
-        readonly property int base: 8
+        readonly property int snug:  6
+        readonly property int base:  8
         readonly property int roomy: 12
-        readonly property int wide: 16
-        readonly property int vast: 24
+        readonly property int wide:  16
+        readonly property int vast:  24
     }
 
-    readonly property QtObject border: QtObject {
+    component BorderSet: QtObject {
         readonly property int inner: 1
         readonly property int outer: 2
     }
 
-    readonly property QtObject metric: QtObject {
+    component MetricSet: QtObject {
         readonly property int barHeight:      34
         readonly property int crenelHeight:   6   // altura dos dentes da ameia
         readonly property int crenelWidth:    9   // largura do merlão
@@ -170,13 +165,30 @@ Singleton {
         readonly property int holdMs:         700 // segurar-para-confirmar
     }
 
-    readonly property QtObject anim: QtObject {
+    component AnimSet: QtObject {
         readonly property int instant: 90
         readonly property int quick:   150
         readonly property int base:    220
         readonly property int slow:    380
         readonly property int languid: 900
     }
+
+    readonly property FontSet   font:   FontSet {}
+    readonly property SizeSet   size:   SizeSet {}
+    readonly property PadSet    pad:    PadSet {}
+    readonly property BorderSet border: BorderSet {}
+    readonly property MetricSet metric: MetricSet {}
+    readonly property AnimSet   anim:   AnimSet {}
+
+    /// Espaçamento rúnico — o letter-spacing largo das inscrições.
+    /// QML mede em px, não em em; converta a partir do tamanho.
+    function runic(px)  { return px * 0.18; }
+    function graven(px) { return px * 0.10; }
+
+    // ═══ MÉTRICA ═══════════════════════════════════════════════
+    // Pedra não tem canto arredondado. Raio 0 em tudo.
+
+    readonly property int radius: 0
 
     // ═══ FERRAMENTAS ═══════════════════════════════════════════════
 

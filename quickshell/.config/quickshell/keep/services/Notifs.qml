@@ -18,17 +18,17 @@ Singleton {
     property var popups: []
 
     /// A cripta: o registro do que já passou, entre reinícios.
-    readonly property alias history: crypt.log
-    property real lastSeen: crypt.lastSeen
+    property alias history: crypt.log
+    property alias lastSeen: crypt.lastSeen
 
     readonly property bool dnd: Settings.data.dnd
     readonly property bool silent: dnd
 
     readonly property int unread: {
-        const h = crypt.log;
+        const h = root.history;
         let n = 0;
         for (let i = 0; i < h.length; i++)
-            if (h[i].at > crypt.lastSeen) n++;
+            if (h[i].at > root.lastSeen) n++;
         return n;
     }
 
@@ -105,31 +105,31 @@ Singleton {
             desktopEntry: n.desktopEntry || ""
         };
 
-        const log = crypt.log.slice();
+        const log = root.history.slice();
         log.unshift(entry);
         while (log.length > Settings.data.cryptLimit) log.pop();
-        crypt.log = log;
+        root.history = log;
 
         saveSoon.restart();
     }
 
     function markSeen() {
-        crypt.lastSeen = Date.now();
+        root.lastSeen = Date.now();
         saveSoon.restart();
     }
 
     function clearHistory() {
-        crypt.log = [];
-        crypt.lastSeen = Date.now();
+        root.history = [];
+        root.lastSeen = Date.now();
         cryptFile.writeAdapter();
     }
 
     /// Busca na cripta, para o Grande Salão.
     function searchHistory(query) {
-        if (!query || query.length === 0) return crypt.log;
+        if (!query || query.length === 0) return root.history;
 
         const out = [];
-        const log = crypt.log;
+        const log = root.history;
         for (let i = 0; i < log.length; i++) {
             const s = F.scoreFields(query, [
                 [log[i].summary, 1.0],
