@@ -120,7 +120,7 @@ Scope {
                     }
 
                     // Quem está sendo autenticado.
-                    DetailRowLite {
+                    Fact {
                         width: parent.width
                         visible: win.flow && win.flow.selectedIdentity !== null
                         label: "em nome de"
@@ -166,12 +166,12 @@ Scope {
                         anchors.right: parent.right
                         spacing: Theme.pad.snug
 
-                        SealButton {
+                        StoneButton {
                             text: "recusar"
                             onChosen: if (win.flow) win.flow.cancelAuthenticationRequest()
                         }
 
-                        SealButton {
+                        StoneButton {
                             text: "lacrar"
                             primary: true
                             onChosen: {

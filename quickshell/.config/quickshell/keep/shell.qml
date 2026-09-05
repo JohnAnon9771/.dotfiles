@@ -19,6 +19,7 @@ import qs.mist
 import qs.rampart
 import qs.grimoire
 import qs.gate
+import qs.hall
 import qs.ossuary
 import qs.scrolls
 import qs.seal
@@ -60,15 +61,20 @@ ShellRoot {
     Rampart {
         id: rampart
 
-        onOpenHall: page => shell.open("hall", page)
+        onOpenHall: page => hall.show(page)
         onOpenOssuary: ossuary.show()
-        onOpenAlmanac: shell.open("almanac", "")
+        onOpenAlmanac: hall.toggle("almanac")
     }
 
     NightVeil {}
 
     Grimoire {
         id: grimoire
+        onAction: what => shell.open(what, "")
+    }
+
+    GreatHall {
+        id: hall
         onAction: what => shell.open(what, "")
     }
 
@@ -126,6 +132,9 @@ ShellRoot {
 
             case "grimoire": grimoire.toggle(); break;
             case "ossuary":  ossuary.toggle(); break;
+            case "hall":     hall.toggle(""); break;
+            case "crypt":    hall.toggle("crypt"); break;
+            case "almanac":  hall.toggle("almanac"); break;
             case "sleep":    Quickshell.execDetached(["systemctl", "suspend"]); break;
             case "lock":     gate.lock(); break;
 

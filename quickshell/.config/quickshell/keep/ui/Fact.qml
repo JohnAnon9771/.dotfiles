@@ -1,4 +1,4 @@
-//  Rótulo e valor, sem depender dos módulos da muralha.
+//  Rótulo e valor, sem barra.
 
 import QtQuick
 import qs
@@ -9,8 +9,10 @@ Item {
 
     property string label: ""
     property string value: ""
+    property color tint: Theme.fg
 
-    implicitHeight: Math.max(name.implicitHeight, reading.implicitHeight)
+    width: parent ? parent.width : 0
+    implicitHeight: Math.max(name.implicitHeight, reading.implicitHeight) + 2
 
     Rune {
         id: name
@@ -28,7 +30,8 @@ Item {
         text: root.value
         font.family: Theme.font.mono
         font.pixelSize: Theme.size.small
-        color: Theme.fg
+        color: root.tint
+        elide: Text.ElideRight
         renderType: Text.NativeRendering
     }
 }

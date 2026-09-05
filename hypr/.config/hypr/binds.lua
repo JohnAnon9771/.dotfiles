@@ -19,7 +19,7 @@ end
 hl.bind(mod .. " + T", hl.dsp.exec_cmd(terminal))
 hl.bind(mod .. " + B", hl.dsp.exec_cmd(browser))
 hl.bind(mod .. " + M", hl.dsp.exec_cmd(terminal .. " -e btop"))
-hl.bind(mod .. " + G", hl.dsp.exec_cmd((os.getenv("HOME") or "~") .. "/.local/bin/gamer-vt"))
+hl.bind(mod .. " + G", hl.dsp.exec_cmd("gamer-vt"))
 
 -- ── O torreão ──────────────────────────────────────────────────
 hl.bind(mod .. " + SPACE",       keep("grimoire"))   -- era wofi

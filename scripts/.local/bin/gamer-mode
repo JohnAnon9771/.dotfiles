@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+# Steam em modo Deck, via gamescope, em 4K sem bordas.
+#
+# LD_PRELOAD vazio de propósito: sobrescritas herdadas da sessão
+# gráfica atrapalham o gamescope.
+exec /usr/bin/env LD_PRELOAD="" \
+    gamescope --mangoapp -W 3840 -H 2160 -f -e -- \
+    steam -gamepadui -steamos3 -steamdeck

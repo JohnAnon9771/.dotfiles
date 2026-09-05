@@ -36,14 +36,27 @@ Item {
         onWidthChanged: requestPaint()
         onHeightChanged: requestPaint()
 
+        // Escudo de brasão (heater shield).
+        //
+        // O bico depende da TANGENTE com que as duas curvas se
+        // encontram. Com o controle no canto de baixo — ou no meio —
+        // a tangente final fica horizontal, as curvas se juntam lisas
+        // e sai um U. Pondo o último controle para dentro e para
+        // cima, cada lado chega ao ponto inclinado, e o encontro vira
+        // ângulo. É o mesmo raciocínio da ogiva do Ossuário.
         function trace(ctx, w, h) {
-            const shoulder = h * 0.52;
+            const shoulder = h * 0.34;
+
             ctx.beginPath();
             ctx.moveTo(1, 1);
             ctx.lineTo(w - 1, 1);
             ctx.lineTo(w - 1, shoulder);
-            ctx.quadraticCurveTo(w - 1, h - 1, w / 2, h - 1);
-            ctx.quadraticCurveTo(1, h - 1, 1, shoulder);
+            ctx.bezierCurveTo(w - 1,     h * 0.56,
+                              w * 0.86,  h * 0.80,
+                              w / 2,     h - 1);
+            ctx.bezierCurveTo(w * 0.14,  h * 0.80,
+                              1,         h * 0.56,
+                              1,         shoulder);
             ctx.closePath();
         }
 
