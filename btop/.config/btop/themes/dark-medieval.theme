@@ -1,7 +1,7 @@
 # Theme: Dark Medieval Keep
 #
 # Colors in "#RRGGBB"
-# Mesma paleta do teu rice (Waybar / Wofi / Kitty)
+# Paleta canônica: quickshell/.config/quickshell/keep/Theme.qml
 
 # Main background (deixe vazio se quiser fundo transparente)
 theme[main_bg]="#15120f"
@@ -43,9 +43,10 @@ theme[div_line]="#2a231d"
 # GRADIENTES (start → mid → end)
 # ────────────────────────────────────────────────────────────
 
-# Temperature graph colors (musgo → ouro → sangue)
+# Temperature graph colors (musgo → brasa → sangue)
+# Casa com Theme.gauge(): ouro é aviso, brasa é calor de verdade.
 theme[temp_start]="#4f6b4a"  # verde musgo
-theme[temp_mid]="#c2a35a"    # ouro envelhecido
+theme[temp_mid]="#c9743a"    # brasa
 theme[temp_end]="#b04b4b"    # sangue seco
 
 # CPU graph colors (teal → céu tempestuoso → ouro)
