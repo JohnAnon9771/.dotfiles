@@ -24,7 +24,11 @@ Singleton {
     readonly property bool present: card !== null
     readonly property var has: card ? card.has : ({})
 
-    readonly property string name: card ? gpuName(card.pciId) : ""
+    readonly property string name: {
+        const pinned = Settings.data.gpuName;
+        if (pinned && pinned.length > 0) return pinned;
+        return card ? gpuName(card) : "";
+    }
     readonly property string driver: card ? card.driver : ""
 
     // ── Ocupação ───────────────────────────────────────────────
@@ -214,29 +218,24 @@ Singleton {
     }
 
     // ═══ NOMES ═════════════════════════════════════════════════
-    // O sysfs não diz o nome comercial da placa. Uma tabelinha curta
-    // cobre o que importa; o resto cai no ID PCI, que é honesto.
+    // O nome vem do pci.ids do sistema, resolvido pelo probe. Uma
+    // tabela escrita a mão envelhece e erra: a primeira versão disto
+    // chamava esta 9070 XT de 9060 XT.
+    //
+    // Quando a base só conhece a família — "Radeon RX 9070/9070 XT/
+    // 9070 GRE", porque o subsistema desta placa ainda não entrou
+    // nela — não há como adivinhar a variante, e chutar seria pior
+    // que perguntar. Aí vale o que estiver em Settings.gpuName.
 
-    readonly property var pciNames: ({
-        "1002:7550": "Radeon RX 9060 XT",
-        "1002:7551": "Radeon RX 9060",
-        "1002:7590": "Radeon RX 9070 XT",
-        "1002:7591": "Radeon RX 9070",
-        "1002:744c": "Radeon RX 7900 XTX",
-        "1002:747e": "Radeon RX 7800 XT",
-        "1002:7480": "Radeon RX 7700 XT",
-        "1002:73ff": "Radeon RX 6600",
-        "1002:73df": "Radeon RX 6750 XT",
-        "1002:164e": "Radeon Graphics (Raphael)",
-        "1002:15bf": "Radeon 780M",
-        "1002:1586": "Radeon 890M"
-    })
-
-    function gpuName(pciId) {
-        if (!pciId) return "GPU";
-        const key = String(pciId).toLowerCase();
-        return pciNames[key] !== undefined ? pciNames[key] : ("GPU " + pciId);
+    function gpuName(card) {
+        if (!card) return "GPU";
+        if (card.name && card.name.length > 0) return card.name;
+        return card.pciId ? "GPU " + card.pciId : "GPU";
     }
+
+    /// Verdade quando a base do sistema só soube dizer a família.
+    readonly property bool nameIsFamily:
+        card !== null && card.name !== undefined && card.name.indexOf("/") >= 0
 
     /// Todas as placas, para o Grande Salão poder mostrar a iGPU também.
     readonly property var all: Probe.gpus

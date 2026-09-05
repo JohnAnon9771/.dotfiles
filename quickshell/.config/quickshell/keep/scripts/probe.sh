@@ -15,6 +15,59 @@
 set -u
 
 j_str() { printf '"%s"' "$(printf '%s' "${1:-}" | sed 's/\\/\\\\/g; s/"/\\"/g')"; }
+
+# ── Nome comercial da placa ─────────────────────────────────────
+# Vem da base do sistema (hwdata), nao de tabela escrita a mao: uma
+# tabela chumbada envelhece e erra — a primeira versao disto chamava
+# uma 9070 XT de 9060 XT.
+#
+# Procura primeiro pelo subsistema, que identifica a placa exata do
+# fabricante; se nao achar, cai no dispositivo, que da a familia.
+PCI_IDS=""
+for f in /usr/share/hwdata/pci.ids /usr/share/misc/pci.ids /usr/share/pci.ids; do
+    [ -r "$f" ] && { PCI_IDS=$f; break; }
+done
+
+pci_name() {
+    ven=$1; dev=$2; subven=$3; subdev=$4
+    [ -n "$PCI_IDS" ] || return 1
+
+    awk -v ven="$ven" -v dev="$dev" -v sv="$subven" -v sd="$subdev" '
+        # Bloco do fabricante
+        /^[0-9a-f]/ { invendor = ($1 == ven); indev = 0; next }
+        !invendor { next }
+
+        # Linha do dispositivo: um tab
+        /^\t[0-9a-f]/ {
+            if (indev) exit
+            id = $1
+            if (id == dev) {
+                indev = 1
+                sub(/^\t[0-9a-f]+  /, "")
+                devname = $0
+            }
+            next
+        }
+
+        # Linha do subsistema: dois tabs
+        indev && /^\t\t/ {
+            if ($1 == sv && $2 == sd) {
+                sub(/^\t\t[0-9a-f]+ [0-9a-f]+  /, "")
+                print $0
+                exit
+            }
+            next
+        }
+
+        END { if (devname != "" ) print devname }
+    ' "$PCI_IDS" 2>/dev/null | head -1
+}
+
+# "Navi 48 [Radeon RX 9070 XT]" -> "Radeon RX 9070 XT"
+# O nome de marketing entre colchetes e o que uma pessoa reconhece.
+pretty_name() {
+    printf '%s' "$1" | sed -n 's/.*\[\(.*\)\].*/\1/p; t; p' | head -1
+}
 j_num() { n=$(cat "$1" 2>/dev/null) || n=""; case "$n" in ''|*[!0-9-]*) printf 'null' ;; *) printf '%s' "$n" ;; esac; }
 have()  { [ -r "$1" ] && printf true || printf false; }
 
@@ -95,15 +148,24 @@ emit_gpu() {
     [ -L "$dev/driver" ] && drv=$(basename "$(readlink -f "$dev/driver")" 2>/dev/null)
 
     pciid=$(sed -n 's/^PCI_ID=//p' "$dev/uevent" 2>/dev/null)
+    subid=$(sed -n 's/^PCI_SUBSYS_ID=//p' "$dev/uevent" 2>/dev/null)
     slot=$(sed -n 's/^PCI_SLOT_NAME=//p' "$dev/uevent" 2>/dev/null)
+
+    name=$(pci_name "$(echo "$pciid" | cut -d: -f1 | tr 'A-Z' 'a-z')" \
+                    "$(echo "$pciid" | cut -d: -f2 | tr 'A-Z' 'a-z')" \
+                    "$(echo "$subid" | cut -d: -f1 | tr 'A-Z' 'a-z')" \
+                    "$(echo "$subid" | cut -d: -f2 | tr 'A-Z' 'a-z')")
+    name=$(pretty_name "$name")
 
     # amdgpu expõe potência ora como power1_average, ora power1_input.
     power=""
     [ -r "$hw/power1_average" ] && power="$hw/power1_average"
     [ -z "$power" ] && [ -r "$hw/power1_input" ] && power="$hw/power1_input"
 
-    printf '    { "dev": %s, "hwmon": %s, "driver": %s, "pciId": %s, "slot": %s,\n' \
-        "$(j_str "$dev")" "$(j_str "$hw")" "$(j_str "$drv")" "$(j_str "$pciid")" "$(j_str "$slot")"
+    printf '    { "dev": %s, "hwmon": %s, "driver": %s, "pciId": %s, "subsysId": %s, "slot": %s,\n' \
+        "$(j_str "$dev")" "$(j_str "$hw")" "$(j_str "$drv")" "$(j_str "$pciid")" \
+        "$(j_str "$subid")" "$(j_str "$slot")"
+    printf '      "name": %s,\n' "$(j_str "$name")"
     printf '      "vramTotal": %s, "powerPath": %s,\n' \
         "$(j_num "$dev/mem_info_vram_total")" "$(j_str "$power")"
     printf '      "powerCap": %s, "fanMax": %s,\n' \

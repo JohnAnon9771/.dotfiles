@@ -58,6 +58,9 @@ Singleton {
 
             // ── Sensores: "" = detectar sozinho (o padrão correto) ──
             property string gpuCard: ""       // ex.: "card1"
+            /// O pci.ids nem sempre distingue a variante ("RX 9070/
+            /// 9070 XT/9070 GRE"). Escreva aqui o nome exato da placa.
+            property string gpuName: ""
             property string cpuHwmon: ""      // ex.: "k10temp"
             property string netInterface: ""  // ex.: "enp5s0"
         }

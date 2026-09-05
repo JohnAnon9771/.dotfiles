@@ -210,7 +210,7 @@ Column {
                 const others = [];
                 for (let i = 0; i < Gpu.all.length; i++) {
                     if (Gpu.all[i] === Gpu.card) continue;
-                    others.push(Gpu.gpuName(Gpu.all[i].pciId)
+                    others.push(Gpu.gpuName(Gpu.all[i])
                               + " (" + Fmt.bytes(Gpu.all[i].vramTotal) + ")");
                 }
                 return others.join(", ");

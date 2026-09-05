@@ -1,75 +1,83 @@
 //  ARCO OGIVAL — a porta gótica.
 //
-//  A primeira versão usava duas curvas quadráticas com os controles
-//  no topo: elas se encontravam com tangente horizontal, o que dá um
-//  arco ROMANO, arredondado. Gótico é ponta.
+//  Duas armadilhas já pegas aqui:
 //
-//  A ogiva de verdade são dois arcos de círculo cujos centros ficam
-//  nos pés opostos. Com raio igual à largura, eles se cruzam a
-//  0,866·largura acima da linha de imposta — e cruzam em ângulo,
-//  formando o bico.
+//  1. Curva quadrática com os controles no topo dá arco ROMANO: as
+//     duas metades se encontram com tangente horizontal e o topo sai
+//     redondo. Gótico é ponta — dois arcos de círculo com centro nos
+//     pés opostos, que se cruzam em ângulo a 0,866 da largura.
+//
+//  2. O Shape do Qt não redesenha quando só a COR de uma parada do
+//     gradiente muda por vinculação: o arco continuava aceso depois
+//     de o mouse sair, e só apagava na segunda passagem. Por isso
+//     isto é Canvas, como o escudo, o selo e as ameias — repinta
+//     quando mandamos.
 
 import QtQuick
-import QtQuick.Shapes
 import qs
 
-Shape {
+Canvas {
     id: root
 
     property color fill: Theme.bgPanel
     property color stroke: Theme.borderOuter
     property real strokeWidth: Theme.border.outer
-    /// Segunda cor: quando definida, o arco recebe um degradê de cima
-    /// para baixo. É como a tocha acende a porta sem vazar do arco.
+    /// A luz que entra por cima quando a porta está acesa.
     property color glow: "transparent"
     property bool lit: false
 
-    /// 1.0 = ogiva equilátera. Abaixo disso o bico abre.
-    property real pointiness: 1.0
+    /// Altura da ogiva acima da linha de imposta.
+    readonly property real rise: width * 0.8660254
+    readonly property real springY: Math.min(rise, height * 0.9)
 
-    readonly property real rise: width * 0.8660254 * pointiness
-    readonly property real springY: Math.min(rise, height * 0.86)
+    onFillChanged: requestPaint()
+    onStrokeChanged: requestPaint()
+    onStrokeWidthChanged: requestPaint()
+    onGlowChanged: requestPaint()
+    onLitChanged: requestPaint()
+    onWidthChanged: requestPaint()
+    onHeightChanged: requestPaint()
 
-    preferredRendererType: Shape.CurveRenderer
+    onPaint: {
+        const ctx = getContext("2d");
+        ctx.reset();
 
-    ShapePath {
-        strokeColor: root.stroke
-        strokeWidth: root.strokeWidth
-        joinStyle: ShapePath.MiterJoin
-        capStyle: ShapePath.FlatCap
+        const w = width;
+        const h = height;
+        const sy = springY;
+        const inset = strokeWidth / 2;
 
-        // Um caminho só: pôr fillGradient de volta em null não limpa
-        // o degradê anterior no Shape — o arco ficava aceso depois de
-        // apagar. Então o degradê é sempre o mesmo objeto, e quem
-        // muda é a cor do topo.
-        fillColor: "transparent"
-        fillGradient: litFill
-
-        startX: 0
-        startY: root.height
-
-        PathLine { x: 0; y: root.springY }
-        PathArc {
-            x: root.width / 2; y: root.springY - root.rise
-            radiusX: root.width; radiusY: root.width
-            direction: PathArc.Clockwise
+        function trace() {
+            ctx.beginPath();
+            ctx.moveTo(inset, h - inset);
+            ctx.lineTo(inset, sy);
+            // Metade esquerda: centro no pé direito.
+            ctx.arc(w, sy, w - inset, Math.PI, Math.PI * 4 / 3, false);
+            // Metade direita: centro no pé esquerdo.
+            ctx.arc(0, sy, w - inset, -Math.PI / 3, 0, false);
+            ctx.lineTo(w - inset, h - inset);
+            ctx.closePath();
         }
-        PathArc {
-            x: root.width; y: root.springY
-            radiusX: root.width; radiusY: root.width
-            direction: PathArc.Clockwise
+
+        trace();
+
+        if (lit && Qt.colorEqual(glow, "transparent") === false) {
+            const g = ctx.createLinearGradient(0, 0, 0, h);
+            g.addColorStop(0.0, glow);
+            g.addColorStop(0.7, fill);
+            g.addColorStop(1.0, fill);
+            ctx.fillStyle = g;
+        } else {
+            ctx.fillStyle = fill;
         }
-        PathLine { x: root.width; y: root.height }
-        PathLine { x: 0;          y: root.height }
-    }
+        ctx.fill();
 
-    LinearGradient {
-        id: litFill
-        x1: 0; y1: 0
-        x2: 0; y2: root.height
-
-        GradientStop { position: 0.0; color: root.lit ? root.glow : root.fill }
-        GradientStop { position: 0.7; color: root.fill }
-        GradientStop { position: 1.0; color: root.fill }
+        if (strokeWidth > 0) {
+            trace();
+            ctx.strokeStyle = stroke;
+            ctx.lineWidth = strokeWidth;
+            ctx.lineJoin = "miter";
+            ctx.stroke();
+        }
     }
 }

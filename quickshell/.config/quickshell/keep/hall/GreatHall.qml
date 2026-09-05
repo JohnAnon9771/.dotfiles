@@ -55,8 +55,14 @@ Scope {
             WlrLayershell.layer: WlrLayer.Overlay
             WlrLayershell.namespace: "keep-hall"
             WlrLayershell.keyboardFocus: WlrKeyboardFocus.OnDemand
-            exclusionMode: ExclusionMode.Ignore
             color: "transparent"
+
+            // Zona zero, mas em modo Normal: não reserva espaço para
+            // si e ainda assim respeita o de quem já reservou. É o
+            // que faz o Salão nascer exatamente sob a Muralha, sem
+            // precisar somar alturas à mão — e continua certo com a
+            // waybar antiga no ar durante a transição.
+            exclusiveZone: 0
 
             anchors { left: true; right: true; top: true; bottom: true }
 
@@ -70,8 +76,7 @@ Scope {
                 id: slab
 
                 anchors { right: parent.right; top: parent.top; bottom: parent.bottom }
-                anchors.topMargin: Theme.metric.barHeight + Theme.metric.crenelHeight
-                width: Theme.metric.hallWidth + rail.width
+                width: Theme.metric.hallWidth + rail.width + tower.width
 
                 // Desliza da direita.
                 x: parent.width
@@ -83,11 +88,78 @@ Scope {
 
                 MouseArea { anchors.fill: parent }
 
+                // ── As ameias do Salão ─────────────────────────
+                // A mesma ideia de degraus da Muralha, na lateral, no
+                // topo e no pé: o Salão é uma torre pendurada na
+                // parede, não uma gaveta que abriu.
+                //
+                // O corpo abaixo RECUA a profundidade dos dentes em
+                // cada borda ameiada. Sem isso a pedra do fundo
+                // cobria os vãos e só a linha de contorno aparecia —
+                // as ameias ficavam invisíveis.
+
+                readonly property int cren: Theme.metric.crenelHeight
+                readonly property int quoin: 6
+
+                Crenellation {
+                    id: tower
+
+                    anchors { left: parent.left; top: parent.top; bottom: parent.bottom }
+                    edge: Qt.LeftEdge
+                    // A cor do corrimão, que é quem ela encosta.
+                    stone: Theme.bgDeep
+                    rim: Theme.borderOuter
+                    heat: Settings.data.weather ? Theme.heat : 0
+
+                    // Numa borda vertical o motivo lê como cantaria —
+                    // as pedras de canto de uma torre. Cantaria é
+                    // regular, então nada de merlão faltando; e mais
+                    // rasa, senão vira zíper ao longo de mil pixels.
+                    ruined: false
+                    depth: slab.quoin
+                    merlon: 18
+                    gap: 14
+                    z: 3
+                }
+
+                // O encaixe com a Muralha: dentes apontando para CIMA,
+                // defasados meio compasso, para cada um nascer sob um
+                // vão dela. Os dois perfis se fecham como fiada de
+                // pedra, em vez de deixar uma tira de papel de parede
+                // entre a barra e o painel.
+                Crenellation {
+                    anchors { left: tower.right; right: parent.right; top: parent.top }
+                    edge: Qt.TopEdge
+                    stone: Theme.bg
+                    rim: Theme.borderOuter
+                    heat: Settings.data.weather ? Theme.heat : 0
+                    ruined: false
+                    phase: slab.x + tower.width
+                         + (Theme.metric.crenelWidth + Theme.metric.crenelGap) / 2
+                    z: 3
+                }
+
+                Crenellation {
+                    anchors { left: tower.right; right: parent.right; bottom: parent.bottom }
+                    edge: Qt.BottomEdge
+                    stone: Theme.bg
+                    rim: Theme.borderOuter
+                    heat: Settings.data.weather ? Theme.heat : 0
+                    // Em compasso com os dentes da Muralha, que
+                    // começam na borda da tela.
+                    phase: slab.x + tower.width
+                    z: 3
+                }
+
                 // ── As flâmulas laterais ───────────────────────
                 Rectangle {
                     id: rail
 
-                    anchors { left: parent.left; top: parent.top; bottom: parent.bottom }
+                    anchors {
+                        left: tower.right
+                        top: parent.top; topMargin: slab.cren
+                        bottom: parent.bottom; bottomMargin: slab.cren
+                    }
                     width: 46
                     color: Theme.bgDeep
 
@@ -115,7 +187,7 @@ Scope {
 
                                 Rectangle {
                                     anchors.fill: parent
-                                    color: banner.here ? Theme.bgPanel
+                                    color: banner.here ? Theme.bg
                                          : tabArea.containsMouse ? Theme.alpha(Theme.gold, 0.08)
                                                                  : "transparent"
                                     Behavior on color { ColorAnimation { duration: Theme.anim.instant } }
@@ -162,8 +234,14 @@ Scope {
 
                 // ── O salão ────────────────────────────────────
                 Rectangle {
-                    anchors { left: rail.right; right: parent.right; top: parent.top; bottom: parent.bottom }
-                    color: Theme.bgPanel
+                    anchors {
+                        left: rail.right; right: parent.right
+                        top: parent.top; topMargin: slab.cren
+                        bottom: parent.bottom; bottomMargin: slab.cren
+                    }
+                    // A mesma pedra da Muralha, não um painel mais
+                    // claro: as duas superfícies são a mesma parede.
+                    color: Theme.bg
 
                     Rectangle {
                         anchors { left: parent.left; top: parent.top; bottom: parent.bottom }
@@ -175,11 +253,35 @@ Scope {
                     Fleuron { anchors { right: parent.right; bottom: parent.bottom; rightMargin: 4; bottomMargin: 3 } }
 
                     Flickable {
+                        id: scroll
+
                         anchors.fill: parent
                         anchors.margins: Theme.pad.wide
                         contentHeight: pages.implicitHeight
                         clip: true
                         boundsBehavior: Flickable.StopAtBounds
+
+                        // Sem arrasto: clicar e puxar o conteúdo num
+                        // painel de controle é fácil de fazer sem
+                        // querer, e atrapalha mais do que serve. A
+                        // roda faz o trabalho.
+                        interactive: false
+
+                        readonly property real limit:
+                            Math.max(0, contentHeight - height)
+
+                        Behavior on contentY {
+                            NumberAnimation { duration: 130; easing.type: Easing.OutCubic }
+                        }
+
+                        WheelHandler {
+                            acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
+                            onWheel: e => {
+                                const step = e.angleDelta.y !== 0 ? e.angleDelta.y : e.angleDelta.x;
+                                scroll.contentY = Math.max(0,
+                                    Math.min(scroll.limit, scroll.contentY - step));
+                            }
+                        }
 
                         Item {
                             id: pages
