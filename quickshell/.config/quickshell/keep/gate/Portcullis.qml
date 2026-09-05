@@ -92,14 +92,9 @@ Scope {
                 anchors.fill: parent
                 fillMode: Image.PreserveAspectCrop
                 asynchronous: true
-                cache: false
-                source: {
-                    const p = Settings.data.wallpaper;
-                    if (!p || p.length === 0) return "";
-                    if (p.charAt(0) !== "~") return "file://" + p;
-                    const home = Quickshell.env("HOME");
-                    return home ? "file://" + home + p.substring(1) : "";
-                }
+                // Mesma URL que a Névoa usa, logo o mesmo decode: o
+                // papel de parede entra na tela de bloqueio de graça.
+                source: Settings.wallpaperUrl
             }
 
             Rectangle {

@@ -44,12 +44,23 @@ Column {
     Divider { width: parent.width }
 
     RuneField {
+        id: search
+
         width: parent.width
         placeholder: "procurar na cripta"
-        onTextChanged: root.needle = text
+        // A busca espera a digitação parar: `needle` alimenta o model do
+        // Repeater abaixo, e cada mudança destrói e recria até 120
+        // delegates. Mesmo respiro que o Grimório usa para os arquivos.
+        onTextChanged: sift.restart()
     }
 
     property string needle: ""
+
+    Timer {
+        id: sift
+        interval: 220
+        onTriggered: root.needle = search.text
+    }
 
     Repeater {
         model: Notifs.searchHistory(root.needle)

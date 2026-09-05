@@ -84,11 +84,14 @@ Singleton {
         root.popups = out;
     }
 
-    /// Quanto tempo o pergaminho fica aberto. O aplicativo pode
-    /// pedir um tempo; crítico não expira sozinho, por definição.
+    /// Quanto tempo o pergaminho fica aberto. O aplicativo pode pedir
+    /// um tempo; crítico fica muito mais, mas não para sempre. Com vida
+    /// zero o pavio nunca queimava, o pergaminho nunca saía de `popups`
+    /// e cada crítica não dispensada ficava de pé na memória até o fim
+    /// da sessão. O registro continua na cripta.
     function lifetime(n) {
         if (!n) return Settings.data.scrollTimeoutMs;
-        if (n.urgency === NotificationUrgency.Critical) return 0;
+        if (n.urgency === NotificationUrgency.Critical) return Settings.data.criticalTimeoutMs;
         if (n.expireTimeout > 0) return n.expireTimeout * 1000;
         return Settings.data.scrollTimeoutMs;
     }

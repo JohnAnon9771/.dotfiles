@@ -23,18 +23,15 @@ Variants {
         WlrLayershell.layer: WlrLayer.Background
         WlrLayershell.namespace: "keep-mist"
         exclusionMode: ExclusionMode.Ignore
-        color: "transparent"
+
+        // Opaca de propósito, e não "transparent": a Névoa é o fundo de
+        // tudo e sempre pinta o gradiente abaixo. Cor opaca faz o
+        // Quickshell pedir uma superfície opaca, que poupa blend na GPU
+        // e deixa o compositor descartar por oclusão o que está atrás.
+        // A cor é a mesma do primeiro GradientStop: nada muda na tela.
+        color: Theme.crypt
 
         anchors { left: true; right: true; top: true; bottom: true }
-
-        /// "~/Pictures/x.jpg" → caminho absoluto.
-        readonly property string wallpaper: {
-            const p = Settings.data.wallpaper;
-            if (!p || p.length === 0) return "";
-            if (p.charAt(0) !== "~") return p;
-            const home = Quickshell.env("HOME");
-            return home ? home + p.substring(1) : p;
-        }
 
         // ── Fundo procedural ───────────────────────────────────
         // Sempre desenhado. Se a imagem carregar, ela cobre; se
@@ -55,7 +52,10 @@ Variants {
             anchors.fill: parent
             fillMode: Image.PreserveAspectCrop
             asynchronous: true
-            cache: false
+            // Sem `cache: false`: os dois panos acabam com a MESMA
+            // imagem depois da travessia, e com o cache ligado isso é
+            // um decode compartilhado em vez de dois. O Portão também
+            // se pendura neste mesmo.
             visible: status === Image.Ready
         }
 
@@ -64,8 +64,7 @@ Variants {
             anchors.fill: parent
             fillMode: Image.PreserveAspectCrop
             asynchronous: true
-            cache: false
-            source: win.wallpaper.length > 0 ? "file://" + win.wallpaper : ""
+            source: Settings.wallpaperUrl
             visible: status === Image.Ready
             opacity: 0
 

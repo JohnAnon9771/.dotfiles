@@ -15,6 +15,18 @@ Singleton {
 
     readonly property alias data: adapter
 
+    /// O papel de parede como URL absoluta, com o "~" resolvido.
+    /// Um lugar só, de propósito: a Névoa e o Portão precisam da MESMA
+    /// string. URLs diferentes para o mesmo arquivo são duas chaves no
+    /// cache de pixmap do Qt, e a imagem é decodificada duas vezes.
+    readonly property string wallpaperUrl: {
+        const p = root.data.wallpaper;
+        if (!p || p.length === 0) return "";
+        if (p.charAt(0) !== "~") return "file://" + p;
+        const home = Quickshell.env("HOME");
+        return home ? "file://" + home + p.substring(1) : "";
+    }
+
     FileView {
         path: Quickshell.statePath("settings.json")
         watchChanges: true
@@ -42,6 +54,11 @@ Singleton {
             // ── Notificações ──
             property bool dnd: false
             property int scrollTimeoutMs: 6000
+            /// O protocolo diz que crítico não expira sozinho. Aqui
+            /// expira, mas devagar: pergaminho que nunca sai da tela é
+            /// pergaminho que nunca sai da memória, e a cripta guarda o
+            /// registro de qualquer jeito.
+            property int criticalTimeoutMs: 300000
             property int cryptLimit: 120      // quantos pergaminhos a cripta guarda
 
             // ── Vigília (idle) ──
