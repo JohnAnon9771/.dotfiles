@@ -63,7 +63,9 @@ hl.config({
     },
 
     dwindle = {
-        pseudotile = true,      -- sem isto o bind SUPER+P fica órfão
+        -- pseudotile deixou de ser opção de config: virou estado de
+        -- janela. O SUPER+P não fica órfão — hl.dsp.window.pseudo()
+        -- não depende de nada declarado aqui.
         preserve_split = true,
     },
 
@@ -74,7 +76,10 @@ hl.config({
     misc = {
         force_default_wallpaper = -1,
         disable_hyprland_logo   = true,
-        vfr = true,
+        -- misc.vfr saiu do config: o compositor já reduz o quadro
+        -- sozinho quando a tela está parada. Quem existe hoje é
+        -- misc.vrr, que é outra coisa (sincronia adaptativa) e fica
+        -- desligada de propósito.
         focus_on_activate = true,
     },
 })
@@ -85,7 +90,7 @@ hl.curve("easeInOutCubic", { type = "bezier", points = { {0.65, 0.05}, {0.36, 1}
 hl.curve("linear",         { type = "bezier", points = { {0, 0},       {1, 1} } })
 hl.curve("almostLinear",   { type = "bezier", points = { {0.5, 0.5},   {0.75, 1} } })
 hl.curve("quick",          { type = "bezier", points = { {0.15, 0},    {0.1, 1} } })
-hl.curve("easy",           { type = "spring", mass = 1, stiffness = 238.1191, damping = 24.21279333 })
+hl.curve("easy",           { type = "spring", mass = 1, stiffness = 238.1191, dampening = 24.21279333 })
 
 hl.animation({ leaf = "global",        enabled = true, speed = 10,   bezier = "default" })
 hl.animation({ leaf = "border",        enabled = true, speed = 5.39, bezier = "easeOutQuint" })
