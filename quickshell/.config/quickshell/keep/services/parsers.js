@@ -169,3 +169,48 @@ function ppDpm(txt) {
     }
     return 0;
 }
+
+/// /proc/diskstats → { device: {read, written} } em bytes acumulados.
+/// Conta só discos inteiros: somar as partições junto contaria tudo
+/// duas vezes. Setor de 512 B é a unidade que o kernel usa aqui,
+/// independente do tamanho de bloco real do dispositivo.
+function diskstats(txt) {
+    var out = {};
+    var lines = txt.split("\n");
+
+    for (var i = 0; i < lines.length; i++) {
+        var f = lines[i].trim().split(/\s+/);
+        if (f.length < 10) continue;
+
+        var name = f[2];
+
+        // Pseudodispositivos.
+        if (/^(loop|ram|zram|fd)\d/.test(name)) continue;
+        // Partições — o disco inteiro já as contabiliza.
+        if (/^nvme\d+n\d+p\d+$/.test(name)) continue;
+        if (/^mmcblk\d+p\d+$/.test(name)) continue;
+        if (/^(sd|hd|vd|xvd)[a-z]+\d+$/.test(name)) continue;
+
+        var rd = parseInt(f[5], 10);
+        var wr = parseInt(f[9], 10);
+        if (!isFinite(rd) || !isFinite(wr)) continue;
+
+        out[name] = { read: rd * 512, written: wr * 512 };
+    }
+    return out;
+}
+
+/// Taxa de I/O em bytes/s entre duas amostras de diskstats().
+function diskRate(now, prev, seconds) {
+    var out = { read: 0, written: 0 };
+    if (!prev || seconds <= 0) return out;
+
+    for (var name in now) {
+        if (!prev[name]) continue;
+        var dr = now[name].read - prev[name].read;
+        var dw = now[name].written - prev[name].written;
+        if (dr > 0) out.read += dr / seconds;
+        if (dw > 0) out.written += dw / seconds;
+    }
+    return out;
+}

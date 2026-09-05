@@ -86,6 +86,23 @@ QtObject {
         ok("cabecalho ignorado", P.df("Filesystem 1B-blocks Used Available Capacity Mounted on\n").length === 0);
         ok("tamanho zero descartado", P.df("F S U A C M\ntmpfs 0 0 0 - /run\n").length === 0);
 
+        console.log("\n/proc/diskstats");
+        const ds = P.diskstats(read("/proc/diskstats"));
+        ok("achou algum disco", Object.keys(ds).length > 0, Object.keys(ds));
+        const fake = "   8   0 sda 1 0 100 0 2 0 200 0\n"
+                   + "   8   1 sda1 1 0 100 0 2 0 200 0\n"
+                   + " 259   0 nvme0n1 1 0 10 0 2 0 20 0\n"
+                   + " 259   1 nvme0n1p2 1 0 10 0 2 0 20 0\n"
+                   + "   7   0 loop0 1 0 999 0 2 0 999 0\n";
+        const fd = P.diskstats(fake);
+        ok("particoes nao entram na conta", fd["sda1"] === undefined && fd["nvme0n1p2"] === undefined);
+        ok("loopback de arquivo ignorado", fd["loop0"] === undefined);
+        ok("discos inteiros contados", fd["sda"] !== undefined && fd["nvme0n1"] !== undefined);
+        ok("setor de 512 B", fd["sda"].read === 100 * 512, fd["sda"].read);
+        const dr = P.diskRate({ sda: { read: 1024, written: 2048 } },
+                              { sda: { read: 0, written: 0 } }, 2);
+        ok("taxa de disco = delta / segundos", dr.read === 512 && dr.written === 1024, JSON.stringify(dr));
+
         console.log("\npp_dpm");
         ok("pega a linha marcada", P.ppDpm("0: 400Mhz \n1: 600Mhz *\n2: 2200Mhz \n") === 600);
         ok("aceita o prefixo S:", P.ppDpm("S: 0Mhz *\n1: 500Mhz \n") === 0);
