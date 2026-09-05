@@ -4,6 +4,7 @@
 
 import QtQml
 import "../quickshell/.config/quickshell/keep/services/parsers.js" as P
+import "../quickshell/.config/quickshell/keep/services/fuzzy.js" as F
 
 QtObject {
     property int failures: 0
@@ -111,6 +112,45 @@ QtObject {
         console.log("\nclamp01");
         ok("limita acima", P.clamp01(5) === 1);
         ok("limita abaixo", P.clamp01(-5) === 0);
+
+        console.log("\nbusca difusa");
+        ok("nao casa devolve -1", F.score("zzz", "Firefox") === -1);
+        ok("consulta vazia e neutra", F.score("", "Firefox") === 0);
+        ok("exato ganha de tudo", F.score("firefox", "Firefox") === 1000);
+        ok("prefixo vale muito", F.score("fire", "Firefox") > 700);
+
+        // O caso que motiva o algoritmo: iniciais de palavra batem
+        // subsequencia espalhada.
+        ok("iniciais de palavra > letras espalhadas",
+           F.score("ff", "Firefox Browser") > F.score("ff", "Diff Tool"),
+           F.score("ff", "Firefox Browser") + " vs " + F.score("ff", "Diff Tool"));
+        ok("camelCase conta como fronteira",
+           F.score("vc", "VSCode") > 0);
+        ok("letras seguidas valem mais que separadas",
+           F.score("abc", "abcxxx") > F.score("abc", "axbxc"));
+        ok("entre iguais, o nome curto ganha",
+           F.score("term", "Terminal") > F.score("term", "Terminal Emulator Deluxe"));
+        ok("ignora maiusculas", F.score("FIRE", "firefox") > 0);
+        ok("ordem importa", F.score("xof", "Firefox") === -1);
+
+        ok("posicoes marcam as letras certas",
+           JSON.stringify(F.positions("ff", "Firefox")) === "[0,4]",
+           JSON.stringify(F.positions("ff", "Firefox")));
+        ok("sem casar, sem posicoes", F.positions("zz", "Firefox").length === 0);
+
+        ok("campo com peso maior vence",
+           F.scoreFields("x", [["x", 1], ["x", 3]]) === F.score("x", "x") * 3);
+        ok("campo que nao casa e ignorado",
+           F.scoreFields("fire", [["zzz", 9], ["Firefox", 1]]) > 0);
+
+        const tNow = Date.now();
+        ok("nunca usado pesa zero", F.frecency(0, tNow, tNow) === 0);
+        ok("usado agora pesa cheio", Math.abs(F.frecency(10, tNow, tNow) - 10) < 0.01);
+        ok("meia-vida de 14 dias",
+           Math.abs(F.frecency(10, tNow - 14 * 86400000, tNow) - 5) < 0.05,
+           F.frecency(10, tNow - 14 * 86400000, tNow));
+        ok("relogio para tras nao amplifica",
+           F.frecency(10, tNow + 86400000, tNow) <= 10);
 
         console.log(failures === 0
             ? "\n── As pedras estao assentadas."
