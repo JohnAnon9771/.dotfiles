@@ -14,7 +14,7 @@ Readout {
 
     visible: Sys.cpuTemp > 0
 
-    glyph: Sys.feverish ? "🜂" : "☄"
+    glyph: Sys.feverish ? Theme.glyph.tempHot : Theme.glyph.temp
     value: Fmt.temp(Sys.cpuTemp)
     tint: Theme.ember
     level: Sys.thermalPressure

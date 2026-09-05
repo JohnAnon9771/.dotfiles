@@ -14,8 +14,18 @@ Segment {
     property color tint: Theme.accent
     /// Amostras 0..1 para o traço. Vazio esconde o traço.
     property var samples: []
-    /// 0..1 — pinta o glifo pela escala de estado quando > 0.
+    /// 0..1 — o quanto este medidor está sofrendo.
     property real level: -1
+
+    /// A cor do glifo guarda a identidade do módulo em repouso e só
+    /// desliza para a escala de estado quando a coisa aperta. Pintar
+    /// direto pela escala deixava a muralha inteira verde no ócio, e
+    /// aí ouro, roxo e teal — a paleta do rice — nunca apareciam.
+    readonly property color liveTint: {
+        if (level < 0) return tint;
+        if (level < 0.6) return tint;
+        return Theme.mix(tint, Theme.gauge(level), (level - 0.6) / 0.4);
+    }
 
     spacing: Theme.pad.tight
     hoverTint: root.tint
@@ -25,7 +35,7 @@ Segment {
         text: root.glyph
         font.family: Theme.font.mono
         font.pixelSize: Theme.size.base
-        color: root.level >= 0 ? Theme.gauge(root.level) : root.tint
+        color: root.liveTint
         renderType: Text.NativeRendering
 
         Behavior on color { ColorAnimation { duration: Theme.anim.slow } }

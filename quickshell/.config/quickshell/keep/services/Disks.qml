@@ -23,11 +23,14 @@ Singleton {
     property real readRate: 0      // bytes/s
     property real writeRate: 0
 
-    /// A raiz é a que aparece na muralha.
+    /// A raiz é a que aparece na muralha. Se não houver "/" na
+    /// lista — acontece dentro de container, onde a raiz é overlay
+    /// e nós a filtramos — mostra a maior montagem em vez de zero.
     readonly property var rootFs: {
-        for (let i = 0; i < mounts.length; i++)
-            if (mounts[i].mount === "/") return mounts[i];
-        return null;
+        const m = mounts;
+        for (let i = 0; i < m.length; i++)
+            if (m[i].mount === "/") return m[i];
+        return m.length > 0 ? m[0] : null;
     }
 
     readonly property real rootUsage: rootFs ? rootFs.usage : 0

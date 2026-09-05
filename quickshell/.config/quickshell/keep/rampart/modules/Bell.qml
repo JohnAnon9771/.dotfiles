@@ -26,7 +26,9 @@ Segment {
         Text {
             id: glyph
             anchors.centerIn: parent
-            text: Notifs.dnd ? "󰂛" : Notifs.unread > 0 ? "󰂚" : "󰂜"
+            text: Notifs.dnd ? Theme.glyph.bellOff
+                : Notifs.unread > 0 ? Theme.glyph.bell
+                                    : Theme.glyph.bellNone
             font.family: Theme.font.mono
             font.pixelSize: Theme.size.base
             color: Notifs.dnd ? Theme.verdigris

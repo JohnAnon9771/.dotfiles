@@ -7,7 +7,7 @@ import qs
 Text {
     property real weight: 0.4
 
-    text: "◈"
+    text: Theme.glyph.fleuron
     font.family: Theme.font.mono
     font.pixelSize: Theme.size.tiny
     color: Theme.alpha(Theme.gold, weight)

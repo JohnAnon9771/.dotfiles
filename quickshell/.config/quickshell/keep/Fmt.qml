@@ -7,21 +7,23 @@ import QtQuick
 import Quickshell
 
 Singleton {
-    /// Bytes → "1,4 G". Base 1024, que é como o kernel conta.
+    /// Bytes → "1.4G". Base 1024, que é como o kernel conta.
+    /// A unidade vem SEMPRE junto: "354.0" sozinho não diz nada.
     function bytes(n, digits) {
-        if (!isFinite(n) || n <= 0) return "0";
-        const units = ["", "K", "M", "G", "T", "P"];
+        if (!isFinite(n) || n <= 0) return "0B";
+        const units = ["B", "K", "M", "G", "T", "P"];
         let i = 0;
         let v = n;
         while (v >= 1024 && i < units.length - 1) { v /= 1024; i++; }
-        const d = digits !== undefined ? digits : (v < 10 ? 1 : 0);
+        // Bytes crus não têm casa decimal: "354B", não "354.0B".
+        const d = i === 0 ? 0 : (digits !== undefined ? digits : (v < 10 ? 1 : 0));
         return v.toFixed(d) + units[i];
     }
 
-    /// Bytes por segundo → "1,4 M/s".
+    /// Bytes por segundo → "1.4M/s".
     function rate(n) {
-        if (!isFinite(n) || n < 1) return "0";
-        return bytes(n, n < 1024 * 10 ? 1 : 0);
+        if (!isFinite(n) || n < 1) return "0B/s";
+        return bytes(n) + "/s";
     }
 
     /// 0..1 → "42%"

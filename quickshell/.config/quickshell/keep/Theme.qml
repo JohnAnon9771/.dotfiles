@@ -155,9 +155,9 @@ Singleton {
 
     component MetricSet: QtObject {
         readonly property int barHeight:      34
-        readonly property int crenelHeight:   6   // altura dos dentes da ameia
-        readonly property int crenelWidth:    9   // largura do merlão
-        readonly property int crenelGap:      6   // vão entre merlões
+        readonly property int crenelHeight:   9   // altura dos dentes da ameia
+        readonly property int crenelWidth:    15  // largura do merlão
+        readonly property int crenelGap:      11  // vão entre merlões
         readonly property int hallWidth:      420
         readonly property int grimoireWidth:  760
         readonly property int grimoireHeight: 460
@@ -179,6 +179,89 @@ Singleton {
     readonly property BorderSet border: BorderSet {}
     readonly property MetricSet metric: MetricSet {}
     readonly property AnimSet   anim:   AnimSet {}
+
+    // ═══ GLIFOS ════════════════════════════════════════════════
+    // Regra do castelo: nenhum glifo cai em fonte de reserva.
+    //
+    // A JetBrainsMono Nerd Font NÃO cobre ⚙ ⌬ ☄ ⛃ ✝ ☠ ☾ ⛨ nem os
+    // algarismos romanos Ⅰ..Ⅹ. Tudo isso vinha sendo desenhado por
+    // alguma fonte de reserva do fontconfig, cada um com um peso
+    // diferente — era a causa da barra parecer remendada.
+    //
+    // Então: ícone é sempre codepoint Nerd Font (conferido presente),
+    // e o que é letra fica em Cinzel. Os algarismos romanos passam a
+    // ser I, V, X do alfabeto: a Cinzel é uma capitular romana de
+    // inscrição, e "IV" nela é mais romano que o Ⅳ do Unicode.
+
+    component GlyphSet: QtObject {
+        // Vigília
+        readonly property string cpu:      "\u{f0ee0}"
+        readonly property string gpu:      "\u{f08ae}"
+        readonly property string ram:      "\u{f035b}"
+        readonly property string temp:     "\u{f050f}"
+        readonly property string tempHot:  "\u{f0e01}"
+        readonly property string disk:     "\u{f02ca}"
+        readonly property string fan:      "\u{f0210}"
+
+        // Corvos
+        readonly property string wired:    "\u{f0201}"
+        readonly property string wifiOff:  "\u{f092d}"
+        readonly property var    wifi:     ["\u{f091f}", "\u{f0922}", "\u{f0925}", "\u{f0928}"]
+        readonly property string down:     "↓"
+        readonly property string up:       "↑"
+
+        // Órgão
+        readonly property string volMute:  "\u{f075f}"
+        readonly property string volLow:   "\u{f057f}"
+        readonly property string volMid:   "\u{f0580}"
+        readonly property string volHigh:  "\u{f057e}"
+        readonly property string mic:      "\u{f036c}"
+        readonly property string micOff:   "\u{f036d}"
+
+        // Pergaminhos
+        readonly property string bell:     "\u{f009a}"
+        readonly property string bellOff:  "\u{f009b}"
+        readonly property string bellNone: "\u{f009c}"
+
+        // Ossuário
+        readonly property string lock:     "\u{f033e}"
+        readonly property string sleep:    "\u{f04b2}"
+        readonly property string reboot:   "\u{f0709}"
+        readonly property string power:    "\u{f0425}"
+        readonly property string logout:   "\u{f0343}"
+
+        // Elo rúnico
+        readonly property string bt:       "\u{f00af}"
+        readonly property string btOn:     "\u{f00b1}"
+        readonly property string btOff:    "\u{f00b2}"
+
+        // Bardo
+        readonly property string music:    "\u{f075a}"
+        readonly property string play:     "\u{f040a}"
+        readonly property string pause:    "\u{f03e4}"
+
+        // Identidade — estes ficam em Cinzel, não na mono.
+        readonly property string cross:    "†"      // o brasão
+        readonly property string skull:    "\u{f068c}"
+        readonly property string ghost:    "\u{f07f0}"
+        readonly property string keep:     "\u{f0be9}"
+        readonly property string fleuron:  "◈"
+        readonly property string scratch:  "\u{f0306}"
+        readonly property string moon:     "\u{f0594}"
+    }
+
+    readonly property GlyphSet glyph: GlyphSet {}
+
+    /// Algarismo romano em letras de verdade, para a Cinzel.
+    function roman(n) {
+        const vals = [1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1];
+        const syms = ["M", "CM", "D", "CD", "C", "XC", "L", "XL",
+                      "X", "IX", "V", "IV", "I"];
+        let out = "", v = Math.max(0, Math.floor(n));
+        for (let i = 0; i < vals.length; i++)
+            while (v >= vals[i]) { out += syms[i]; v -= vals[i]; }
+        return out;
+    }
 
     /// Espaçamento rúnico — o letter-spacing largo das inscrições.
     /// QML mede em px, não em em; converta a partir do tamanho.

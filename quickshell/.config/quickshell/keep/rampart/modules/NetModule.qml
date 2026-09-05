@@ -33,12 +33,12 @@ Segment {
             }
             DetailRow {
                 label: "descendo"
-                value: Fmt.rate(Net.rxRate) + "/s"
+                value: Fmt.rate(Net.rxRate)
                 tint: Theme.moat
             }
             DetailRow {
                 label: "subindo"
-                value: Fmt.rate(Net.txRate) + "/s"
+                value: Fmt.rate(Net.txRate)
                 tint: Theme.gold
             }
             DetailRow {
@@ -52,12 +52,15 @@ Segment {
 
     Text {
         anchors.verticalCenter: parent.verticalCenter
-        text: !Net.available ? "󰤭"
-            : Net.onWifi ? Net.strength > 0.75 ? "󰤨"
-                         : Net.strength > 0.5  ? "󰤥"
-                         : Net.strength > 0.25 ? "󰤢"
-                                               : "󰤟"
-            : root.linked ? "󰈁" : "󰤭"
+        text: {
+            if (!Net.available) return Theme.glyph.wifiOff;
+            if (Net.onWifi) {
+                const bars = Theme.glyph.wifi;
+                return bars[Math.min(bars.length - 1,
+                                     Math.floor(Net.strength * bars.length))];
+            }
+            return root.linked ? Theme.glyph.wired : Theme.glyph.wifiOff;
+        }
         font.family: Theme.font.mono
         font.pixelSize: Theme.size.base
         color: Net.online ? Theme.wraith
@@ -68,23 +71,21 @@ Segment {
         Behavior on color { ColorAnimation { duration: Theme.anim.slow } }
     }
 
-    Column {
+    Text {
         anchors.verticalCenter: parent.verticalCenter
-        spacing: 0
+        text: Theme.glyph.down + Fmt.rate(Net.rxRate)
+        font.family: Theme.font.mono
+        font.pixelSize: Theme.size.base
+        color: Theme.fgMuted
+        renderType: Text.NativeRendering
+    }
 
-        Text {
-            text: "↓" + Fmt.rate(Net.rxRate)
-            font.family: Theme.font.mono
-            font.pixelSize: Theme.size.tiny
-            color: Theme.fgMuted
-            renderType: Text.NativeRendering
-        }
-        Text {
-            text: "↑" + Fmt.rate(Net.txRate)
-            font.family: Theme.font.mono
-            font.pixelSize: Theme.size.tiny
-            color: Theme.fgDim
-            renderType: Text.NativeRendering
-        }
+    Text {
+        anchors.verticalCenter: parent.verticalCenter
+        text: Theme.glyph.up + Fmt.rate(Net.txRate)
+        font.family: Theme.font.mono
+        font.pixelSize: Theme.size.base
+        color: Theme.fgDim
+        renderType: Text.NativeRendering
     }
 }

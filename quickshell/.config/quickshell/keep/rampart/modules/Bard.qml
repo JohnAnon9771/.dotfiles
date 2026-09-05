@@ -75,7 +75,7 @@ Segment {
 
     Text {
         anchors.verticalCenter: parent.verticalCenter
-        text: root.playing ? "♫" : "♪"
+        text: root.playing ? Theme.glyph.music : Theme.glyph.pause
         font.family: Theme.font.mono
         font.pixelSize: Theme.size.base
         color: root.playing ? Theme.royal : Theme.verdigris

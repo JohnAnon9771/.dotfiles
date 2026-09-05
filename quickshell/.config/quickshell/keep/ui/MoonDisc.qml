@@ -11,7 +11,7 @@ Canvas {
     /// 0.0 = nova · 0.25 = quarto crescente · 0.5 = cheia · 0.75 = minguante
     property real phase: Lore.moonPhase
     property color lit: Theme.parchment
-    property color dark: Theme.alpha(Theme.iron, 0.28)
+    property color dark: Theme.alpha(Theme.iron, 0.45)
 
     implicitWidth: 14
     implicitHeight: 14

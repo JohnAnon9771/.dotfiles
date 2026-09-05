@@ -1,64 +1,109 @@
-pragma ComponentBehavior: Bound
-
 //  AMEIAS — a assinatura do torreão.
-//  Merlões pendurados na borda inferior da muralha. Alguns estão
-//  gastos, um ou outro caiu: o castelo está abandonado, afinal.
+//
+//  Na primeira versão eram retângulos soltos com um fio no topo de
+//  cada um: contra a parede escura só o fio aparecia, e a barra
+//  ganhava uma borda pontilhada em vez de uma muralha. Agora é um
+//  perfil só, traçado de ponta a ponta — a silhueta é o que lê.
 
 import QtQuick
 import qs
 
-Item {
+Canvas {
     id: root
 
-    /// Cor da pedra dos merlões.
-    property color stone: Theme.wood
-    /// Fio de luz no topo, onde a pedra pega o brilho da tocha.
+    /// Cor da pedra. A mesma da parede: é a mesma muralha.
+    property color stone: Theme.bg
+    /// Fio de luz que corre pela silhueta.
     property color rim: Theme.iron
-    /// 0..1 — quanto o castelo está em brasa (as ameias esquentam).
+    /// 0..1 — brasa subindo pela muralha sob carga.
     property real heat: Theme.heat
-    /// Deixa merlões faltando aqui e ali, como muralha desmoronada.
+    /// Merlões gastos e um ou outro desabado.
     property bool ruined: true
+
+    readonly property int merlon: Theme.metric.crenelWidth
+    readonly property int gap: Theme.metric.crenelGap
 
     implicitHeight: Theme.metric.crenelHeight
 
-    readonly property int step: Theme.metric.crenelWidth + Theme.metric.crenelGap
-    readonly property int count: Math.max(1, Math.floor(width / step))
+    onStoneChanged: requestPaint()
+    onRimChanged: requestPaint()
+    onHeatChanged: requestPaint()
+    onWidthChanged: requestPaint()
+    onHeightChanged: requestPaint()
 
-    Repeater {
-        model: root.count
+    onPaint: {
+        const ctx = getContext("2d");
+        ctx.reset();
 
-        Rectangle {
-            id: merlon
+        const step = merlon + gap;
+        const count = Math.ceil(width / step) + 1;
+        const h = height;
 
-            required property int index
+        // ── O perfil ───────────────────────────────────────────
+        // Sobe e desce entre a base da parede e a ponta do merlão,
+        // num traço só. É isto que dá a silhueta de castelo.
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
 
-            // Pedra gasta: cada quinto merlão é mais baixo, e um a
-            // cada dezessete simplesmente não está mais lá.
-            readonly property bool missing: root.ruined && (merlon.index % 17 === 11)
-            readonly property real wear: root.ruined && (merlon.index % 5 === 3) ? 0.62 : 1.0
+        for (let i = 0; i < count; i++) {
+            const x0 = i * step;
+            const x1 = x0 + merlon;
 
-            x: merlon.index * root.step
-            width: Theme.metric.crenelWidth
-            height: root.height * merlon.wear
-            visible: !missing
+            // Pedra gasta: um a cada sete é mais baixo, e um a cada
+            // vinte e três já não está mais lá.
+            const missing = ruined && (i % 23 === 14);
+            const drop = missing ? 0 : (ruined && (i % 7 === 3) ? h * 0.62 : h);
 
-            color: root.stone
-
-            // A brasa sobe pela muralha quando as forjas trabalham.
-            Rectangle {
-                anchors.fill: parent
-                color: Theme.ember
-                opacity: root.heat * 0.35 * (0.6 + 0.4 * Math.sin(merlon.index * 1.7))
-                visible: root.heat > 0.02
-            }
-
-            // Fio de luz no topo do merlão.
-            Rectangle {
-                anchors { left: parent.left; right: parent.right; top: parent.top }
-                height: 1
-                color: root.rim
-                opacity: 0.55
+            ctx.lineTo(x0, 0);
+            if (drop > 0) {
+                ctx.lineTo(x0, drop);
+                ctx.lineTo(x1, drop);
+                ctx.lineTo(x1, 0);
             }
         }
+
+        ctx.lineTo(width, 0);
+
+        // Fecha por cima para poder preencher: a parede acima já é
+        // sólida, então o preenchimento só aparece nos dentes.
+        ctx.lineTo(width, -1);
+        ctx.lineTo(0, -1);
+        ctx.closePath();
+
+        ctx.fillStyle = stone;
+        ctx.fill();
+
+        // Brasa: as ameias esquentam quando as forjas trabalham.
+        if (heat > 0.02) {
+            const g = ctx.createLinearGradient(0, 0, 0, h);
+            g.addColorStop(0, Qt.rgba(Theme.ember.r, Theme.ember.g, Theme.ember.b, heat * 0.30));
+            g.addColorStop(1, Qt.rgba(Theme.ember.r, Theme.ember.g, Theme.ember.b, 0));
+            ctx.fillStyle = g;
+            ctx.fill();
+        }
+
+        // ── O fio de luz ───────────────────────────────────────
+        // Traça a silhueta de novo, agora só a linha.
+        ctx.beginPath();
+        ctx.moveTo(0, 0.5);
+
+        for (let i = 0; i < count; i++) {
+            const x0 = i * step;
+            const x1 = x0 + merlon;
+            const missing = ruined && (i % 23 === 14);
+            const drop = missing ? 0 : (ruined && (i % 7 === 3) ? h * 0.62 : h);
+
+            ctx.lineTo(x0 + 0.5, 0.5);
+            if (drop > 0) {
+                ctx.lineTo(x0 + 0.5, drop - 0.5);
+                ctx.lineTo(x1 - 0.5, drop - 0.5);
+                ctx.lineTo(x1 - 0.5, 0.5);
+            }
+        }
+        ctx.lineTo(width, 0.5);
+
+        ctx.strokeStyle = rim;
+        ctx.lineWidth = 1;
+        ctx.stroke();
     }
 }

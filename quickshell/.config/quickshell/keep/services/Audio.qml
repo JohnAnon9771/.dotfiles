@@ -165,10 +165,9 @@ Singleton {
 
     /// Glifo do volume, para a muralha e a lápide.
     function glyph(v, isMuted) {
-        if (isMuted) return "󰝟";
-        if (v <= 0.001) return "󰕿";
-        if (v < 0.34) return "󰕿";
-        if (v < 0.67) return "󰖀";
-        return "󰕾";
+        if (isMuted) return Theme.glyph.volMute;
+        if (v < 0.34) return Theme.glyph.volLow;
+        if (v < 0.67) return Theme.glyph.volMid;
+        return Theme.glyph.volHigh;
     }
 }

@@ -90,7 +90,7 @@ Item {
                     id: numeral
 
                     anchors.centerIn: parent
-                    text: Lore.numeral(flag.modelData)
+                    text: Theme.roman(flag.modelData)
 
                     font.family: Theme.font.carved
                     font.pixelSize: Theme.size.large
@@ -161,7 +161,7 @@ Item {
             Text {
                 id: scratch
                 anchors.centerIn: parent
-                text: "🜛"
+                text: Theme.glyph.scratch
                 font.family: Theme.font.mono
                 font.pixelSize: Theme.size.base
                 color: Theme.royal

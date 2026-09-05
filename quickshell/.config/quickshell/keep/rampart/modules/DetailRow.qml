@@ -10,7 +10,7 @@ Item {
     property string label: ""
     property string value: ""
     property color tint: Theme.fg
-    /// >= 0 pinta o valor pela escala de estado.
+    /// >= 0: o valor desliza para a escala de estado conforme piora.
     property real level: -1
     property int labelWidth: 74
 
@@ -23,7 +23,7 @@ Item {
         anchors.verticalCenter: parent.verticalCenter
         width: root.labelWidth
         text: root.label
-        font.pixelSize: Theme.size.tiny
+        size: Theme.size.tiny
         color: Theme.fgDim
     }
 
@@ -34,7 +34,9 @@ Item {
         text: root.value
         font.family: Theme.font.mono
         font.pixelSize: Theme.size.small
-        color: root.level >= 0 ? Theme.gauge(root.level) : root.tint
+        color: root.level < 0 ? root.tint
+             : root.level < 0.6 ? root.tint
+             : Theme.mix(root.tint, Theme.gauge(root.level), (root.level - 0.6) / 0.4)
         renderType: Text.NativeRendering
     }
 }

@@ -15,7 +15,7 @@ Readout {
 
     visible: Gpu.present
 
-    glyph: "◈"
+    glyph: Theme.glyph.gpu
     value: Fmt.pct(Gpu.usage)
     tint: Theme.moat
     level: Math.max(Gpu.usage, Gpu.thermalPressure)

@@ -25,28 +25,28 @@ Column {
         rowSpacing: 2
         columnSpacing: Theme.pad.roomy
 
-        Rune { text: "vigília"; font.pixelSize: Theme.size.tiny; color: Theme.fgDim }
+        Rune { text: "vigília"; size: Theme.size.tiny; color: Theme.fgDim }
         Text {
             text: Fmt.duration(Sys.uptime)
             font.family: Theme.font.mono; font.pixelSize: Theme.size.small
             color: Theme.fg
         }
 
-        Rune { text: "forja"; font.pixelSize: Theme.size.tiny; color: Theme.fgDim }
+        Rune { text: "forja"; size: Theme.size.tiny; color: Theme.fgDim }
         Text {
             text: Probe.cpuModel.replace(/\s*\d+-Core Processor\s*/i, "")
             font.family: Theme.font.mono; font.pixelSize: Theme.size.small
             color: Theme.fg
         }
 
-        Rune { text: "carga"; font.pixelSize: Theme.size.tiny; color: Theme.fgDim }
+        Rune { text: "carga"; size: Theme.size.tiny; color: Theme.fgDim }
         Text {
             text: Sys.load1.toFixed(2) + "  ·  " + Sys.procTotal + " almas"
             font.family: Theme.font.mono; font.pixelSize: Theme.size.small
             color: Theme.fg
         }
 
-        Rune { text: "lua"; font.pixelSize: Theme.size.tiny; color: Theme.fgDim }
+        Rune { text: "lua"; size: Theme.size.tiny; color: Theme.fgDim }
         Row {
             spacing: Theme.pad.tight
             MoonDisc { anchors.verticalCenter: parent.verticalCenter }

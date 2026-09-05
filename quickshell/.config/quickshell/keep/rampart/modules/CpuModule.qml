@@ -11,7 +11,7 @@ import qs.services
 Readout {
     id: root
 
-    glyph: "⚙"
+    glyph: Theme.glyph.cpu
     value: Fmt.pct(Sys.cpuUsage)
     tint: Theme.gold
     level: Sys.cpuUsage

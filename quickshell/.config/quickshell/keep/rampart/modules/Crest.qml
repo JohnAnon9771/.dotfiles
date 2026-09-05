@@ -17,7 +17,7 @@ Segment {
     property string hostName: "castelo"
 
     readonly property bool cursed: Settings.data.easterEggs && Lore.cursedDay
-    readonly property string mark: cursed ? "☠" : "✝"
+    readonly property string mark: cursed ? Theme.glyph.skull : Theme.glyph.cross
 
     hoverTint: Theme.royal
     padding: Theme.pad.roomy
@@ -30,7 +30,8 @@ Segment {
     Text {
         anchors.verticalCenter: parent.verticalCenter
         text: root.mark
-        font.family: Theme.font.mono
+        // A adaga vive na Cinzel, junto do nome; a caveira é Nerd Font.
+        font.family: root.cursed ? Theme.font.mono : Theme.font.carved
         font.pixelSize: Theme.size.base
         color: root.cursed ? Theme.blood : Theme.royal
         renderType: Text.NativeRendering
@@ -53,17 +54,17 @@ Segment {
     Text {
         anchors.verticalCenter: parent.verticalCenter
         text: root.mark
-        font.family: Theme.font.mono
+        font.family: root.cursed ? Theme.font.mono : Theme.font.carved
         font.pixelSize: Theme.size.base
         color: root.cursed ? Theme.blood : Theme.royal
         renderType: Text.NativeRendering
     }
 
-    // O corvo da hora das bruxas.
+    // O espectro da hora das bruxas.
     Text {
         anchors.verticalCenter: parent.verticalCenter
         visible: Settings.data.easterEggs && Lore.witching
-        text: "🜲"
+        text: Theme.glyph.ghost
         font.family: Theme.font.mono
         font.pixelSize: Theme.size.small
         color: Theme.wraith

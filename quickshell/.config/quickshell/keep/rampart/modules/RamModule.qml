@@ -11,7 +11,7 @@ import qs.services
 Readout {
     id: root
 
-    glyph: "⌬"
+    glyph: Theme.glyph.ram
     value: Fmt.bytes(Sys.memUsed)
     tint: Theme.royal
     level: Sys.memUsage

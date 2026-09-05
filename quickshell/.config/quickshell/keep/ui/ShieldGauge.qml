@@ -85,7 +85,7 @@ Item {
     Rune {
         id: caption
         anchors { horizontalCenter: parent.horizontalCenter; bottom: parent.bottom }
-        font.pixelSize: Theme.size.tiny
+        size: Theme.size.tiny
         color: Theme.fgDim
         visible: text.length > 0
     }

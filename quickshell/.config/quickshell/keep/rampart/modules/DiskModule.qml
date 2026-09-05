@@ -11,7 +11,7 @@ import qs.services
 Readout {
     id: root
 
-    glyph: "⛃"
+    glyph: Theme.glyph.disk
     value: Fmt.bytes(Disks.rootFree)
     tint: Theme.teal
     level: Disks.rootUsage
@@ -38,13 +38,13 @@ Readout {
             DetailRow {
                 label: "leitura"
                 labelWidth: 96
-                value: Fmt.rate(Disks.readRate) + "/s"
+                value: Fmt.rate(Disks.readRate)
                 tint: Theme.moat
             }
             DetailRow {
                 label: "escrita"
                 labelWidth: 96
-                value: Fmt.rate(Disks.writeRate) + "/s"
+                value: Fmt.rate(Disks.writeRate)
                 tint: Theme.gold
             }
         }
