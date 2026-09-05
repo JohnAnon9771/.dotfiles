@@ -23,6 +23,30 @@ Canvas {
     property real heat: Theme.heat
     property bool ruined: true
 
+    /// Se este perfil desenha a própria silhueta.
+    ///
+    /// Um perfil que só PREENCHE o vão de outro não é uma segunda fiada:
+    /// é a pedra que faltava. Se ele traçar o próprio fio, as duas linhas
+    /// ficam lado a lado e o encaixe vira zíper. Quem carrega a silhueta
+    /// é sempre o perfil que dá para fora — a Muralha, no caso do
+    /// encontro dela com o Grande Salão.
+    property bool rimmed: true
+
+    /// Este perfil é o NEGATIVO de outro, não um perfil próprio.
+    ///
+    /// `merlon` e `gap` continuam sendo os DA OUTRA superfície: o que
+    /// muda é o que se preenche. Onde ela tem dente, aqui fica só o que
+    /// faltou ao dente — nada, se ele estiver inteiro; onde ela tem vão,
+    /// aqui é cheio.
+    ///
+    /// Encaixe periódico não dá conta disto. Trocar merlão por vão fecha
+    /// os vãos, mas não fecha a RUÍNA: um merlão desabado abre um buraco
+    /// de 15 px que nenhum dente de 11 alcança, e o que aparecia lá era
+    /// o papel de parede — uma janelinha no meio da parede. O negativo
+    /// fecha os dois, porque não supõe padrão nenhum: ele lê o perfil
+    /// da outra dente a dente.
+    property bool complement: false
+
     /// Deslocamento em pixels do padrão. Serve para casar as ameias
     /// de duas superfícies diferentes: a muralha começa na borda da
     /// tela, e o Salão, que fica no meio dela, precisa saber disso
@@ -37,6 +61,19 @@ Canvas {
     implicitHeight: vertical ? 0 : depth
     implicitWidth: vertical ? depth : 0
 
+    // onHeatChanged repinta, e isso é aceitável — mas só depois que
+    // Sys.pressure e Gpu.pressure passaram a sair em degraus de 1/20
+    // (ver Fmt.step). Antes, o ruído de leitura fazia Theme.heat mudar
+    // a cada amostra de 2 s, e o Behavior de 1400 ms transformava isso
+    // numa repintura por frame de uma tela inteira de merlões, 70% do
+    // tempo. Com o degrau, em repouso heat não muda e este Canvas não
+    // é tocado.
+    //
+    // Tentei uma vez separar a brasa e o fio em Canvas próprios, para
+    // trocar repintura por opacidade. Ficou pior: três texturas
+    // empilhadas somam as bordas antialiased de cada uma, e o fio de
+    // luz de 1 px perde o corte. Um passo só de fill+stroke no mesmo
+    // contexto é o que deixa a silhueta limpa.
     onStoneChanged: requestPaint()
     onRimChanged: requestPaint()
     onHeatChanged: requestPaint()
@@ -45,14 +82,21 @@ Canvas {
     onMerlonChanged: requestPaint()
     onGapChanged: requestPaint()
     onRuinedChanged: requestPaint()
+    onRimmedChanged: requestPaint()
+    onComplementChanged: requestPaint()
     onWidthChanged: requestPaint()
     onHeightChanged: requestPaint()
 
     /// Quanto o dente n avança. Zero = merlão desabado.
-    function reach(i, d) {
+    ///
+    /// `n` é o índice do dente NO PADRÃO, contado da origem da fase — e
+    /// não a contagem interna deste item. É o que faz duas superfícies
+    /// com a mesma fase concordarem sobre qual merlão desabou: sem isso
+    /// o negativo tapava o buraco errado.
+    function reach(n, d) {
         if (!ruined) return d;
-        if (i % 23 === 14) return 0;          // um desabou
-        if (i % 7 === 3) return d * 0.62;     // e um está gasto
+        if (n % 23 === 14) return 0;          // um desabou
+        if (n % 7 === 3) return d * 0.62;     // e um está gasto
         return d;
     }
 
@@ -67,6 +111,11 @@ Canvas {
         const d = vertical ? width : height;
         const start = -(((phase % step) + step) % step);
         const count = Math.ceil((span - start) / step) + 1;
+        // O índice, no padrão, do primeiro dente que cai neste item.
+        // `phase` é onde o zero local do item cai na régua do padrão, e
+        // `start` recua até o dente anterior: a soma é sempre múltipla
+        // do passo. Para a Muralha, que começa na borda da tela, dá 0.
+        const first = Math.round((phase + start) / step);
 
         ctx.save();
 
@@ -91,6 +140,17 @@ Canvas {
                 break;
         }
 
+        // Um degrau do perfil: corre pelo teto até x0, mergulha `drop`,
+        // atravessa até x1 e volta.
+        function dip(x0, x1, drop, inset) {
+            ctx.lineTo(x0, inset);
+            if (drop > 0) {
+                ctx.lineTo(x0, drop - inset);
+                ctx.lineTo(x1, drop - inset);
+                ctx.lineTo(x1, inset);
+            }
+        }
+
         function trace(inset) {
             ctx.beginPath();
             ctx.moveTo(start, inset);
@@ -98,13 +158,14 @@ Canvas {
             for (let i = 0; i < count; i++) {
                 const a = start + i * step;
                 const b = a + merlon;
-                const drop = reach(i, d);
+                const n = first + i;
 
-                ctx.lineTo(a, inset);
-                if (drop > 0) {
-                    ctx.lineTo(a, drop - inset);
-                    ctx.lineTo(b, drop - inset);
-                    ctx.lineTo(b, inset);
+                if (complement) {
+                    // Sob o merlão, o que faltou a ele; sob o vão, tudo.
+                    dip(a, b, d - reach(n, d), inset);
+                    dip(b, a + step, d, inset);
+                } else {
+                    dip(a, b, reach(n, d), inset);
                 }
             }
 
@@ -128,10 +189,12 @@ Canvas {
         }
 
         // O fio de luz, correndo pela silhueta.
-        trace(0.5);
-        ctx.strokeStyle = rim;
-        ctx.lineWidth = 1;
-        ctx.stroke();
+        if (rimmed) {
+            trace(0.5);
+            ctx.strokeStyle = rim;
+            ctx.lineWidth = 1;
+            ctx.stroke();
+        }
 
         ctx.restore();
     }

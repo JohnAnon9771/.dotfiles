@@ -46,6 +46,39 @@ Scope {
         { id: "almanac",  title: "Almanaque", glyph: Theme.glyph.moon }
     ]
 
+    // ── O véu ──────────────────────────────────────────────────
+    // Pega o clique fora, e é só para isso que existe. Era um MouseArea
+    // dentro da janela do Salão, o que obrigava a janela a cobrir a tela
+    // inteira — e o Qt danifica a superfície INTEIRA a cada frame que
+    // desenha, então qualquer repintura do painel custava ao compositor
+    // uma recomposição de 3840x2160. Separado, o véu desenha uma vez e
+    // nunca mais: superfície parada não gera dano nenhum.
+    //
+    // Camada Top, não Overlay: assim ele fica abaixo do Salão sem
+    // depender da ordem em que as duas janelas nascem. E a margem
+    // superior tira a superfície de cima da Muralha em vez de apenas não
+    // tratar o clique lá — o que é mais firme, porque uma camada sem item
+    // interativo ainda engole o evento.
+    LazyLoader {
+        activeAsync: root.open
+
+        PanelWindow {
+            WlrLayershell.layer: WlrLayer.Top
+            WlrLayershell.namespace: "keep-hall-scrim"
+            WlrLayershell.keyboardFocus: WlrKeyboardFocus.None
+            color: "transparent"
+
+            exclusionMode: ExclusionMode.Ignore
+            anchors { left: true; right: true; top: true; bottom: true }
+            margins.top: Theme.metric.barHeight + Theme.metric.crenelHeight
+
+            MouseArea {
+                anchors.fill: parent
+                onClicked: root.hide()
+            }
+        }
+    }
+
     LazyLoader {
         activeAsync: root.open
 
@@ -57,32 +90,67 @@ Scope {
             WlrLayershell.keyboardFocus: WlrKeyboardFocus.OnDemand
             color: "transparent"
 
-            // Zona zero, mas em modo Normal: não reserva espaço para
-            // si e ainda assim respeita o de quem já reservou. É o
-            // que faz o Salão nascer exatamente sob a Muralha, sem
-            // precisar somar alturas à mão — e continua certo com a
-            // waybar antiga no ar durante a transição.
-            exclusiveZone: 0
+            // O Salão não reserva espaço para si, e TAMBÉM não respeita
+            // o de quem reservou. Em modo Normal a janela nascia em
+            // y=43, logo abaixo dos dentes da Muralha, e os dois perfis
+            // só se encostavam — duas fiadas empilhadas, com costura à
+            // vista. Para encaixar de verdade, os dentes do Salão
+            // precisam subir PARA DENTRO da faixa dos dentes da
+            // Muralha, e para isso a janela precisa alcançar y=34.
+            // Só o exclusionMode: atribuir exclusiveZone junto faz o
+            // Quickshell voltar o modo para Normal, e a janela nasce
+            // de novo abaixo da Muralha.
+            exclusionMode: ExclusionMode.Ignore
 
-            anchors { left: true; right: true; top: true; bottom: true }
-
-            // Clicar fora fecha.
-            MouseArea {
-                anchors.fill: parent
-                onClicked: root.hide()
-            }
+            // Sem `left`: a janela tem a largura do painel e mais nada.
+            // Cobria a tela inteira, e como o Qt danifica a superfície
+            // toda a cada frame, um medidor que mexesse obrigava o
+            // compositor a recompor 3840x2160. Assim o dano é o painel.
+            anchors { right: true; top: true; bottom: true }
+            implicitWidth: slab.width
 
             Item {
                 id: slab
 
-                anchors { right: parent.right; top: parent.top; bottom: parent.bottom }
+                // O topo encosta na PAREDE da Muralha, não nos dentes
+                // dela: a faixa de crenelHeight logo abaixo de
+                // barHeight passa a ser dividida pelos dois perfis, um
+                // apontando para baixo e o outro para cima. O corpo
+                // continua recuando slab.cren em cada borda ameiada,
+                // então nada de conteúdo sobe junto.
+                //
+                // Sem `anchors.right`: o anchor e o `x` se atropelavam,
+                // um mandando na posição e o outro sobrescrevendo. A
+                // janela agora tem a largura do painel, então em repouso
+                // o slab mora em x=0 e quem manda é só o deslize.
+                anchors {
+                    top: parent.top; topMargin: Theme.metric.barHeight
+                    bottom: parent.bottom
+                }
                 width: Theme.metric.hallWidth + rail.width + tower.width
 
-                // Desliza da direita.
-                x: parent.width
-                Component.onCompleted: x = parent.width - width
+                // Desliza da direita, e ASSENTA EM PIXEL INTEIRO.
+                //
+                // O que animava era o próprio `x`, em float. Durante os
+                // 380 ms a subárvore inteira — as três texturas de Canvas
+                // das ameias e todo o texto — ficava sob uma translação
+                // de meio pixel: textura amostrada fora da grade sai
+                // filtrada, e o fio de luz de 1 px, que só existe porque
+                // cai no centro do pixel, se espalhava por duas linhas.
+                // Era o borrão da abertura. Ao parar num inteiro tudo
+                // voltava ao corte, o que dava a impressão de a nitidez
+                // "chegar depois".
+                //
+                // Animar um número solto e arredondar na saída mantém o
+                // deslize e devolve cada quadro à grade. De quebra o
+                // valor inicial vem de `slab.width`, que é constante:
+                // não depende mais de o compositor já ter dimensionado a
+                // janela, e some a chance de o painel nascer em x=-472.
+                property real slide: slab.width
+                x: Math.round(slab.slide)
+                Component.onCompleted: slab.slide = 0
 
-                Behavior on x {
+                Behavior on slide {
                     NumberAnimation { duration: Theme.anim.slow; easing.type: Easing.OutCubic }
                 }
 
@@ -100,6 +168,20 @@ Scope {
 
                 readonly property int cren: Theme.metric.crenelHeight
                 readonly property int quoin: 6
+
+                /// Onde a borda esquerda do Salão cai NA TELA.
+                ///
+                /// As ameias se penduram aqui, não no `x`: a fase delas se
+                /// mede a partir da borda da tela, que é onde o padrão da
+                /// Muralha começa, e a janela não alcança mais lá. Além
+                /// disso este valor é fixo, e o `x` anima por 380 ms —
+                /// cada mudança de `phase` repintaria os Canvas das três
+                /// ameias a cada frame do deslize.
+                ///
+                /// O alinhamento com a Muralha só precisa valer quando o
+                /// painel para. Durante o deslize os dentes acompanham a
+                /// pedra, que é o que pedra faz.
+                readonly property real originX: win.screen ? win.screen.width - win.width : 0
 
                 Crenellation {
                     id: tower
@@ -122,20 +204,37 @@ Scope {
                     z: 3
                 }
 
-                // O encaixe com a Muralha: dentes apontando para CIMA,
-                // defasados meio compasso, para cada um nascer sob um
-                // vão dela. Os dois perfis se fecham como fiada de
-                // pedra, em vez de deixar uma tira de papel de parede
-                // entre a barra e o painel.
+                // O encaixe com a Muralha: este perfil é o NEGATIVO do
+                // dela, e não uma segunda fiada.
+                //
+                // Meio compasso nunca encaixou. O merlão dela tem 15 e o
+                // vão 11, então um dente de 15 deslocado de 13 caía em
+                // [13, 28] enquanto o vão é [15, 26] — invadia 2 px de
+                // cada lado, e o que se via era a costura, não o encaixe.
+                //
+                // Trocar merlão por vão fecharia os vãos, mas não a
+                // ruína: um merlão desabado abre 15 px que nenhum dente
+                // de 11 alcança. O negativo fecha os dois — ver
+                // Crenellation.complement. Por isso merlon e gap ficam
+                // nos valores DELA, e a fase é a dela: a Muralha começa
+                // na borda da tela, então basta somar onde a nossa borda
+                // esquerda cai lá.
                 Crenellation {
                     anchors { left: tower.right; right: parent.right; top: parent.top }
                     edge: Qt.TopEdge
                     stone: Theme.bg
-                    rim: Theme.borderOuter
                     heat: Settings.data.weather ? Theme.heat : 0
-                    ruined: false
-                    phase: slab.x + tower.width
-                         + (Theme.metric.crenelWidth + Theme.metric.crenelGap) / 2
+
+                    complement: true
+                    phase: slab.originX + tower.width
+
+                    // Sem fio próprio. Com ele, o traço daqui corria
+                    // colado ao da Muralha e as duas linhas de 1 px
+                    // viravam o zíper. O que sobra é a silhueta DELA,
+                    // descendo pelos flancos de cada merlão e correndo
+                    // pelo pé — ameia em relevo, entalhada numa faixa de
+                    // pedra cheia, com um fio só.
+                    rimmed: false
                     z: 3
                 }
 
@@ -146,8 +245,9 @@ Scope {
                     rim: Theme.borderOuter
                     heat: Settings.data.weather ? Theme.heat : 0
                     // Em compasso com os dentes da Muralha, que
-                    // começam na borda da tela.
-                    phase: slab.x + tower.width
+                    // começam na borda da tela. Esta dá para o papel de
+                    // parede, então mantém merlão, vão e fio próprios.
+                    phase: slab.originX + tower.width
                     z: 3
                 }
 

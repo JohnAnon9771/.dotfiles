@@ -9,6 +9,8 @@ Item {
 
     property string label: ""
     property string detail: ""
+    /// A explicação por extenso, no balão. Ver Hint.qml.
+    property string hint: ""
     property bool on: false
     property color tint: Theme.moss
 
@@ -23,6 +25,8 @@ Item {
     }
 
     Rune {
+        id: name
+
         anchors {
             left: parent.left; leftMargin: Theme.pad.base
             verticalCenter: parent.verticalCenter
@@ -32,11 +36,20 @@ Item {
         color: root.enabled ? (root.on ? Theme.fgStrong : Theme.ash) : Theme.fgDim
     }
 
+    //  Ancorada nos DOIS lados, alinhada à direita.
+    //
+    //  Só tinha a âncora da direita e nenhuma largura, então crescia
+    //  para a esquerda até onde o texto quisesse — e uma etiqueta longa
+    //  escrevia por cima do rótulo. Com o vão fechado ela elide, que é
+    //  o certo para uma etiqueta: o que não coube nela não pertencia a
+    //  ela, pertence ao balão.
     Rune {
         anchors {
+            left: name.right; leftMargin: Theme.pad.base
             right: lamp.left; rightMargin: Theme.pad.base
             verticalCenter: parent.verticalCenter
         }
+        horizontalAlignment: Text.AlignRight
         text: root.detail
         size: Theme.size.tiny
         color: Theme.fgDim
@@ -72,12 +85,23 @@ Item {
         }
     }
 
+    //  hoverEnabled fica ligado mesmo com a linha desativada: um sigilo
+    //  que não pode ser acionado é justamente o que mais precisa dizer
+    //  por quê. Quem para de responder é o clique.
     MouseArea {
         id: area
         anchors.fill: parent
-        enabled: root.enabled
+        acceptedButtons: root.enabled ? Qt.LeftButton : Qt.NoButton
         hoverEnabled: true
-        cursorShape: Qt.PointingHandCursor
+        cursorShape: root.enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
         onClicked: root.flipped()
+    }
+
+    Hint {
+        id: glossary
+        anchor: root
+        area: area
+        text: root.hint
+        tint: root.tint
     }
 }

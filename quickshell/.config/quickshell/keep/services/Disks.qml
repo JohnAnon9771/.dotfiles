@@ -9,6 +9,7 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 import qs
+import qs.services
 import "parsers.js" as P
 
 Singleton {
@@ -59,10 +60,13 @@ Singleton {
         }
     }
 
+    // Dorme com o castelo: é o único spawn recorrente do torreão,
+    // e rodava 3x por minuto com a tela apagada. Ver Idle.awake.
     Timer {
         interval: root.usageIntervalMs
-        running: true
+        running: Idle.awake
         repeat: true
+        triggeredOnStart: true
         onTriggered: dfProc.running = true
     }
 
@@ -91,11 +95,18 @@ Singleton {
         }
     }
 
+    // Dorme com o castelo. Ver Idle.awake.
     Timer {
         interval: root.ioIntervalMs
-        running: true
+        running: Idle.awake
         repeat: true
         triggeredOnStart: true
+
+        onRunningChanged: if (!running) {
+            root.lastIo = null;
+            root.lastIoAt = 0;
+        }
+
         onTriggered: stats.reload()
     }
 }

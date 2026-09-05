@@ -332,10 +332,17 @@ Scope {
 
                 Text {
                     anchors.centerIn: parent
-                    text: "︿"
+                    // Era "\u{fe3f}", um colchete angular de apresentação
+                    // vertical que NENHUMA fonte do sistema tem — saía
+                    // como tofu. Não se notava porque a cor também
+                    // estava errada e o morcego era invisível.
+                    text: Theme.glyph.bat
                     font.family: Theme.font.mono
                     font.pixelSize: 18
-                    color: Theme.alpha(Theme.crypt, 0.85)
+                    // E a cor era Theme.crypt (#11100d), a mais escura da
+                    // paleta, sobre um véu que compõe em ~#231D25:
+                    // contraste 1.16:1.
+                    color: Theme.alpha(Theme.iron, 0.85)
                     rotation: -8
                     renderType: Text.NativeRendering
                 }

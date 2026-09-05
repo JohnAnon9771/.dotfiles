@@ -111,10 +111,10 @@ ShellRoot {
 
         function onShouldLock() { gate.lock(); }
         function onShouldSleep() {
-            if (gate.locked) Wm.send("dpms off");
+            if (gate.locked) Wm.dpms("off");
         }
         function onAwoke() {
-            Wm.send("dpms on");
+            Wm.dpms("on");
         }
     }
 

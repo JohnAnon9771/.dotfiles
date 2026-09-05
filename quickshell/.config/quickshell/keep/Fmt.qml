@@ -71,4 +71,20 @@ Singleton {
     function clamp01(v) {
         return v < 0 ? 0 : (v > 1 ? 1 : v);
     }
+
+    /// Prende um 0..1 numa escada de `steps` degraus.
+    ///
+    /// Existe por causa do ruído: gpu_busy_percent e cpuUsage balançam
+    /// alguns por cento entre duas leituras mesmo com a máquina parada.
+    /// Sem degrau esse tremor atravessa a pressão, chega em Theme.heat e
+    /// reabre o Behavior de 1400 ms a cada amostra de 2 s — o torreão
+    /// nunca para de animar, e o Hyprland nunca para de recompor.
+    ///
+    /// Vinte degraus é mais resolução do que o olho separa num gradiente
+    /// de brasa, e é grosso o bastante para o ruído não passar.
+    function step(v, steps) {
+        if (!isFinite(v)) return 0;
+        const n = steps || 20;
+        return Math.round(clamp01(v) * n) / n;
+    }
 }

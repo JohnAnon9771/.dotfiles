@@ -10,23 +10,41 @@ Item {
 
     /// 0..1
     property real value: 0
-    property color charge: Theme.gauge(value)
+    property color charge: Theme.gauge(root.level)
     property color field: Theme.alpha(Theme.crypt, 0.55)
     property color rim: Theme.borderInner
     property alias label: caption.text
     property alias reading: readout.text
 
+    /// Em quantos degraus o escudo enxerga o 0..1. Ver Fmt.step().
+    property int steps: 20
+
+    /// O valor em degraus, e o nível que o desenho de fato segue.
+    ///
+    /// O Behavior morava em `value`, que vem cru do serviço. Como
+    /// cpuUsage e gpu_busy_percent balançam alguns por cento entre duas
+    /// leituras, cada amostra de 2 s reabria 380 ms de animação, e
+    /// `onVChanged` repinta o Canvas A CADA FRAME dela: eram ~23
+    /// rasterizações em CPU por escudo, indefinidamente, com a máquina
+    /// parada. É o mesmo laço que Fmt.step() já tinha fechado para
+    /// Theme.heat, e que aqui tinha ficado aberto.
+    ///
+    /// Com o degrau antes do Behavior, em repouso nada muda e o escudo
+    /// não é tocado; uma subida de verdade continua chegando suave.
+    readonly property real level: Fmt.step(root.value, root.steps)
+    property real shown: root.level
+
     implicitWidth: 54
     implicitHeight: 62
 
-    Behavior on value { NumberAnimation { duration: Theme.anim.slow; easing.type: Easing.OutCubic } }
+    Behavior on shown { NumberAnimation { duration: Theme.anim.slow; easing.type: Easing.OutCubic } }
 
     Canvas {
         id: shield
         anchors.fill: parent
         anchors.bottomMargin: caption.visible ? caption.height + 2 : 0
 
-        readonly property real v: root.value
+        readonly property real v: root.shown
         readonly property color c: root.charge
         readonly property color f: root.field
         readonly property color r: root.rim

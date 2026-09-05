@@ -132,11 +132,18 @@ Singleton {
         }
     }
 
+    // Dorme com o castelo. Ver Idle.awake.
     Timer {
         interval: root.intervalMs
-        running: true
+        running: Idle.awake
         repeat: true
         triggeredOnStart: true
+
+        onRunningChanged: if (!running) {
+            root.lastSample = null;
+            root.lastSampleAt = 0;
+        }
+
         onTriggered: dev.reload()
     }
 

@@ -19,6 +19,17 @@ open() {
 
 alias icat="kitty +kitten icat"
 
-export PATH="$HOME/.local/bin:$PATH"
+# O PATH sai daqui: environment.d/50-path.conf já o monta uma vez
+# para a sessão inteira. Exportar de novo fazia cada shell aninhado
+# reprefixar o mesmo diretório.
 
-eval "$(starship init bash)"
+# O init do starship é o mesmo texto todo dia, e gerá-lo custava um
+# fork+exec por shell interativo. Fica em cache e só é regerado quando
+# o binário muda.
+if command -v starship >/dev/null; then
+    __starship_cache="${XDG_CACHE_HOME:-$HOME/.cache}/starship-init.bash"
+    if [[ ! -s $__starship_cache || $(command -v starship) -nt $__starship_cache ]]; then
+        starship init bash --print-full-init > "$__starship_cache"
+    fi
+    source "$__starship_cache"
+fi
