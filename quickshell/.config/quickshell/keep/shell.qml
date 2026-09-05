@@ -93,6 +93,10 @@ ShellRoot {
         onRequested: what => shell.open(what, "")
     }
 
+    Shortcuts {
+        onTriggered: what => shell.open(what, "")
+    }
+
     // ═══ A VIGÍLIA ═════════════════════════════════════════════
     // Ninguém precisa lembrar de trancar o portão.
 

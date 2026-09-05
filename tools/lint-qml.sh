@@ -38,6 +38,9 @@ IGNORE="$IGNORE|incomplete type \"FileViewAdapter\""
 # Tipos que existem mas nao sao exportados declarativamente
 # (BluetoothAdapter, AuthFlow, ...). O runtime resolve; o qmltypes nao.
 IGNORE="$IGNORE|not being exposed declaratively"
+# GlobalShortcut herda de PostReloadHook, que nao e exportado.
+IGNORE="$IGNORE|PostReloadHook was not found"
+IGNORE="$IGNORE|Type GlobalShortcut is used but it is not resolved"
 IGNORE="$IGNORE|unknown grouped property scope margins"
 IGNORE="$IGNORE|Type margins is used but it is not resolved"
 
