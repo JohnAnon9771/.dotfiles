@@ -31,6 +31,7 @@ o que antes eram quatro programas:
 ## Estrutura
 
 ```
+bash/        .bash_profile — o tty1 abre a sessao, o tty3 o modo jogo
 btop/        tema dark-medieval do monitor de recursos
 environment.d/ o PATH da sessão gráfica
 fonts/       Cinzel e UnifrakturMaguntia (SIL OFL), versionadas
@@ -40,6 +41,7 @@ opencode/    tema do agente de código
 quickshell/  o torreão
 scripts/     gamer-vt, gamer-mode, keep-shot, keep-session
 starship/    prompt
+systemd/     a unit do torreao, ligada em graphical-session.target
 tools/       lint e testes — não é pacote stow
 ```
 
@@ -60,8 +62,8 @@ sudo pacman -S --needed quickshell hyprland uwsm kitty btop starship stow \
 
 # Links
 stow -t "$HOME" --no-folding \
-    btop environment.d fonts hypr kitty opencode quickshell scripts \
-    starship systemd
+    bash btop environment.d fonts hypr kitty opencode quickshell \
+    scripts starship systemd
 
 fc-cache -f
 ```
@@ -82,13 +84,11 @@ vez de virar processo órfão.
 ```sh
 systemctl --user daemon-reload
 systemctl --user enable --now quickshell-keep.service
-
-# A barra e o papel de parede antigos saem de cena
-systemctl --user disable --now waybar.service hyprpaper.service
 ```
 
-O `hyprpaper` **precisa sair**: a Névoa desenha o papel de parede na
-mesma camada de fundo, e os dois juntos brigam pelo espaço.
+Se a máquina vem de um setup anterior, o `hyprpaper` **precisa sair** —
+não basta desabilitar a unit: a Névoa desenha o papel de parede na mesma
+camada de fundo, e os dois juntos brigam pelo espaço.
 
 O compositor só dá a partida, em `autostart.lua`: chama `keep-session`,
 que decide entre `uwsm finalize` — é ele que libera o
@@ -195,14 +195,11 @@ repositório **desliga** essa síntese, então eles não existem aqui.
 
 ## Voltar atrás
 
-O Hyprland prefere `hyprland.lua` ao `hyprland.conf`. Apagar os `*.lua`
-da pasta devolve a configuração antiga, que continua ali de propósito.
+Não há caminho de volta configurado, e é de propósito. A `waybar`, o
+`wofi` e o `polkit-gnome` saíram da máquina; o `hyprland.conf` antigo,
+os pacotes `waybar/` e `wofi/` e a unit do `hyprpaper` saíram do repo.
+Enquanto existiam, prometiam um rollback que já não funcionava: metade
+apontava para binário desinstalado.
 
-Para o shell:
-
-```sh
-systemctl --user disable --now quickshell-keep.service
-systemctl --user enable  --now waybar.service hyprpaper.service
-stow -D -t "$HOME" quickshell
-stow    -t "$HOME" waybar wofi
-```
+O caminho de volta é o `git` — o commit anterior à migração tem tudo, e
+os pacotes precisariam ser reinstalados junto.

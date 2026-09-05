@@ -6,8 +6,8 @@
 # dentro da fatia certa, reinicia sozinho se morrer, e é encerrado
 # junto com a sessão em vez de virar processo órfão.
 #
-# É o mesmo caminho que a waybar já usava — /usr/lib/systemd/user/
-# waybar.service, ligada em graphical-session.target.wants.
+# É o mesmo caminho que a waybar usava enquanto existiu, com a unit que
+# o pacote dela instalava em /usr/lib/systemd/user/.
 
 [Unit]
 Description=O Torreão — barra, lançador, notificações e bloqueio

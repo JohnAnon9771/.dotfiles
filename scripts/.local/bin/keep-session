@@ -5,8 +5,7 @@
 # é só chamar `uwsm finalize`, que exporta WAYLAND_DISPLAY,
 # HYPRLAND_INSTANCE_SIGNATURE e companhia para o gerenciador de
 # usuário e, com isso, libera graphical-session.target. É esse alvo
-# que sobe quickshell-keep.service — e também a waybar, o hyprpaper e
-# o que mais estiver ligado nele.
+# que sobe quickshell-keep.service e o que mais estiver ligado nele.
 #
 # Sem uwsm não há sessão systemd para pendurar nada, então o torreão
 # sobe direto, como filho do compositor.
