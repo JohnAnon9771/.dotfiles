@@ -14,7 +14,6 @@
 -- ╚═══════════════════════════════════════════════════════════════╝
 
 require("monitors")
-require("env")
 require("looknfeel")
 require("input")
 require("binds")

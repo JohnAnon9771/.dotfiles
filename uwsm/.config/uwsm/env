@@ -1,0 +1,39 @@
+# Ambiente da sessão gráfica, comum a qualquer compositor.
+#
+# ATENÇÃO ao alcance: o uwsm importa este arquivo para o gerenciador
+# de usuário inteiro (systemctl --user show-environment), então o que
+# está aqui alcança TODA unit gráfica — inclusive as que sobem por
+# .service e nunca passaram pelo compositor, como o Torreão. É um
+# alcance maior que o do `env =` do Hyprland, que só popula o processo
+# do compositor e de lá desce para os filhos de exec-once.
+
+export XCURSOR_SIZE=24
+
+# ── Escala ─────────────────────────────────────────────────────
+# Par de looknfeel.xwayland.force_zero_scaling: a XWayland passa a
+# desenhar em 3840x2160 e é o toolkit que dobra o tamanho.
+#
+# Só o GDK_SCALE entra, e a diferença entre os dois não é de gosto:
+#
+#   GDK_SCALE       o GTK o trata como *override* do scale. No Wayland
+#                   nativo ele manda 2, que é o mesmo 2 que o
+#                   wl_output já dizia — coincide, e nada muda.
+#
+#   QT_SCALE_FACTOR o Qt o trata como *multiplicador*, aplicado por
+#                   cima do que o compositor entregou. No Wayland
+#                   nativo com o HDMI-A-1 em scale 2 isso dá fator 4:
+#                   o Torreão saía com 86px de barra onde o Theme.qml
+#                   pede 43, e a névoa perdia a tela cheia.
+#
+# E não há o que compensar do outro lado: `pacman -Qi qt6-base` mostra
+# que o único cliente Qt desta máquina é o próprio quickshell, que fala
+# Wayland direto. Sem qt5-base, sem app Qt em XWayland. A variável não
+# comprava nada e cobrava a barra.
+#
+# Se um dia entrar um app Qt que caia em XWayland, o caminho NÃO é
+# ressuscitar esta linha — é QT_FONT_DPI=192, que mexe na DPI lógica
+# em vez de multiplicar o scale do compositor.
+export GDK_SCALE=2
+
+# Sem isto o Firefox cai em XWayland, que com scale 2 é o pior caso.
+export MOZ_ENABLE_WAYLAND=1
