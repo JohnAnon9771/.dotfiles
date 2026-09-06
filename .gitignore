@@ -4,3 +4,4 @@
 # UUID por pasta, não configuração: reaparece a cada fc-cache e não
 # significa nada em outra máquina.
 .uuid
+tmp

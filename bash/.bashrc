@@ -21,9 +21,9 @@ alias icat="kitty +kitten icat"
 
 # O ~/.local/bin.
 #
-# A sessão gráfica já o recebe do environment.d/50-path.conf, pelo
-# systemd do usuário. Isto aqui é para o shell interativo que NÃO desce
-# dali — um terminal aberto fora da sessão, um container.
+# A sessão gráfica já o recebe do ~/.config/uwsm/env, que o uwsm exporta
+# para o systemd do usuário. Isto aqui é para o shell interativo que NÃO
+# desce dali — um terminal aberto fora da sessão, um container.
 #
 # O que faltava era a guarda: o .bashrc roda em todo shell aninhado, e
 # sem ela cada um reprefixava o mesmo diretório. Tirar a linha inteira

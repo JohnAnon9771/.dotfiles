@@ -18,7 +18,7 @@ Column {
 
     //  Os scripts do torreão moram em ~/.local/bin, e o torreão sobe
     //  como unit do systemd: herda o PATH do gerenciador de usuário,
-    //  não o do seu shell. O environment.d põe a pasta lá, mas o
+    //  não o do seu shell. O uwsm/env põe a pasta lá, mas o
     //  caminho inteiro dispensa a aposta — um execDetached que não
     //  acha o binário não devolve erro nenhum, o botão só não faz nada.
     readonly property string bin: Quickshell.env("HOME") + "/.local/bin/"

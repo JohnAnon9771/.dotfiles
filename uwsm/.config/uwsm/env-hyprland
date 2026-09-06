@@ -1,0 +1,4 @@
+export HYPRCURSOR_SIZE=24
+
+# Foi feito um symlink em /etc/udev/rules.d/99-drm-gpus.rules onde a discret GPU (RX 9070 XT) que era 0000:03:00.0 ficou como amd-dgpu
+export AQ_DRM_DEVICES="/dev/dri/amd-dgpu"

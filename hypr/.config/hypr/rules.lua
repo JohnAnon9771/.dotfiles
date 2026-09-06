@@ -116,7 +116,7 @@ hl.window_rule({
 -- Steam abre janelinhas que não devem virar tile.
 hl.window_rule({
     name  = "steam-bits",
-    match = { class = "^steam$", title = "^(?!Steam$).*" },
+    match = { class = "^steam$" },
     float = true,
 })
 

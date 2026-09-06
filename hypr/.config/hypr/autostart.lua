@@ -11,9 +11,9 @@
 --
 -- A unit é systemd/.config/systemd/user/quickshell-keep.service.
 
--- Caminho inteiro: no primeiro arranque de uma sessão nova o PATH
--- ainda pode ser o de antes do environment.d, e um keep-session que
--- não é encontrado significa um `uwsm finalize` que nunca roda.
+-- Caminho inteiro: quem põe o ~/.local/bin no PATH é o uwsm/env, e uma
+-- sessão que não passe pelo uwsm não o tem. Um keep-session que não é
+-- encontrado significa um `uwsm finalize` que nunca roda.
 hl.on("hyprland.start", function()
     hl.exec_cmd(os.getenv("HOME") .. "/.local/bin/keep-session")
 end)
