@@ -222,19 +222,22 @@ Scope {
                 Crenellation {
                     anchors { left: tower.right; right: parent.right; top: parent.top }
                     edge: Qt.TopEdge
-                    stone: Theme.bg
                     heat: Settings.data.weather ? Theme.heat : 0
 
                     complement: true
                     phase: slab.originX + tower.width
 
-                    // Sem fio próprio. Com ele, o traço daqui corria
-                    // colado ao da Muralha e as duas linhas de 1 px
-                    // viravam o zíper. O que sobra é a silhueta DELA,
-                    // descendo pelos flancos de cada merlão e correndo
-                    // pelo pé — ameia em relevo, entalhada numa faixa de
-                    // pedra cheia, com um fio só.
+                    // A MESMA pedra da Muralha: a faixa é uma parede só,
+                    // e quem mostra a costura é o fio.
+                    //
+                    // Fio nenhum daqui — o único é o dela, e o `spare`
+                    // poupa o pixel do teto para ele sobreviver inteiro.
+                    // Sem isso o negativo apagava o trecho que corre
+                    // pelos vãos e sobrava só o fundo e os flancos de
+                    // cada merlão: o U solto.
+                    stone: Theme.bg
                     rimmed: false
+                    spare: 1
                     z: 3
                 }
 

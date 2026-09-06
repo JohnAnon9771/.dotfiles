@@ -47,6 +47,20 @@ Canvas {
     /// da outra dente a dente.
     property bool complement: false
 
+    /// Quanto o negativo POUPA junto à linha da parede, em px.
+    /// Só faz sentido com `complement`.
+    ///
+    /// A outra superfície traça o fio dela por toda a silhueta, teto
+    /// incluído — e o teto é justamente onde o negativo é mais cheio.
+    /// Preenchendo até lá em cima, o negativo apaga o trecho do fio que
+    /// corre pelos vãos e deixa só o que sobra: o fundo e os flancos de
+    /// cada merlão, soltos. É o U.
+    ///
+    /// Poupando um pixel, o fio sobrevive inteiro. As duas ameias ficam
+    /// na MESMA pedra, e o que mostra a costura é ele — um só, contínuo,
+    /// desenhando a silhueta da Muralha dentro da faixa cheia.
+    property real spare: 0
+
     /// Deslocamento em pixels do padrão. Serve para casar as ameias
     /// de duas superfícies diferentes: a muralha começa na borda da
     /// tela, e o Salão, que fica no meio dela, precisa saber disso
@@ -84,6 +98,7 @@ Canvas {
     onRuinedChanged: requestPaint()
     onRimmedChanged: requestPaint()
     onComplementChanged: requestPaint()
+    onSpareChanged: requestPaint()
     onWidthChanged: requestPaint()
     onHeightChanged: requestPaint()
 
@@ -161,9 +176,13 @@ Canvas {
                 const n = first + i;
 
                 if (complement) {
-                    // Sob o merlão, o que faltou a ele; sob o vão, tudo.
-                    dip(a, b, d - reach(n, d), inset);
-                    dip(b, a + step, d, inset);
+                    // Sob o merlão, o que faltou a ele; sob o vão, tudo —
+                    // menos o que `spare` reserva para o fio da outra.
+                    // O teto do merlão desabado também respeita o teto,
+                    // senão o fio se interrompe justo na ruína.
+                    const cap = d - spare;
+                    dip(a, b, Math.min(d - reach(n, d), cap), inset);
+                    dip(b, a + step, cap, inset);
                 } else {
                     dip(a, b, reach(n, d), inset);
                 }
