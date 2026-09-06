@@ -12,8 +12,8 @@ local terminal = "kitty"
 local browser = "firefox"
 
 -- Os scripts do torreão moram em ~/.local/bin. O caminho vai inteiro
--- de propósito: o environment.d põe essa pasta no PATH da sessão, mas
--- um bind que não acha o binário falha calado — nada no log, nada na
+-- de propósito: o uwsm/env põe essa pasta no PATH da sessão, mas um
+-- bind que não acha o binário falha calado — nada no log, nada na
 -- tela, a tecla simplesmente não faz nada. Caro demais para depender
 -- de uma variável. O kitty, o firefox e o btop ficam pelo nome: vêm
 -- de /usr/bin, que está no PATH de qualquer sessão.

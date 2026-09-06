@@ -7,6 +7,26 @@
 # alcance maior que o do `env =` do Hyprland, que só popula o processo
 # do compositor e de lá desce para os filhos de exec-once.
 
+# ── PATH ───────────────────────────────────────────────────────
+# O uwsm arranca do login no tty1, e o PATH que o preloader monta vem
+# do /etc/profile do Arch — sem o ~/.local/bin. Sem esta linha,
+# keep-shot, keep-session, gamer-vt e gamer-mode existem no disco e
+# mesmo assim não são encontrados: o bind dispara, o dispatcher roda,
+# o exec não acha o binário e falha calado, sem uma linha no log.
+#
+# Isto já morou em ~/.config/environment.d/50-path.conf, e de lá não
+# funcionava. O gerador do environment.d roda quando o gerenciador de
+# usuário arranca; o preloader do uwsm roda *depois*, faz "Loading
+# shell profile" e exporta o PATH dele por cima. Dá para ver os dois
+# lados: o PATH aparece no /run/user/$UID/uwsm/env_cleanup.list — a
+# lista do que o uwsm escreveu — e o journalctl --user -b mostra o
+# preloader exportando a variável. Aqui a ordem se inverte: o arquivo
+# é lido *dentro* do preloader, então o que sai daqui é a palavra
+# final.
+#
+# Confere com:  systemd-run --user --pipe --wait sh -c 'command -v keep-shot'
+export PATH="$HOME/.local/bin:$PATH"
+
 export XCURSOR_SIZE=24
 
 # ── Escala ─────────────────────────────────────────────────────

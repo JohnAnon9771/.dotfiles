@@ -33,7 +33,6 @@ o que antes eram quatro programas:
 ```
 bash/        .bash_profile — o tty1 abre a sessao, o tty3 o modo jogo
 btop/        tema dark-medieval do monitor de recursos
-environment.d/ o PATH da sessão gráfica
 fonts/       Cinzel e UnifrakturMaguntia (SIL OFL), versionadas
 hypr/        Hyprland, em Lua (0.55+)
 kitty/       terminal
@@ -42,6 +41,7 @@ quickshell/  o torreão
 scripts/     gamer-vt, gamer-mode, keep-shot, keep-session
 starship/    prompt
 systemd/     a unit do torreao, ligada em graphical-session.target
+uwsm/        as envs da sessão gráfica, e o PATH que os binds precisam
 tools/       lint e testes — não é pacote stow
 ```
 
@@ -62,8 +62,8 @@ sudo pacman -S --needed quickshell hyprland uwsm kitty btop starship stow \
 
 # Links
 stow -t "$HOME" --no-folding \
-    bash btop environment.d fonts hypr kitty opencode quickshell \
-    scripts starship systemd
+    bash btop fonts hypr kitty opencode quickshell \
+    scripts starship systemd uwsm
 
 fc-cache -f
 ```
