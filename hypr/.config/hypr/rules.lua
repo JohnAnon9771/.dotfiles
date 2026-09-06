@@ -9,19 +9,53 @@
 -- texto que está atrás.
 hl.layer_rule({
     name  = "keep-glass",
-    match = { namespace = "^keep-(grimoire|ossuary|seal|hall|tablet)$" },
+    match = { namespace = "^keep-(grimoire|ossuary|seal|tablet)$" },
 
     blur = true,
     ignore_alpha = 0.08,
 })
 
+-- O Grande Salão saiu do vidro. Ele é pedra opaca de ponta a ponta —
+-- Theme.bg no corpo, bgDeep no corrimão e na cantaria — então o blur
+-- ficava atrás de superfície que não deixa ver nada. E como a janela
+-- cobria a tela inteira, isso era kawase de 3 passes sobre 3840x2160 a
+-- cada frame que o painel repintasse: o mesmo item que tirou a Muralha
+-- daqui, pago de novo e sem nada em troca.
+hl.layer_rule({
+    name  = "keep-hall",
+    match = { namespace = "^keep-hall$" },
+
+    blur = false,
+    ignore_alpha = 0.4,
+})
+
+-- O véu que pega o clique fora do Salão. Alpha 0 puro, e desenhado uma
+-- vez só: nem blur, nem animação de camada — animar uma superfície de
+-- tela cheia que ninguém vê é custo por nada.
+hl.layer_rule({
+    name  = "keep-hall-scrim",
+    match = { namespace = "^keep-hall-scrim$" },
+
+    blur = false,
+    no_anim = true,
+})
+
 -- A muralha e os pergaminhos: sem blur (são quase opacos) mas com
 -- animação de camada, que é o que os faz deslizar.
+--
+-- O blur estava ligado aqui, contra o que este comentário sempre
+-- disse, e era o item mais caro da sessão: a barra tem fundo
+-- transparente, então todo repaint dela obrigava o Hyprland a
+-- recomputar kawase de 3 passes (looknfeel: size 6, passes 3) sobre
+-- um framebuffer 3840x2160. Como a barra nunca ficava parada, isso
+-- rodava a 60 fps o dia inteiro e anulava o misc:vfr.
+--
+-- Medido com o desktop ocioso: gpu_busy_percent 13-19% e 23 W.
 hl.layer_rule({
     name  = "keep-rampart",
     match = { namespace = "^keep-(rampart|scrolls)$" },
 
-    blur = true,
+    blur = false,
     ignore_alpha = 0.4,
 })
 

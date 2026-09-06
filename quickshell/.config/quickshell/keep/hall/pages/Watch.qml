@@ -22,33 +22,40 @@ Column {
         Row {
             spacing: Theme.pad.wide
 
+            // A cor sai do `level` do próprio escudo, não da leitura
+            // crua: `charge` também dispara repintura do Canvas, e passá-la
+            // por fora do degrau anularia metade do conserto. O `reading`
+            // continua fino — o número não anima, então não custa nada.
             ShieldGauge {
+                id: cpuShield
                 implicitWidth: 62
                 implicitHeight: 92
                 value: Sys.cpuUsage
-                charge: Theme.mix(Theme.gold, Theme.gauge(Sys.cpuUsage),
-                                  Sys.cpuUsage < 0.6 ? 0 : (Sys.cpuUsage - 0.6) / 0.4)
+                charge: Theme.mix(Theme.gold, Theme.gauge(cpuShield.level),
+                                  cpuShield.level < 0.6 ? 0 : (cpuShield.level - 0.6) / 0.4)
                 label: "cpu"
                 reading: Fmt.pct(Sys.cpuUsage)
             }
 
             ShieldGauge {
+                id: gpuShield
                 visible: Gpu.present
                 implicitWidth: 62
                 implicitHeight: 92
                 value: Gpu.usage
-                charge: Theme.mix(Theme.moat, Theme.gauge(Gpu.usage),
-                                  Gpu.usage < 0.6 ? 0 : (Gpu.usage - 0.6) / 0.4)
+                charge: Theme.mix(Theme.moat, Theme.gauge(gpuShield.level),
+                                  gpuShield.level < 0.6 ? 0 : (gpuShield.level - 0.6) / 0.4)
                 label: "gpu"
                 reading: Fmt.pct(Gpu.usage)
             }
 
             ShieldGauge {
+                id: ramShield
                 implicitWidth: 62
                 implicitHeight: 92
                 value: Sys.memUsage
-                charge: Theme.mix(Theme.royal, Theme.gauge(Sys.memUsage),
-                                  Sys.memUsage < 0.6 ? 0 : (Sys.memUsage - 0.6) / 0.4)
+                charge: Theme.mix(Theme.royal, Theme.gauge(ramShield.level),
+                                  ramShield.level < 0.6 ? 0 : (ramShield.level - 0.6) / 0.4)
                 label: "ram"
                 reading: Fmt.pct(Sys.memUsage)
             }
@@ -80,10 +87,20 @@ Column {
                             height: 15
                             color: Theme.alpha(Theme.crypt, 0.7)
 
+                            // Em degraus, como os escudos. A carga por
+                            // núcleo é a leitura mais nervosa da casa, e
+                            // são doze a vinte e quatro destas com Behavior
+                            // de 220 ms: sem o degrau, o ruído de uma
+                            // amostra bastava para o Salão inteiro
+                            // renderizar a 60 fps. Dez degraus num quadrado
+                            // de 15 px é 1,5 px por passo — o degrau não
+                            // aparece, o tremor some.
                             Rectangle {
+                                readonly property real level: Fmt.step(thread.modelData, 10)
+
                                 anchors { left: parent.left; right: parent.right; bottom: parent.bottom }
-                                height: Math.max(1, parent.height * thread.modelData)
-                                color: Theme.gauge(thread.modelData)
+                                height: Math.max(1, parent.height * level)
+                                color: Theme.gauge(level)
                                 Behavior on height { NumberAnimation { duration: Theme.anim.base } }
                             }
                         }

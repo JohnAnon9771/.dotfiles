@@ -10,6 +10,8 @@ Item {
     property string text: ""
     property string detail: ""
     property string glyph: ""
+    /// A explicação por extenso, no balão. Ver Hint.qml.
+    property string hint: ""
     property bool chosen: false
     property bool busy: false
     property color tint: Theme.moss
@@ -61,12 +63,18 @@ Item {
         renderType: Text.NativeRendering
     }
 
+    //  Com teto de largura: o detalhe daqui é a mensagem de erro do
+    //  Probe, que pode vir de qualquer tamanho, e sem teto ele comia o
+    //  nome do ato até não sobrar nada para ler. O que passar do teto
+    //  elide — o texto inteiro está no balão.
     Rune {
         id: side
         anchors {
             right: parent.right; rightMargin: Theme.pad.base
             verticalCenter: parent.verticalCenter
         }
+        width: Math.min(implicitWidth, root.width * 0.45)
+        horizontalAlignment: Text.AlignRight
         text: root.busy ? "…" : root.detail
         size: Theme.size.tiny
         color: Theme.fgDim
@@ -78,5 +86,13 @@ Item {
         hoverEnabled: true
         cursorShape: Qt.PointingHandCursor
         onClicked: root.picked()
+    }
+
+    Hint {
+        id: glossary
+        anchor: root
+        area: area
+        text: root.hint
+        tint: root.tint
     }
 }

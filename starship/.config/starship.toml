@@ -4,6 +4,13 @@ $character"""
 
 add_newline = false
 
+# Tetos de tempo por prompt. Sem eles o starship usa 500 ms por
+# comando e 30 ms de varredura: um repositório grande, ou um `node -v`
+# lento, seguram o prompt inteiro. 100 ms é mais do que suficiente
+# para todo detector daqui, e o que estourar simplesmente não aparece.
+command_timeout = 100
+scan_timeout = 10
+
 # Directory: Clean blue/cyan
 [directory]
 style = "bold #3a8f8f"
@@ -21,6 +28,9 @@ format = "[$symbol$branch]($style) "
 [git_status]
 style = "bold #b04b4b"
 format = '([$all_status$ahead_behind]($style) )'
+# $all_status obriga um `git status` completo a cada prompt. Pular os
+# submódulos é o corte que a própria doc do starship recomenda.
+ignore_submodules = true
 
 # Rust: Official Rust Orange/Red (#ce412b)
 [rust]

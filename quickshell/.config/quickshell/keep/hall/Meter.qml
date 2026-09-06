@@ -16,9 +16,21 @@ Item {
     property color tint: Theme.accent
     property int barHeight: 5
 
-    readonly property color liveTint: value < 0.6
+    /// Em quantos degraus a barra enxerga o 0..1. Ver Fmt.step().
+    ///
+    /// A barra tem quase 400 px, então vinte degraus dão saltos de 19 px
+    /// — visíveis, mas com os 220 ms de OutCubic em cima eles leem como
+    /// movimento, não como pulo. O que não podia continuar era o outro
+    /// extremo: `value` vem cru do serviço, e o ruído de leitura reabria
+    /// os dois Behaviors a cada amostra de 2 s. São doze Meters só na
+    /// Vigília — o Salão renderizava a 60 fps com a máquina parada.
+    property int steps: 20
+
+    readonly property real level: Fmt.step(root.value, root.steps)
+
+    readonly property color liveTint: level < 0.6
         ? tint
-        : Theme.mix(tint, Theme.gauge(value), (value - 0.6) / 0.4)
+        : Theme.mix(tint, Theme.gauge(level), (level - 0.6) / 0.4)
 
     implicitHeight: name.implicitHeight + barHeight + 5
     width: parent ? parent.width : 0
@@ -49,7 +61,7 @@ Item {
 
         Rectangle {
             anchors { left: parent.left; top: parent.top; bottom: parent.bottom }
-            width: parent.width * Math.max(0, Math.min(1, root.value))
+            width: parent.width * root.level
             color: root.liveTint
 
             Behavior on width {

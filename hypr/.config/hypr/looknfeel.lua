@@ -45,6 +45,11 @@ hl.config({
         -- Quem se inscreve no blur são as camadas do shell, em
         -- rules.lua — é o que dá profundidade de vidro fosco aos
         -- painéis sem custar nada no resto da tela.
+        --
+        -- "Sem custar nada" só vale para janela opaca. Para as camadas
+        -- inscritas, size 6 com passes 3 é kawase de 3 idas e 3 voltas
+        -- sobre um framebuffer 3840x2160 — e a wiki é explícita em que
+        -- passes é o que mais pesa. Daí o xray.
         blur = {
             enabled = true,
             size = 6,
@@ -53,7 +58,18 @@ hl.config({
             contrast = 0.9,
             brightness = 0.72,
             vibrancy = 0.10,
-            popups = true,
+
+            -- Borra o papel de parede, não a pilha de janelas que
+            -- estiver sob a camada. Como a Névoa é estática, o vidro
+            -- sai igual — e o Hyprland para de reborrar o que mudou
+            -- atrás do painel a cada frame.
+            xray = true,
+
+            -- Era true; o default do Hyprland é false. Borrar menu e
+            -- tooltip é custo por superfície efêmera, e elas aparecem
+            -- justamente durante interação, quando há menos folga.
+            popups = false,
+
             new_optimizations = true,
         },
     },
@@ -71,6 +87,15 @@ hl.config({
 
     master = {
         new_status = "master",
+    },
+
+    -- Com o monitor em scale 2 (ver monitors.lua), toda janela
+    -- XWayland era renderizada em 1x e ampliada pela GPU: borrada, e
+    -- pagando sampling a cada frame. Com isto ela desenha na
+    -- resolução real, e o GDK_SCALE/QT_SCALE_FACTOR do env.lua faz
+    -- os toolkits compensarem o tamanho.
+    xwayland = {
+        force_zero_scaling = true,
     },
 
     misc = {

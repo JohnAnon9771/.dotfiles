@@ -54,5 +54,17 @@ Singleton {
 
     readonly property bool idle: lockWatch.isIdle
 
+    /// Vale a pena medir a máquina agora?
+    ///
+    /// Os serviços de telemetria (Sys, Gpu, Net, Disks) penduram o
+    /// `running:` dos seus Timers aqui. Enquanto o castelo dorme não
+    /// há quem leia um número: o Portão não mostra telemetria, e a
+    /// tela está apagada. Eram ~9,5 leituras de arquivo por segundo e
+    /// um `df` a cada 20 s rodando para ninguém.
+    ///
+    /// Com a vigília desligada nos Sigilos, `idle` nunca vira true —
+    /// então isto fica preso em `true` e nada muda, que é o correto.
+    readonly property bool awake: !root.idle
+
     function toggleInhibit() { root.inhibited = !root.inhibited; }
 }

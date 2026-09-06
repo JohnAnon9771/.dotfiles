@@ -45,7 +45,6 @@ Singleton {
             // ── Névoa (wallpaper) ──
             property string wallpaper: "~/Pictures/dark_medieval.jpg"
             property bool vignette: true
-            property bool fog: false          // névoa à deriva: bonito, mas custa GPU
 
             // ── Atmosfera ──
             property bool weather: true       // as cores reagem à carga
@@ -86,5 +85,5 @@ Singleton {
     // Conveniências de escrita — evitam Settings.data.x = y espalhado.
     function toggleDnd()        { root.data.dnd = !root.data.dnd; }
     function toggleNightLight() { root.data.nightLight = !root.data.nightLight; }
-    function toggleFog()        { root.data.fog = !root.data.fog; }
+    function toggleEasterEggs() { root.data.easterEggs = !root.data.easterEggs; }
 }

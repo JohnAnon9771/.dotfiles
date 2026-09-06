@@ -102,18 +102,22 @@ Item {
                          : flag.occupied ? Theme.ash
                                          : Theme.fgDim
 
-                    opacity: flag.focused ? root.flame : 1
                     renderType: Text.NativeRendering
 
                     Behavior on color { ColorAnimation { duration: Theme.anim.base } }
                 }
 
                 // O brilho da tocha, só no que está aceso.
+                //
+                // Nada de animar strength: o TorchGlow é um MultiEffect
+                // com shadowEnabled, e a doc do Qt é direta — blur e
+                // sombra são os efeitos mais caros e não se aplicam a
+                // uma fonte que anima.
                 TorchGlow {
                     target: numeral
                     visible: flag.focused
                     glow: Theme.accentLit
-                    strength: flag.focused ? 0.55 * Theme.glowStrength * root.flame : 0
+                    strength: flag.focused ? 0.55 * Theme.glowStrength : 0
                 }
 
                 // A flâmula: fio embaixo de quem tem janelas.
@@ -176,25 +180,12 @@ Item {
         }
     }
 
-    // ── A chama ────────────────────────────────────────────────
-    // Tremulação irregular: intervalo sorteado, não uma senoide.
-    // Uma tocha não pisca em compasso.
-    property real flame: 1.0
-
-    Behavior on flame {
-        NumberAnimation { duration: 260; easing.type: Easing.InOutQuad }
-    }
-
-    Timer {
-        running: Settings.data.easterEggs
-        repeat: true
-        interval: 90 + Math.random() * 260
-
-        onTriggered: {
-            root.flame = 0.87 + Math.random() * 0.13;
-            interval = 90 + Math.random() * 260;
-        }
-
-        onRunningChanged: if (!running) root.flame = 1.0
-    }
+    // A CHAMA FOI EMBORA. Ela sorteava flame ∈ [0.87, 1.00) a cada
+    // ~470 ms e animava por 260 ms, o que mantinha a barra desenhando
+    // ~55% do tempo — a última fonte de dano contínuo do torreão.
+    //
+    // E não se via: o efeito entrava em UM lugar só, a opacidade do
+    // algarismo romano de 14 px do workspace em foco, com diferença
+    // média de 4,3% entre dois sorteios. Abaixo do limiar. Uma tocha
+    // que ninguém vê tremular não é uma tocha, é um timer.
 }

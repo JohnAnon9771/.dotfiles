@@ -54,18 +54,27 @@ Singleton {
     readonly property real thermalPressure:
         cpuTemp > 0 ? Fmt.clamp01((cpuTemp - 55) / 35) : 0
 
+    /// Em degraus: o ruído de leitura não pode virar animação.
+    /// Ver Fmt.step().
     readonly property real pressure:
-        Math.max(cpuUsage * 0.85, thermalPressure, memUsage * 0.5)
+        Fmt.step(Math.max(cpuUsage * 0.85, thermalPressure, memUsage * 0.5))
 
     readonly property bool feverish: cpuTemp >= 85
 
     // ═══ LEITURA ═══════════════════════════════════════════════
 
+    // Dorme com o castelo. Ver Idle.awake.
     Timer {
         interval: root.intervalMs
-        running: true
+        running: Idle.awake
         repeat: true
         triggeredOnStart: true
+
+        // A contagem de ticks fica velha enquanto o castelo dorme; o
+        // primeiro delta depois de acordar seria a média dos 12
+        // minutos parados. Zerar faz a primeira amostra ser um
+        // recomeço limpo, e triggeredOnStart já repõe o valor.
+        onRunningChanged: if (!running) root.lastTicks = null
 
         onTriggered: {
             stat.reload();

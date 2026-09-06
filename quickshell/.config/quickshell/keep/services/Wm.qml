@@ -67,4 +67,19 @@ Singleton {
     function exitSession() {
         send(lua ? "hl.dsp.exit()" : "exit");
     }
+
+    // ── Energia ────────────────────────────────────────────────
+
+    /// `state` = "on" | "off" | "toggle".
+    ///
+    /// Este era o único dispatcher que escapava da tradução: o
+    /// shell.qml mandava "dpms off" cru pelo send(), e sob Lua o
+    /// Hyprland respondia
+    ///   [string "return hl.dispatch(dpms on)"]:1: ')' expected near 'on'
+    /// em todo despertar. Resultado prático: a tela nunca apagava por
+    /// ociosidade, num painel 4K.
+    function dpms(state) {
+        send(lua ? "hl.dsp.dpms({ action = \"" + state + "\" })"
+                 : "dpms " + state);
+    }
 }

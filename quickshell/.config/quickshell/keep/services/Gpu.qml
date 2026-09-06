@@ -85,8 +85,12 @@ Singleton {
     readonly property real thermalPressure:
         temp > 0 ? Fmt.clamp01((temp - 60) / (critJunction - 60)) : 0
 
+    /// Em degraus, como a da CPU: gpu_busy_percent é a leitura mais
+    /// ruidosa das duas. Ver Fmt.step().
     readonly property real pressure:
-        present ? Math.max(usage * 0.85, thermalPressure, powerUsage * 0.6) : 0
+        present
+            ? Fmt.step(Math.max(usage * 0.85, thermalPressure, powerUsage * 0.6))
+            : 0
 
     readonly property bool feverish: temp > 0 && temp >= critJunction - 15
 
@@ -99,9 +103,10 @@ Singleton {
         return (enabled === true && base.length > 0) ? base + "/" + leaf : "";
     }
 
+    // Dorme com o castelo. Ver Idle.awake.
     Timer {
         interval: root.intervalMs
-        running: root.present
+        running: root.present && Idle.awake
         repeat: true
         triggeredOnStart: true
 
@@ -116,8 +121,14 @@ Singleton {
             if (fan.path.length > 0) fan.reload();
             if (f1.path.length > 0) f1.reload();
             if (f2.path.length > 0) f2.reload();
-            if (lspeed.path.length > 0) lspeed.reload();
-            if (lwidth.path.length > 0) lwidth.reload();
+            // lspeed e lwidth NÃO entram aqui: largura e velocidade do
+            // link PCIe não mudam em uso normal, e o FileView já lê uma
+            // vez quando o path é atribuído. Relê sozinho se o Probe
+            // trocar de placa, que é a única hora em que faz diferença.
+            //
+            // Em amdgpu a leitura desses dois ainda pode tirar a placa
+            // do estado de baixa energia — reamostrá-los a 0,5 Hz para
+            // ver o mesmo número era o pior negócio do serviço.
         }
     }
 

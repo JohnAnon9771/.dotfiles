@@ -243,8 +243,14 @@ Singleton {
         // Identidade — estes ficam em Cinzel, não na mono.
         readonly property string cross:    "†"      // o brasão
         readonly property string skull:    "\u{f068c}"
-        readonly property string ghost:    "\u{f07f0}"
-        readonly property string keep:     "\u{f0be9}"
+        // U+F07F0 era md-surround_sound_2_0: o espectro do Portão e o
+        // fantasma do brasão apareciam como um "2.0" desenhado. A
+        // fonte TEM o codepoint, ele só não é um fantasma.
+        readonly property string ghost:    "\u{f02a0}"   // md-ghost
+        // E U+F0BE9 era md-airbag.
+        readonly property string keep:     "\u{f011a}"   // md-castle
+        readonly property string gamepad:  "\u{f0296}"   // md-gamepad
+        readonly property string bat:      "\u{f0b5f}"   // md-bat
         readonly property string fleuron:  "◈"
         readonly property string scratch:  "\u{f0306}"
         readonly property string moon:     "\u{f0594}"
