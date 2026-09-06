@@ -15,7 +15,6 @@ import "parsers.js" as P
 Singleton {
     id: root
 
-    property int intervalMs: 2000
     /// Quantas amostras o traço da muralha guarda.
     property int historyLength: 40
 
@@ -54,73 +53,92 @@ Singleton {
     readonly property real thermalPressure:
         cpuTemp > 0 ? Fmt.clamp01((cpuTemp - 55) / 35) : 0
 
-    /// Em degraus: o ruído de leitura não pode virar animação.
-    /// Ver Fmt.step().
+    /// Em degraus e com piso: o ruído de leitura não pode virar
+    /// animação. Ver Fmt.step() e Fmt.clima().
     readonly property real pressure:
-        Fmt.step(Math.max(cpuUsage * 0.85, thermalPressure, memUsage * 0.5))
+        Fmt.clima(Math.max(cpuUsage * 0.85, thermalPressure, memUsage * 0.5))
 
     readonly property bool feverish: cpuTemp >= 85
 
     // ═══ LEITURA ═══════════════════════════════════════════════
 
-    // Dorme com o castelo. Ver Idle.awake.
-    Timer {
-        interval: root.intervalMs
-        running: Idle.awake
-        repeat: true
-        triggeredOnStart: true
+    /// Quantas superfícies estão olhando o detalhe. Ver Attention.qml.
+    property int watchers: 0
+    readonly property bool detailed: watchers > 0
+
+    // Um relógio só, com divisores. Ver services/Vigil.qml — inclusive
+    // para o porquê de a cadência ser a alavanca, e não o modo de
+    // leitura.
+    Connections {
+        target: Vigil
+
+        function onBeat(n) {
+            // 2 s. O traço da CPU na muralha se desenha com isto, e é
+            // a única leitura desta casa que a barra mostra ao vivo.
+            stat.reload();
+
+            // 6 s. Memória não muda em degrau de dois segundos, e o
+            // /proc/meminfo é o arquivo mais gordo do conjunto — são
+            // ~55 linhas para colher cinco números.
+            if (n % 3 === 0) mem.reload();
+
+            // 6 s. Silício não esfria mais rápido que isso, e o §1.6
+            // do spec já pedia 5 s para temperatura.
+            if (n % 3 === 0 && temp.path.length > 0) temp.reload();
+
+            // Daqui para baixo, só com alguém olhando: carga, processos
+            // e uptime aparecem no popup do módulo, no Epitáfio e na
+            // página do Salão — nunca na muralha.
+            if (!root.detailed) return;
+            load.reload();
+            up.reload();
+        }
 
         // A contagem de ticks fica velha enquanto o castelo dorme; o
         // primeiro delta depois de acordar seria a média dos 12
         // minutos parados. Zerar faz a primeira amostra ser um
-        // recomeço limpo, e triggeredOnStart já repõe o valor.
-        onRunningChanged: if (!running) root.lastTicks = null
-
-        onTriggered: {
-            stat.reload();
-            mem.reload();
-            up.reload();
-            load.reload();
-            if (temp.path.length > 0) temp.reload();
-        }
+        // recomeço limpo, e o triggeredOnStart da ronda repõe o valor.
+        function onWoke() { root.lastTicks = null; }
     }
 
-    FileView {
+    // Abrir o popup não pode mostrar carga de dois minutos atrás.
+    onDetailedChanged: {
+        if (!root.detailed) return;
+        load.reload();
+        up.reload();
+    }
+
+    ProcFile {
         id: stat
         path: "/proc/stat"
-        printErrors: false
         onLoaded: root.readStat(text())
     }
 
-    FileView {
+    ProcFile {
         id: mem
         path: "/proc/meminfo"
-        printErrors: false
         onLoaded: root.readMeminfo(text())
     }
 
-    FileView {
+    ProcFile {
         id: up
         path: "/proc/uptime"
-        printErrors: false
         onLoaded: {
             const v = parseFloat(text().split(" ")[0]);
             if (isFinite(v)) root.uptime = v;
         }
     }
 
-    FileView {
+    ProcFile {
         id: load
         path: "/proc/loadavg"
-        printErrors: false
         onLoaded: root.readLoadavg(text())
     }
 
-    FileView {
+    ProcFile {
         id: temp
         // "" enquanto a sondagem não terminou; FileView trata como descarregado.
         path: Probe.cpu.temp || ""
-        printErrors: false
         onLoaded: {
             const v = parseInt(text(), 10);
             if (isFinite(v)) root.cpuTemp = v / 1000;

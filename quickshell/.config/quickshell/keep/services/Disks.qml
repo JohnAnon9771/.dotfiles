@@ -15,8 +15,6 @@ import "parsers.js" as P
 Singleton {
     id: root
 
-    property int usageIntervalMs: 20000
-    property int ioIntervalMs: 2000
 
     /// [{ source, mount, size, used, avail, usage }]
     property var mounts: []
@@ -60,14 +58,27 @@ Singleton {
         }
     }
 
-    // Dorme com o castelo: é o único spawn recorrente do torreão,
-    // e rodava 3x por minuto com a tela apagada. Ver Idle.awake.
-    Timer {
-        interval: root.usageIntervalMs
-        running: Idle.awake
-        repeat: true
-        triggeredOnStart: true
-        onTriggered: dfProc.running = true
+    // O df é o único spawn recorrente do torreão. Rodava 3x por minuto
+    // — 180 vezes por hora para ver um número que muda em dia, não em
+    // segundo. Agora é a cada 5 minutos (150 compassos), e quem abre o
+    // painel recebe leitura fresca na hora, pelo refresh().
+    //
+    // Não há de onde tirar isto sem processo: o QStorageInfo não é
+    // registrado no QML, o /proc/self/mountinfo sabe o que está montado
+    // mas não o que está ocupado, e o UDisks2 só conta o tamanho do
+    // bloco. Ocupação é chamada de sistema, não arquivo.
+    Connections {
+        target: Vigil
+        function onBeat(n) { if (n % 150 === 0) root.refresh(); }
+        function onWoke() {
+            root.lastIo = null;
+            root.lastIoAt = 0;
+        }
+    }
+
+    /// Colhe a ocupação agora, se não houver uma em voo.
+    function refresh() {
+        if (!dfProc.running) dfProc.running = true;
     }
 
     // ═══ VAZÃO ═════════════════════════════════════════════════
@@ -75,10 +86,9 @@ Singleton {
     property var lastIo: null
     property real lastIoAt: 0
 
-    FileView {
+    ProcFile {
         id: stats
         path: "/proc/diskstats"
-        printErrors: false
 
         onLoaded: {
             const now = P.diskstats(text());
@@ -95,18 +105,30 @@ Singleton {
         }
     }
 
-    // Dorme com o castelo. Ver Idle.awake.
-    Timer {
-        interval: root.ioIntervalMs
-        running: Idle.awake
-        repeat: true
-        triggeredOnStart: true
+    /// Quantas superfícies estão olhando a vazão. Ver Attention.qml.
+    property int watchers: 0
+    readonly property bool detailed: watchers > 0
 
-        onRunningChanged: if (!running) {
+    // A muralha mostra o ESPAÇO LIVRE, que vem do df. A vazão de leitura
+    // e escrita só aparece no cartão de detalhe — então o /proc/diskstats
+    // só é lido enquanto o cartão existe. Eram 0,5 leituras por segundo
+    // para alimentar duas linhas que ninguém estava lendo.
+    Connections {
+        target: Vigil
+        function onBeat(n) { if (root.detailed) stats.reload(); }
+        function onWoke() {
             root.lastIo = null;
             root.lastIoAt = 0;
         }
+    }
 
-        onTriggered: stats.reload()
+    // Sem amostra anterior não há taxa: a primeira leitura ao abrir o
+    // cartão só serve de marco zero, e a taxa aparece no compasso
+    // seguinte. É o preço de não medir o que ninguém olha.
+    onDetailedChanged: {
+        if (!root.detailed) return;
+        root.lastIo = null;
+        root.lastIoAt = 0;
+        stats.reload();
     }
 }

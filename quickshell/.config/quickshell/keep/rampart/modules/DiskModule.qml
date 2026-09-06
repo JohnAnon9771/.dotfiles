@@ -13,12 +13,19 @@ Readout {
 
     glyph: Theme.glyph.disk
     value: Fmt.bytes(Disks.rootFree)
+    reserve: "88.8T"
     tint: Theme.teal
     level: Disks.rootUsage
 
     popup: Component {
         DetailCard {
             title: "Adegas"
+
+            // O df agora só corre de cinco em cinco minutos; abrir o
+            // cartão manda colher na hora, para o número que se OLHA
+            // nunca ser o velho.
+            Attention { service: Disks }
+        Component.onCompleted: Disks.refresh()
 
             Repeater {
                 model: Disks.mounts

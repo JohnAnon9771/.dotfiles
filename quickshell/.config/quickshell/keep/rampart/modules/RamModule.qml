@@ -13,12 +13,15 @@ Readout {
 
     glyph: Theme.glyph.ram
     value: Fmt.bytes(Sys.memUsed)
+    reserve: "88.8G"
     tint: Theme.royal
     level: Sys.memUsage
 
     popup: Component {
         DetailCard {
             title: "Despensa"
+
+            Attention { service: Sys }
 
             DetailRow {
                 label: "em uso"

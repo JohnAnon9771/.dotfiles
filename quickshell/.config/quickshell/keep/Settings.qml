@@ -61,6 +61,11 @@ Singleton {
             property int cryptLimit: 120      // quantos pergaminhos a cripta guarda
 
             // ── Vigília (idle) ──
+            /// Com janela em tela cheia por cima, a muralha não é lida
+            /// por ninguém — e a telemetria pode dormir junto. Fica
+            /// desligado por padrão: quem joga com a barra escondida
+            /// liga, e quem não usa não sente diferença nenhuma.
+            property bool hideOnFullscreen: false
             property bool idleEnabled: true
             property int idleLockMinutes: 12
             property int idleDpmsMinutes: 20

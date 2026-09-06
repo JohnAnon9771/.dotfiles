@@ -12,6 +12,10 @@ Column {
 
     spacing: Theme.pad.snug
 
+    // O Epitáfio conta a vigília e a carga: sensores que a muralha não
+    // desenha e que, por isso, só são lidos enquanto ele existe.
+    Attention { service: Sys }
+
     Illuminated {
         text: root.hostName
         initialSize: Theme.size.display

@@ -17,6 +17,7 @@ Readout {
 
     glyph: Theme.glyph.gpu
     value: Fmt.pct(Gpu.usage)
+    reserve: "100%"
     tint: Theme.moat
     level: Math.max(Gpu.usage, Gpu.thermalPressure)
     samples: Gpu.history
@@ -24,6 +25,8 @@ Readout {
     popup: Component {
         DetailCard {
             title: Gpu.name
+
+            Attention { service: Gpu }
 
             DetailRow {
                 label: "núcleo"

@@ -16,7 +16,6 @@ import "parsers.js" as P
 Singleton {
     id: root
 
-    property int intervalMs: 2000
     property int historyLength: 40
 
     // ── Vazão ──────────────────────────────────────────────────
@@ -111,10 +110,9 @@ Singleton {
     property var lastSample: null
     property real lastSampleAt: 0
 
-    FileView {
+    ProcFile {
         id: dev
         path: "/proc/net/dev"
-        printErrors: false
 
         onLoaded: {
             const now = P.netdev(text());
@@ -132,19 +130,19 @@ Singleton {
         }
     }
 
-    // Dorme com o castelo. Ver Idle.awake.
-    Timer {
-        interval: root.intervalMs
-        running: Idle.awake
-        repeat: true
-        triggeredOnStart: true
+    // A vazão é a única leitura de arquivo desta casa: estado de rede
+    // vem do NetworkManager por sinal. Fica no compasso porque ↓↑ é
+    // justamente o número que se olha para ver se está acontecendo
+    // agora. Ver services/Vigil.qml.
+    Connections {
+        target: Vigil
 
-        onRunningChanged: if (!running) {
+        function onBeat(n) { dev.reload(); }
+
+        function onWoke() {
             root.lastSample = null;
             root.lastSampleAt = 0;
         }
-
-        onTriggered: dev.reload()
     }
 
     /// O gráfico é normalizado pelo pico recente, não por um teto

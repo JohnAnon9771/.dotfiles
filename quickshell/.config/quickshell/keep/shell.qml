@@ -54,6 +54,24 @@ ShellRoot {
         value: rampart.primaryBar
     }
 
+    // ═══ O INTERRUPTOR DA RONDA ════════════════════════════════
+    // O Vigil decide se vale medir a máquina agora, e não pode
+    // perguntar sozinho: se ele passasse a conhecer o Portão, o grafo
+    // de serviços fecharia um ciclo. Então a resposta vem de cima,
+    // no mesmo gesto do anchorWindow.
+
+    Binding {
+        target: Vigil
+        property: "locked"
+        value: gate.locked
+    }
+
+    Binding {
+        target: Vigil
+        property: "barVisible"
+        value: rampart.primaryBar !== null && rampart.primaryBar.visible
+    }
+
     // ═══ AS SUPERFÍCIES ════════════════════════════════════════
 
     Mist {}
@@ -111,10 +129,16 @@ ShellRoot {
 
         function onShouldLock() { gate.lock(); }
         function onShouldSleep() {
-            if (gate.locked) Wm.dpms("off");
+            // O Hyprland não conta o estado de DPMS por IPC: quem sabe
+            // que a tela apagou é quem mandou apagar.
+            if (gate.locked) {
+                Wm.dpms("off");
+                Vigil.screenOff = true;
+            }
         }
         function onAwoke() {
             Wm.dpms("on");
+            Vigil.screenOff = false;
         }
     }
 

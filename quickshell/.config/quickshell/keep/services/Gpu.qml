@@ -17,7 +17,6 @@ import qs.services
 Singleton {
     id: root
 
-    property int intervalMs: 2000
     property int historyLength: 40
 
     readonly property var card: Probe.gpu
@@ -85,11 +84,12 @@ Singleton {
     readonly property real thermalPressure:
         temp > 0 ? Fmt.clamp01((temp - 60) / (critJunction - 60)) : 0
 
-    /// Em degraus, como a da CPU: gpu_busy_percent é a leitura mais
-    /// ruidosa das duas. Ver Fmt.step().
+    /// Em degraus e com piso, como a da CPU — e aqui importa mais,
+    /// porque gpu_busy_percent é a leitura mais ruidosa das duas.
+    /// Ver Fmt.clima().
     readonly property real pressure:
         present
-            ? Fmt.step(Math.max(usage * 0.85, thermalPressure, powerUsage * 0.6))
+            ? Fmt.clima(Math.max(usage * 0.85, thermalPressure, powerUsage * 0.6))
             : 0
 
     readonly property bool feverish: temp > 0 && temp >= critJunction - 15
@@ -103,24 +103,39 @@ Singleton {
         return (enabled === true && base.length > 0) ? base + "/" + leaf : "";
     }
 
-    // Dorme com o castelo. Ver Idle.awake.
-    Timer {
-        interval: root.intervalMs
-        running: root.present && Idle.awake
-        repeat: true
-        triggeredOnStart: true
+    /// Quantas superfícies estão olhando o detalhe. Ver Attention.qml.
+    property int watchers: 0
+    readonly property bool detailed: watchers > 0
 
-        onTriggered: {
+    // Esta era a casa mais cara do torreão: doze arquivos de /sys a
+    // cada dois segundos, para a muralha desenhar UM número. O resto
+    // alimentava um popup que passa o dia fechado.
+    //
+    // Agora são dois arquivos no compasso e mais três a cada seis
+    // segundos; os outros seis só respiram enquanto alguém olha.
+    Connections {
+        target: Vigil
+
+        function onBeat(n) {
+            if (!root.present) return;
+
+            // 2 s — `usage`, e é tudo que o GpuModule desenha.
             busy.reload();
-            if (memBusyFile.path.length > 0) memBusyFile.reload();
-            if (vram.path.length > 0) vram.reload();
-            if (t1.path.length > 0) t1.reload();
-            if (t2.path.length > 0) t2.reload();
-            if (t3.path.length > 0) t3.reload();
-            if (pwr.path.length > 0) pwr.reload();
-            if (fan.path.length > 0) fan.reload();
-            if (f1.path.length > 0) f1.reload();
-            if (f2.path.length > 0) f2.reload();
+
+            // 12 s — temperatura e potência da placa não entram na
+            // muralha como NÚMERO em lugar nenhum: entram como COR,
+            // alimentando `pressure`, que vira Theme.heat e sobe a
+            // brasa pela ameia. Cor de ambiente que leva 1,4 s para
+            // interpolar não precisa de amostra de dois segundos.
+            //
+            // (A do processador é outra história: o TempModule desenha
+            // o número, e por isso o Sys lê a dele a cada 6 s.)
+            if (n % 6 === 0) {
+                if (t1.path.length > 0) t1.reload();
+                if (t2.path.length > 0) t2.reload();
+                if (pwr.path.length > 0) pwr.reload();
+            }
+
             // lspeed e lwidth NÃO entram aqui: largura e velocidade do
             // link PCIe não mudam em uso normal, e o FileView já lê uma
             // vez quando o path é atribuído. Relê sozinho se o Probe
@@ -129,7 +144,29 @@ Singleton {
             // Em amdgpu a leitura desses dois ainda pode tirar a placa
             // do estado de baixa energia — reamostrá-los a 0,5 Hz para
             // ver o mesmo número era o pior negócio do serviço.
+
+            if (!root.detailed) return;
+
+            // Daqui para baixo é o popup e a página do Salão.
+            if (memBusyFile.path.length > 0) memBusyFile.reload();
+            if (vram.path.length > 0) vram.reload();
+            if (t3.path.length > 0) t3.reload();
+            if (fan.path.length > 0) fan.reload();
+            if (f1.path.length > 0) f1.reload();
+            if (f2.path.length > 0) f2.reload();
         }
+    }
+
+    // Abrir o popup não pode mostrar número de dois minutos atrás: ao
+    // ganhar o primeiro olhar, colhe tudo na hora.
+    onDetailedChanged: {
+        if (!root.detailed || !root.present) return;
+        if (memBusyFile.path.length > 0) memBusyFile.reload();
+        if (vram.path.length > 0) vram.reload();
+        if (t3.path.length > 0) t3.reload();
+        if (fan.path.length > 0) fan.reload();
+        if (f1.path.length > 0) f1.reload();
+        if (f2.path.length > 0) f2.reload();
     }
 
     function num(txt) {
@@ -137,10 +174,9 @@ Singleton {
         return isFinite(v) ? v : 0;
     }
 
-    FileView {
+    ProcFile {
         id: busy
         path: root.sysPath(root.dev, "gpu_busy_percent", root.has.busy)
-        printErrors: false
         onLoaded: {
             root.usage = Fmt.clamp01(root.num(text()) / 100);
             const h = root.history.slice();
@@ -150,81 +186,70 @@ Singleton {
         }
     }
 
-    FileView {
+    ProcFile {
         id: memBusyFile
         path: root.sysPath(root.dev, "mem_busy_percent", root.has.memBusy)
-        printErrors: false
         onLoaded: root.memBusy = Fmt.clamp01(root.num(text()) / 100)
     }
 
-    FileView {
+    ProcFile {
         id: vram
         path: root.sysPath(root.dev, "mem_info_vram_used", root.has.vram)
-        printErrors: false
         onLoaded: root.vramUsed = root.num(text())
     }
 
-    FileView {
+    ProcFile {
         id: t1
         path: root.sysPath(root.hw, "temp1_input", root.has.tempEdge)
-        printErrors: false
         onLoaded: root.tempEdge = root.num(text()) / 1000
     }
 
-    FileView {
+    ProcFile {
         id: t2
         path: root.sysPath(root.hw, "temp2_input", root.has.tempJunc)
-        printErrors: false
         onLoaded: root.tempJunction = root.num(text()) / 1000
     }
 
-    FileView {
+    ProcFile {
         id: t3
         path: root.sysPath(root.hw, "temp3_input", root.has.tempMem)
-        printErrors: false
         onLoaded: root.tempMemory = root.num(text()) / 1000
     }
 
-    FileView {
+    ProcFile {
         id: pwr
         // O probe já resolveu se é power1_average ou power1_input.
         path: (root.card && root.card.powerPath) ? root.card.powerPath : ""
-        printErrors: false
         onLoaded: root.powerUw = root.num(text())
     }
 
-    FileView {
+    ProcFile {
         id: fan
         path: root.sysPath(root.hw, "fan1_input", root.has.fan)
-        printErrors: false
         onLoaded: root.fanRpm = root.num(text())
     }
 
-    FileView {
+    ProcFile {
         id: f1
         path: root.sysPath(root.hw, "freq1_input", root.has.sclk)
-        printErrors: false
         onLoaded: root.sclk = root.num(text())
     }
 
-    FileView {
+    ProcFile {
         id: f2
         path: root.sysPath(root.hw, "freq2_input", root.has.mclk)
-        printErrors: false
         onLoaded: root.mclk = root.num(text())
     }
 
-    FileView {
+    ProcFile {
         id: lspeed
         path: root.sysPath(root.dev, "current_link_speed", root.has.link)
-        printErrors: false
         onLoaded: root.linkSpeed = text().trim()
     }
 
-    FileView {
+    ProcFile {
         id: lwidth
         path: root.sysPath(root.dev, "current_link_width", root.has.link)
-        printErrors: false
         onLoaded: root.linkWidth = root.num(text())
     }
 
