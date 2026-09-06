@@ -150,9 +150,9 @@ Scope {
                 x: Math.round(slab.slide)
                 Component.onCompleted: slab.slide = 0
 
-                Behavior on slide {
-                    NumberAnimation { duration: Theme.anim.slow; easing.type: Easing.OutCubic }
-                }
+                // Só abre: o LazyLoader destrói o Salão ao fechar, então
+                // não há volta para animar. Ver Motion.qml.
+                Behavior on slide { Motion.Panel { opening: true } }
 
                 MouseArea { anchors.fill: parent }
 

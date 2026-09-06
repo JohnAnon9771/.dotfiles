@@ -94,9 +94,9 @@ Variants {
             padding: Theme.pad.wide
             opacity: 0
 
-            Behavior on opacity {
-                NumberAnimation { duration: Theme.anim.base; easing.type: Easing.OutCubic }
-            }
+            // A lápide aparece por comando e some sozinha depois de 1,4 s:
+            // aparecer é abrir, o apagar do linger é fechar.
+            Behavior on opacity { Motion.Panel { opening: slab.opacity > 0 } }
 
             Column {
                 anchors.centerIn: parent

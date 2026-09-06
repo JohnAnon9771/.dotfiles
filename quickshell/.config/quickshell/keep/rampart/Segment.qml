@@ -35,11 +35,15 @@ Item {
     implicitHeight: parent ? parent.height : Theme.metric.barHeight
 
     // Realce discreto: uma sombra quente, não um botão.
+    //
+    // Entra em 120 ms e sai em 180: o mouse atravessando a muralha
+    // acende rápido e apaga devagar, e é isso que faz a fila de
+    // módulos parecer macia em vez de nervosa. Ver Motion.qml.
     Rectangle {
         anchors.fill: parent
         color: Theme.alpha(root.hoverTint, root.active ? 0.16
                                           : root.hovered ? 0.10 : 0)
-        Behavior on color { ColorAnimation { duration: Theme.anim.quick } }
+        Behavior on color { Motion.Hover { entering: root.hovered || root.active } }
     }
 
     // Fio de luz embaixo quando o painel do módulo está aberto.
@@ -48,7 +52,7 @@ Item {
         height: 1
         color: root.hoverTint
         opacity: root.active ? 1 : 0
-        Behavior on opacity { NumberAnimation { duration: Theme.anim.quick } }
+        Behavior on opacity { Motion.Panel { opening: root.active } }
     }
 
     Row {

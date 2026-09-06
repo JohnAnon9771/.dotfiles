@@ -165,12 +165,56 @@ Singleton {
         readonly property int holdMs:         700 // segurar-para-confirmar
     }
 
+    // ═══ TEMPO ═════════════════════════════════════════════════
+    //
+    // Duas regras de sensação valem mais que qualquer número, e é por
+    // elas que os degraus abaixo foram retunados:
+    //
+    //   1. SAÍDA MAIS LENTA QUE ENTRADA. Entrada rápida faz a interface
+    //      parecer que responde; saída lenta faz ela parecer macia. O
+    //      contrário parece que ela está fugindo de você.
+    //
+    //   2. FECHAR É MAIS RÁPIDO QUE ABRIR. Quem fecha já decidiu. Fazer
+    //      essa pessoa esperar pela animação é a coisa mais irritante
+    //      que uma shell pode fazer.
+    //
+    // E uma regra de faixa: movimento útil é rápido (120–200 ms) e
+    // movimento atmosférico é lento a ponto de dar dúvida (segundos).
+    // Nada no meio — velocidade média parece bug. Era justamente onde
+    // o antigo `slow: 380` vivia.
+
     component AnimSet: QtObject {
-        readonly property int instant: 90
-        readonly property int quick:   150
-        readonly property int base:    220
-        readonly property int slow:    380
+        readonly property int instant: 60
+        readonly property int quick:   120
+        readonly property int base:    180
+        readonly property int slow:    220
         readonly property int languid: 900
+    }
+
+    /// A tabela canônica do movimento. Os NÚMEROS moram aqui; a FORMA
+    /// (curva, assimetria, overshoot) mora em Motion.qml, porque
+    /// entrada e saída não cabem num Behavior sem um condicional.
+    component MotionSet: QtObject {
+        readonly property int hoverIn:    120
+        readonly property int hoverOut:   180   // sai mais devagar do que entra
+        readonly property int press:       60
+        readonly property int release:    220
+        readonly property int focus:      100
+        readonly property int panelOpen:  180
+        readonly property int panelClose: 120   // fecha mais rápido do que abre
+
+        /// Corte seco. O sobrenatural não faz transição: quem não
+        /// estava olhando não vê acontecer.
+        readonly property int haunt: 0
+
+        /// Vinte minutos de relógio de parede. Dia virando noite não é
+        /// animação, é clima.
+        readonly property int dayNight: 1200000
+
+        /// O quanto o `release` passa do ponto antes de assentar. O
+        /// OutBack do Qt usa 1.70158 como padrão, que é elástico
+        /// demais para pedra.
+        readonly property real overshoot: 1.1
     }
 
     readonly property FontSet   font:   FontSet {}
@@ -179,6 +223,7 @@ Singleton {
     readonly property BorderSet border: BorderSet {}
     readonly property MetricSet metric: MetricSet {}
     readonly property AnimSet   anim:   AnimSet {}
+    readonly property MotionSet motion: MotionSet {}
 
     // ═══ GLIFOS ════════════════════════════════════════════════
     // Regra do castelo: nenhum glifo cai em fonte de reserva.

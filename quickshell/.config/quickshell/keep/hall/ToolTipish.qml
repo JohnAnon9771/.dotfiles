@@ -25,7 +25,7 @@ Rectangle {
 
     visible: opacity > 0.01
     opacity: root.shown ? 1 : 0
-    Behavior on opacity { NumberAnimation { duration: Theme.anim.quick } }
+    Behavior on opacity { Motion.Panel { opening: root.shown } }
 
     Rune {
         id: label

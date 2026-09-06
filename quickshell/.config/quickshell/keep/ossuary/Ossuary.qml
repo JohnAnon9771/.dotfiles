@@ -82,9 +82,7 @@ Scope {
                 color: Theme.crypt
                 opacity: 0
                 Component.onCompleted: opacity = 0.94
-                Behavior on opacity {
-                    NumberAnimation { duration: Theme.anim.slow; easing.type: Easing.OutCubic }
-                }
+                Behavior on opacity { Motion.Panel { opening: true } }
             }
 
             Rectangle {
