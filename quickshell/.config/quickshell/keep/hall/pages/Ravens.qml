@@ -152,7 +152,7 @@ Column {
         Text {
             visible: root.trouble.length > 0
             text: root.trouble
-            font.family: Theme.font.carved
+            font.family: Theme.font.quill
             font.italic: true
             font.pixelSize: Theme.size.small
             color: Theme.scar

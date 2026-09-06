@@ -73,7 +73,7 @@ FocusScope {
             verticalCenter: parent.verticalCenter
         }
         visible: field.text.length === 0
-        font.family: Theme.font.carved
+        font.family: Theme.font.quill
         font.pixelSize: root.fontSize - 1
         font.letterSpacing: Theme.runic(root.fontSize - 1)
         font.capitalization: Font.AllUppercase

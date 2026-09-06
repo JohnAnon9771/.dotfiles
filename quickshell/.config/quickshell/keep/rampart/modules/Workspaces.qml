@@ -92,9 +92,11 @@ Item {
                     anchors.centerIn: parent
                     text: Theme.roman(flag.modelData)
 
-                    font.family: Theme.font.carved
-                    font.pixelSize: Theme.size.large
-                    font.letterSpacing: Theme.graven(Theme.size.large)
+                    // Silkscreen, na grade dela: 8 px lógicos = 16 de
+                    // dispositivo em scale 2, inteiro e sem meio-tom.
+                    font.family: Theme.font.pixel
+                    font.pixelSize: Theme.size.pixelLarge
+                    font.letterSpacing: Theme.graven(Theme.size.pixelLarge)
                     font.weight: flag.focused ? Font.Bold : Font.Normal
 
                     color: flag.urgent   ? Theme.scar

@@ -180,18 +180,48 @@ Singleton {
     // silencioso na tela.
 
     component FontSet: QtObject {
-        /// Cinzel — capitulares romanas. Títulos, algarismos, relógio.
-        readonly property string carved: "Cinzel"
-
-        /// UnifrakturMaguntia — blackletter. NUNCA abaixo de 20px,
+        /// UnifrakturMaguntia — blackletter. NUNCA abaixo de 18px,
         /// nunca em texto corrido. Só capitulares e brasões.
         readonly property string scribe: "UnifrakturMaguntia"
 
-        /// JetBrains Mono Nerd Font — todo o resto: dados, corpo, listas.
+        /// Cormorant Garamond — a mão do escriba. Relógio, prosa,
+        /// epitáfios, o corpo de tudo que é texto escrito e não dado.
+        readonly property string quill: "Cormorant Garamond"
+
+        /// JetBrains Mono Nerd Font — todo dado: números, listas,
+        /// caminhos, metadados. E os ícones, que são codepoints dela.
         readonly property string mono: "JetBrainsMono Nerd Font"
+
+        /// Silkscreen — os algarismos romanos e os microrrótulos que
+        /// encostam em pixel art.
+        ///
+        /// Desenhada em grade de 8: use SÓ em size.pixel e
+        /// size.pixelLarge. Em qualquer outro corpo ela sai com haste
+        /// de espessura irregular, que é o oposto do ponto dela.
+        readonly property string pixel: "Silkscreen"
+
     }
 
+    //  POR QUE A CINZEL SAI
+    //
+    //  Ela e a Cormorant Garamond são as duas serifas de display do
+    //  conjunto, e se sobrepõem quase inteiras: capitular romana e
+    //  garalda old-style resolvem o mesmo problema. Carregar cinco
+    //  famílias para manter as duas não se defende.
+    //
+    //  Quem herda o quê: a prosa e o relógio vão para a `quill`, e os
+    //  ALGARISMOS ROMANOS vão para a `pixel`. Este segundo parece
+    //  estranho até você lembrar onde eles ficam — encostados nos
+    //  sprites da muralha. Um glifo de hastes inteiras é mais coerente
+    //  com a doutrina do pixel que uma capitular de inscrição, e de
+    //  quebra resolve a redundância num gesto só.
+
     component SizeSet: QtObject {
+        /// A grade da Silkscreen. Só estes dois corpos para ela: são
+        /// múltiplos de 8, e em scale 2 dão 16 e 32 px de dispositivo.
+        readonly property int pixel:      8
+        readonly property int pixelLarge: 16
+
         readonly property int tiny:     10
         readonly property int small:    11
         readonly property int base:     12
@@ -298,9 +328,10 @@ Singleton {
     // diferente — era a causa da barra parecer remendada.
     //
     // Então: ícone é sempre codepoint Nerd Font (conferido presente),
-    // e o que é letra fica em Cinzel. Os algarismos romanos passam a
-    // ser I, V, X do alfabeto: a Cinzel é uma capitular romana de
-    // inscrição, e "IV" nela é mais romano que o Ⅳ do Unicode.
+    // e o que é letra fica numa das vozes de texto. Os algarismos
+    // romanos são I, V, X do alfabeto e não os Ⅰ..Ⅹ do Unicode: assim
+    // eles existem em QUALQUER voz, e hoje moram na Silkscreen, onde a
+    // haste inteira encosta na pixel art sem destoar.
 
     component GlyphSet: QtObject {
         // Vigília
@@ -349,7 +380,7 @@ Singleton {
         readonly property string play:     "\u{f040a}"
         readonly property string pause:    "\u{f03e4}"
 
-        // Identidade — estes ficam em Cinzel, não na mono.
+        // Identidade — estes ficam numa voz de texto, não na mono.
         readonly property string cross:    "†"      // o brasão
         readonly property string skull:    "\u{f068c}"
         // U+F07F0 era md-surround_sound_2_0: o espectro do Portão e o
@@ -367,7 +398,8 @@ Singleton {
 
     readonly property GlyphSet glyph: GlyphSet {}
 
-    /// Algarismo romano em letras de verdade, para a Cinzel.
+    /// Algarismo romano em letras de verdade, e não nos Ⅰ..Ⅹ do
+    /// Unicode: I, V e X existem em toda voz do castelo.
     function roman(n) {
         const vals = [1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1];
         const syms = ["M", "CM", "D", "CD", "C", "XC", "L", "XL",

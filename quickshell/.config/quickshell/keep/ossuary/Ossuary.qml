@@ -214,7 +214,7 @@ Scope {
                                     top: parent.top; topMargin: Theme.pad.roomy
                                 }
                                 text: door.modelData.key
-                                font.family: Theme.font.carved
+                                font.family: Theme.font.quill
                                 font.pixelSize: Theme.size.tiny
                                 font.letterSpacing: Theme.runic(Theme.size.tiny)
                                 color: door.lit ? Theme.accent : Theme.alpha(Theme.fgDim, 0.6)

@@ -209,7 +209,7 @@ Scope {
                 Text {
                     anchors.horizontalCenter: parent.horizontalCenter
                     text: Fmt.pad2(clock.hours) + ":" + Fmt.pad2(clock.minutes)
-                    font.family: Theme.font.carved
+                    font.family: Theme.font.quill
                     font.pixelSize: Theme.size.colossal
                     font.letterSpacing: Theme.graven(Theme.size.colossal)
                     color: Theme.parchment
@@ -260,7 +260,7 @@ Scope {
                 Text {
                     anchors.horizontalCenter: parent.horizontalCenter
                     text: surface.checking ? "…" : surface.complaint
-                    font.family: Theme.font.carved
+                    font.family: Theme.font.quill
                     font.italic: true
                     font.pixelSize: Theme.size.base
                     color: Theme.scar

@@ -67,7 +67,7 @@ Column {
     Text {
         width: Math.max(180, parent.width)
         text: Lore.aphorism()
-        font.family: Theme.font.carved
+        font.family: Theme.font.quill
         font.pixelSize: Theme.size.small
         font.italic: true
         color: Theme.fgDim

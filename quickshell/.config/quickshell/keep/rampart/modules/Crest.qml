@@ -30,8 +30,8 @@ Segment {
     Text {
         anchors.verticalCenter: parent.verticalCenter
         text: root.mark
-        // A adaga vive na Cinzel, junto do nome; a caveira é Nerd Font.
-        font.family: root.cursed ? Theme.font.mono : Theme.font.carved
+        // A adaga vive na voz do nome; a caveira é Nerd Font.
+        font.family: root.cursed ? Theme.font.mono : Theme.font.quill
         font.pixelSize: Theme.size.base
         color: root.cursed ? Theme.scar : Theme.gold
         renderType: Text.NativeRendering
@@ -42,7 +42,7 @@ Segment {
     Text {
         anchors.verticalCenter: parent.verticalCenter
         text: root.hostName
-        font.family: Theme.font.carved
+        font.family: Theme.font.quill
         font.pixelSize: Theme.size.base
         font.letterSpacing: Theme.runic(Theme.size.base)
         font.capitalization: Font.AllUppercase
@@ -54,7 +54,7 @@ Segment {
     Text {
         anchors.verticalCenter: parent.verticalCenter
         text: root.mark
-        font.family: root.cursed ? Theme.font.mono : Theme.font.carved
+        font.family: root.cursed ? Theme.font.mono : Theme.font.quill
         font.pixelSize: Theme.size.base
         color: root.cursed ? Theme.scar : Theme.gold
         renderType: Text.NativeRendering

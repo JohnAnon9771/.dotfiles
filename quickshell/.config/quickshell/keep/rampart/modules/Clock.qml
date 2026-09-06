@@ -1,7 +1,7 @@
 pragma ComponentBehavior: Bound
 
 //  A AMPULHETA — as horas.
-//  Cinzel com espaçamento largo e a lua de verdade ao lado. Na hora
+//  Cormorant com espaçamento largo e a lua de verdade ao lado. Na hora
 //  das bruxas, blackletter.
 //
 //  Sem envelope: a primeira versão punha o relógio dentro de um Item
@@ -51,7 +51,7 @@ Segment {
             ? Fmt.pad2(clock.hours) + ":" + Fmt.pad2(clock.minutes)
             : Fmt.pad2(((clock.hours + 11) % 12) + 1) + ":" + Fmt.pad2(clock.minutes)
 
-        font.family: root.bewitched ? Theme.font.scribe : Theme.font.carved
+        font.family: root.bewitched ? Theme.font.scribe : Theme.font.quill
         font.pixelSize: root.bewitched ? Theme.size.title : Theme.size.base
         font.letterSpacing: root.bewitched ? 0 : Theme.runic(Theme.size.base)
         color: root.bewitched ? Theme.wraith : Theme.fg

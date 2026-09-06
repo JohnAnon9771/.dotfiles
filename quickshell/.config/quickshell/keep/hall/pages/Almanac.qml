@@ -117,7 +117,7 @@ Column {
                     Text {
                         anchors.centerIn: parent
                         text: day.number
-                        font.family: Theme.font.carved
+                        font.family: Theme.font.quill
                         font.pixelSize: Theme.size.small
                         color: day.today ? Theme.accentLit
                              : day.weekend ? Theme.fgDim
@@ -173,7 +173,7 @@ Column {
         Text {
             width: parent.width
             text: Lore.aphorism()
-            font.family: Theme.font.carved
+            font.family: Theme.font.quill
             font.italic: true
             font.pixelSize: Theme.size.small
             color: Theme.fgDim
