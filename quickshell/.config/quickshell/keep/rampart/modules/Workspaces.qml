@@ -134,10 +134,17 @@ Item {
                     Behavior on opacity { NumberAnimation { duration: Theme.anim.base } }
                 }
 
-                // Pulsação de urgência.
+                // Pulsação de urgência: cinco vezes, e para.
+                //
+                // A urgência do Hyprland dura até você VISITAR o
+                // workspace — pode ser meia hora. Infinito aqui era
+                // meia hora de scale a 60 fps, na mesma muralha de
+                // onde a chama foi embora (ver o rodapé deste arquivo).
+                // Cinco pulsos chamam o olho; depois a cor de sangue
+                // do numeral segura o recado sozinha.
                 SequentialAnimation on scale {
                     running: flag.urgent
-                    loops: Animation.Infinite
+                    loops: 5
                     alwaysRunToEnd: true
                     NumberAnimation { to: 1.12; duration: 420; easing.type: Easing.OutQuad }
                     NumberAnimation { to: 1.0;  duration: 420; easing.type: Easing.InQuad }

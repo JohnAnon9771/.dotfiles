@@ -16,6 +16,15 @@ Segment {
 
     readonly property bool linked: Net.activeNetwork !== null || Net.rxRate > 0
 
+    /// Reserva para as taxas. Mesma razão do Readout.reserve: "↓840k"
+    /// virando "↓1.2M" mudava a largura do módulo a cada dois segundos,
+    /// e o relógio à direita dançava junto.
+    TextMetrics {
+        id: reserva
+        font: descendo.font
+        text: "↓888.8M"
+    }
+
     popup: Component {
         DetailCard {
             title: "Corvos"
@@ -72,8 +81,12 @@ Segment {
     }
 
     Text {
+        id: descendo
+
         anchors.verticalCenter: parent.verticalCenter
         text: Theme.glyph.down + Fmt.rate(Net.rxRate)
+        width: Math.max(reserva.width, implicitWidth)
+        horizontalAlignment: Text.AlignRight
         font.family: Theme.font.mono
         font.pixelSize: Theme.size.base
         color: Theme.fgMuted
@@ -83,6 +96,8 @@ Segment {
     Text {
         anchors.verticalCenter: parent.verticalCenter
         text: Theme.glyph.up + Fmt.rate(Net.txRate)
+        width: Math.max(reserva.width, implicitWidth)
+        horizontalAlignment: Text.AlignRight
         font.family: Theme.font.mono
         font.pixelSize: Theme.size.base
         color: Theme.fgDim

@@ -52,9 +52,14 @@ Row {
                 color: Theme.blood
                 visible: slot.modelData.status === Status.NeedsAttention
 
+                // Seis piscadas e para. Era infinito, e "pedir atenção"
+                // é um estado que o app pode nunca retirar: um
+                // syncthing esquecido prendia a muralha a 60 fps até o
+                // fim da sessão. Seis piscadas você vê; a mancha de
+                // sangue continua lá depois, parada, dizendo o mesmo.
                 SequentialAnimation on opacity {
                     running: slot.modelData.status === Status.NeedsAttention
-                    loops: Animation.Infinite
+                    loops: 6
                     NumberAnimation { to: 0.3; duration: 700 }
                     NumberAnimation { to: 1.0; duration: 700 }
                 }

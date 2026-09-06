@@ -16,6 +16,7 @@ Readout {
 
     glyph: Sys.feverish ? Theme.glyph.tempHot : Theme.glyph.temp
     value: Fmt.temp(Sys.cpuTemp)
+    reserve: "100°"
     tint: Theme.ember
     level: Sys.thermalPressure
 

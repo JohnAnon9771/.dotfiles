@@ -145,10 +145,13 @@ Item {
 
                     readonly property bool hasIcon: icon.status === Image.Ready
 
-                    // Pulsa em sangue quando é crítico.
+                    // Pulsa em sangue quando é crítico — três vezes, e
+                    // para. Era infinito, e um pergaminho crítico vive
+                    // cinco minutos: eram cinco minutos de scale a 60
+                    // fps por uma notificação que você já leu.
                     SequentialAnimation on scale {
                         running: root.critical
-                        loops: Animation.Infinite
+                        loops: 3
                         alwaysRunToEnd: true
                         NumberAnimation { to: 1.10; duration: 900; easing.type: Easing.InOutSine }
                         NumberAnimation { to: 1.00; duration: 900; easing.type: Easing.InOutSine }
@@ -277,7 +280,16 @@ Item {
         }
     }
 
-    // O pavio queimando. Crítico não expira, então não tem pavio.
+    // O pavio queimando.
+    //
+    // O comentário antigo dizia "crítico não expira, então não tem
+    // pavio" — e estava desatualizado: o Notifs.lifetime() devolve
+    // criticalTimeoutMs, que são cinco minutos. O pavio queimava, e
+    // queimava animando `width`: 300 000 ms de relayout, ~18 000
+    // frames para encolher um fio de 1 px.
+    //
+    // Agora encolhe por `scale` ancorado à esquerda. O desenho é o
+    // mesmo, a matriz vai para o scenegraph e o layout não é tocado.
     Item {
         anchors { left: parent.left; right: parent.right; bottom: parent.bottom }
         height: root.roll
@@ -290,11 +302,12 @@ Item {
             width: parent.width
             height: 1
             color: Theme.alpha(Theme.ember, 0.85)
+            transformOrigin: Item.Left
 
             NumberAnimation {
                 id: fuse
-                target: wick; property: "width"
-                from: root.width; to: 0
+                target: wick; property: "scale"
+                from: 1; to: 0
                 duration: root.notif ? Notifs.lifetime(root.notif) : 0
                 running: duration > 0 && !hovering.containsMouse && !root.leaving
                 onFinished: root.dismiss()
