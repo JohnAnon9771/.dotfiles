@@ -14,7 +14,7 @@ Readout {
     glyph: Theme.glyph.cpu
     value: Fmt.pct(Sys.cpuUsage)
     reserve: "100%"
-    tint: Theme.gold
+    tint: Theme.ash
     level: Sys.cpuUsage
     samples: Sys.cpuHistory
 

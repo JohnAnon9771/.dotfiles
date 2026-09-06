@@ -24,7 +24,7 @@ Readout {
     TorchGlow {
         target: parent
         visible: Sys.feverish
-        glow: Theme.blood
+        glow: Theme.scar
         strength: Sys.feverish ? 0.6 : 0
         spread: 0.8
     }

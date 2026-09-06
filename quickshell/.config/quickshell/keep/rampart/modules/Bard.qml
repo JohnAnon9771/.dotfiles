@@ -31,7 +31,7 @@ Segment {
 
     visible: player !== null
     spacing: Theme.pad.tight
-    hoverTint: Theme.royal
+    hoverTint: Theme.gold
 
     onActivated: if (player && player.canTogglePlaying) player.togglePlaying()
     onSecondary: if (player && player.canQuit) player.quit()
@@ -78,7 +78,7 @@ Segment {
         text: root.playing ? Theme.glyph.music : Theme.glyph.pause
         font.family: Theme.font.mono
         font.pixelSize: Theme.size.base
-        color: root.playing ? Theme.royal : Theme.verdigris
+        color: root.playing ? Theme.fg : Theme.dim
         renderType: Text.NativeRendering
 
         // AQUI RESPIRAVA O BARDO, e era a última animação permanente

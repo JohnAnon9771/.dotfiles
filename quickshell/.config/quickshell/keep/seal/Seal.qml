@@ -157,7 +157,7 @@ Scope {
                         font.italic: true
                         font.pixelSize: Theme.size.small
                         color: win.flow && win.flow.supplementaryIsError
-                            ? Theme.blood : Theme.fgDim
+                            ? Theme.scar : Theme.fgDim
                         wrapMode: Text.WordWrap
                         renderType: Text.NativeRendering
                     }

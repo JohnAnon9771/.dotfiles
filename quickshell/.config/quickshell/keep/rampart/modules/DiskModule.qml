@@ -14,7 +14,7 @@ Readout {
     glyph: Theme.glyph.disk
     value: Fmt.bytes(Disks.rootFree)
     reserve: "88.8T"
-    tint: Theme.teal
+    tint: Theme.ash
     level: Disks.rootUsage
 
     popup: Component {
@@ -46,7 +46,7 @@ Readout {
                 label: "leitura"
                 labelWidth: 96
                 value: Fmt.rate(Disks.readRate)
-                tint: Theme.moat
+                tint: Theme.ash
             }
             DetailRow {
                 label: "escrita"

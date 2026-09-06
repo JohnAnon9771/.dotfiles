@@ -56,14 +56,14 @@ Variants {
             win.show(Audio.glyph(Audio.volume, Audio.muted),
                      Audio.muted ? "silenciado" : Fmt.pct(Audio.volume),
                      Audio.muted ? 0 : Audio.volume,
-                     Audio.muted ? Theme.blood : Theme.moss);
+                     Audio.muted ? Theme.scar : Theme.moss);
         }
 
         function showMic() {
             win.show(Audio.micMuted ? Theme.glyph.micOff : Theme.glyph.mic,
                      Audio.micMuted ? "mudo" : "escutando",
                      -1,
-                     Audio.micMuted ? Theme.blood : Theme.moss);
+                     Audio.micMuted ? Theme.scar : Theme.moss);
         }
 
         function showDnd() {

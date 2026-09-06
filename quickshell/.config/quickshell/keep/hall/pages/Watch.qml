@@ -123,7 +123,7 @@ Column {
         Fact {
             label: "calor"
             value: Fmt.temp(Sys.cpuTemp) + "   " + (Probe.cpu.label || "")
-            tint: Sys.feverish ? Theme.blood : Theme.fg
+            tint: Sys.feverish ? Theme.scar : Theme.fg
         }
         Fact {
             label: "média de carga"

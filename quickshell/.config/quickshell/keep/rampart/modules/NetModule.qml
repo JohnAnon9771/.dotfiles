@@ -12,7 +12,7 @@ Segment {
     id: root
 
     spacing: Theme.pad.tight
-    hoverTint: Theme.wraith
+    hoverTint: Theme.gold
 
     readonly property bool linked: Net.activeNetwork !== null || Net.rxRate > 0
 
@@ -32,7 +32,7 @@ Segment {
             DetailRow {
                 label: "elo"
                 value: Net.label
-                tint: Net.online ? Theme.moss : Theme.ember
+                tint: Net.online ? Theme.fg : Theme.ember
             }
             DetailRow {
                 visible: Net.onWifi
@@ -43,7 +43,7 @@ Segment {
             DetailRow {
                 label: "descendo"
                 value: Fmt.rate(Net.rxRate)
-                tint: Theme.moat
+                tint: Theme.ash
             }
             DetailRow {
                 label: "subindo"
@@ -72,7 +72,7 @@ Segment {
         }
         font.family: Theme.font.mono
         font.pixelSize: Theme.size.base
-        color: Net.online ? Theme.wraith
+        color: Net.online ? Theme.fg
              : root.linked ? Theme.ember
                            : Theme.fgDim
         renderType: Text.NativeRendering

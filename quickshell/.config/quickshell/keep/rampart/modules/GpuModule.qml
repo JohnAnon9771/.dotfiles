@@ -18,7 +18,7 @@ Readout {
     glyph: Theme.glyph.gpu
     value: Fmt.pct(Gpu.usage)
     reserve: "100%"
-    tint: Theme.moat
+    tint: Theme.ash
     level: Math.max(Gpu.usage, Gpu.thermalPressure)
     samples: Gpu.history
 
@@ -81,7 +81,7 @@ Readout {
                 visible: Gpu.has.fan === true
                 label: "ventoinha"
                 value: Gpu.fanIdle ? "em repouso" : Gpu.fanRpm + " rpm"
-                tint: Gpu.fanIdle ? Theme.verdigris : Theme.fg
+                tint: Gpu.fanIdle ? Theme.dim : Theme.fg
             }
             DetailRow {
                 visible: Gpu.has.sclk === true

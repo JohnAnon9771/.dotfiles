@@ -263,7 +263,7 @@ Scope {
                     font.family: Theme.font.carved
                     font.italic: true
                     font.pixelSize: Theme.size.base
-                    color: Theme.blood
+                    color: Theme.scar
                     opacity: text.length > 0 ? 1 : 0
                     renderType: Text.NativeRendering
 

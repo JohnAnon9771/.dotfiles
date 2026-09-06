@@ -108,7 +108,7 @@ Scope {
                     gap: 7
                     initialSize: 46
                     restSize: 26
-                    initialColor: Theme.blood
+                    initialColor: Theme.scar
                     restColor: Theme.fgMuted
                 }
 
@@ -158,7 +158,7 @@ Scope {
                                     font.family: Theme.font.mono
                                     font.pixelSize: 38
                                     color: door.lit
-                                        ? (door.modelData.hold ? Theme.blood : Theme.accentLit)
+                                        ? (door.modelData.hold ? Theme.scar : Theme.accentLit)
                                         : Theme.fgDim
                                     renderType: Text.NativeRendering
 

@@ -25,40 +25,93 @@ Singleton {
     // Transições lentas: você sente, não vê piscar.
     Behavior on heat { NumberAnimation { duration: 1400; easing.type: Easing.OutCubic } }
 
-    // ═══ PEDRA E MADEIRA ═══════════════════════════════════════════
-    readonly property color crypt:     "#11100d"  // fundo mais profundo
-    readonly property color stone:     "#15120f"  // fundo principal
-    readonly property color hall:      "#1b1813"  // painel elevado
-    readonly property color timber:    "#2a231d"  // superfície 2 / selecionado
-    readonly property color wood:      "#3a3127"  // madeira escura / bordas
-    readonly property color iron:      "#7a736b"  // ferro velho (era #808080, cinza morto)
+    // ═══ OS NOVE ══════════════════════════════════════════════════
+    // A paleta do spec, literal. Estes são os únicos hexes escritos à
+    // mão no castelo inteiro; todo o resto abaixo é derivado deles por
+    // mix(), para nada entrar na família por acidente.
+    //
+    // As três leis, e elas são leis:
+    //   · OURO só em foco e estado ativo.
+    //   · VERMELHO só em risco real.
+    //   · VIOLETA é do sobrenatural, e nunca decorativo.
 
-    // ═══ PERGAMINHO ════════════════════════════════════════════════
-    readonly property color dust:      "#6f6559"  // pedra gasta — texto inativo
-    readonly property color ash:       "#b6b0a4"  // texto de item
-    readonly property color linen:     "#b0a79b"  // texto abafado
-    readonly property color parchment: "#dcd4c4"  // pergaminho gasto — fg padrão
-    readonly property color ivory:     "#f4f0e6"  // marfim — fg forte
+    readonly property color coal:      "#0a0908"  // carvão — o fundo de tudo
+    readonly property color stone:     "#1c1a17"  // pedra — superfícies
+    readonly property color timber:    "#241a12"  // madeira — superfície quente
+    readonly property color rim:       "#3a3630"  // o fio de luz do sprite escuro
+    readonly property color cinza:     "#6d6a63"  // texto secundário
+    readonly property color blood:     "#6e1420"  // sangue seco
+    readonly property color gold:      "#c9a24a"  // ouro velho
+    readonly property color parchment: "#e8dcc0"  // pergaminho — texto primário
+    readonly property color spectral:  "#8b6bd9"  // o que não devia estar aqui
 
-    // ═══ FOGO E SANGUE ═════════════════════════════════════════════
-    readonly property color gold:      "#c2a35a"  // ouro envelhecido — primária
-    readonly property color torch:     "#e1c97a"  // ouro aceso
-    readonly property color ember:     "#c9743a"  // brasa — atenção térmica
-    readonly property color blood:     "#b04b4b"  // sangue seco — destrutivo
-    readonly property color clot:      "#5b2222"  // sangue coalhado
+    // ═══ DERIVADOS ════════════════════════════════════════════════
+    // Cada um é mix() dos nove. O hex ao lado é o resultado, e serve
+    // para o tools/theme-sync.py exportar sem ter que avaliar QML.
 
-    // ═══ MUSGO E FOSSO ═════════════════════════════════════════════
-    readonly property color moss:      "#4f6b4a"  // verde musgo — sucesso/seleção
-    readonly property color verdigris: "#4a6b66"  // azinhavre — adormecido
-    readonly property color teal:      "#3a8f8f"  // teal profundo
-    readonly property color storm:     "#1e6a88"  // céu tempestuoso
-    readonly property color moat:      "#1e9fb4"  // água do fosso — link
-    readonly property color frost:     "#26333a"  // seleção fria
+    /// Fundo de painel: pedra puxada para a madeira.
+    readonly property color hall:   mix(stone, timber, 0.5)        // #201a14
 
-    // ═══ ASSOMBRAÇÃO ═══════════════════════════════════════════════
-    readonly property color wraith:    "#86b39a"  // fogo-fátuo — o espectral
-    readonly property color royal:     "#8b6f9b"  // roxo realeza — identidade
-    readonly property color vespers:   "#3b2f45"  // véspera — sombra violeta
+    /// Ferro velho — a moldura externa.
+    readonly property color iron:   mix(cinza, stone, 0.28)        // #56544e
+
+    /// Adormecido: o que existe e não está acontecendo.
+    readonly property color dim:    mix(cinza, stone, 0.5)         // #44423d
+
+    /// Texto de item — entre o secundário e o primário.
+    readonly property color ash:    mix(cinza, parchment, 0.55)    // #b1a996
+
+    /// Marfim — o primário forte, para capitular e destaque.
+    readonly property color ivory:  mix(parchment, "#ffffff", 0.4) // #f1ead9
+
+    /// Ouro aceso: foco, tocha, o numeral em que você está.
+    /// É o `l` da paleta dos sprites — a mesma tinta em pixel e vetor.
+    readonly property color torch:  "#e3c37a"
+
+    /// SANGUE SOBRE PEDRA.
+    ///
+    /// O #6e1420 do spec é cor de PREENCHIMENTO: sobre o carvão ele dá
+    /// 1,69:1 de contraste, o que como texto é invisível. Ele está
+    /// certo onde o mockup o usa — selo de cera, quadrado de fechar,
+    /// rótulo sobre pergaminho claro, borda.
+    ///
+    /// Para letra e glifo sobre a muralha é preciso subir: este dá
+    /// 4,23:1, melhor que o #b04b4b que o castelo usava antes (3,75:1),
+    /// e continua na família do sangue seco em vez de virar tijolo.
+    readonly property color scar:   mix(blood, parchment, 0.4)     // #9f6460
+
+    /// Brasa — atenção térmica, entre o ouro e o sangue. É a única
+    /// matiz que o spec não tem e que a escala de estado exige: sem
+    /// ela, "quente mas ainda ok" teria que dividir cor com "risco".
+    readonly property color ember:  mix(gold, blood, 0.45)         // #a06237
+
+    /// Véspera — a sombra que a noite deixa. Carvão com um fio de
+    /// espectral dentro; nunca cor de objeto, só de ar.
+    readonly property color vespers: mix(coal, spectral, 0.22)     // #261f36
+
+    /// O espectral aceso, para quando ele precisa ser lido.
+    readonly property color wraith: mix(spectral, parchment, 0.35) // #ac93d0
+
+    // ── Em trânsito ───────────────────────────────────────────────
+    // Estes NÃO estão na doutrina e saem na próxima passada. Ficam
+    // apontando para o vizinho neutro certo, para o castelo já parar
+    // de ter verde e azul sem quebrar os ~44 pontos que os citam.
+    //
+    // Por que sair: sob "ouro só em foco, vermelho só em risco", uma
+    // máquina ociosa pintada de verde e um link pintado de azul dizem
+    // "isto aqui é um dashboard", e o castelo deixa de ser um castelo.
+    readonly property color moss:      ash        // era #4f6b4a
+    readonly property color verdigris: dim        // era #4a6b66
+    readonly property color teal:      cinza      // era #3a8f8f
+    readonly property color moat:      gold       // era #1e9fb4
+    readonly property color royal:     spectral   // era #8b6f9b
+    readonly property color crypt:     coal       // o nome antigo do carvão
+    readonly property color dust:      cinza
+    readonly property color linen:     ash
+    readonly property color wood:      rim
+    readonly property color storm:     cinza
+    readonly property color frost:     hall
+    readonly property color clot:      blood
 
     // ═══ PAPÉIS SEMÂNTICOS ═════════════════════════════════════════
     // Use SEMPRE estes nos widgets. Trocar um token acima repinta
@@ -79,30 +132,41 @@ Singleton {
     readonly property color borderOuter: iron
     readonly property color borderLit:   accent
 
-    // A escala de estado que faltava:
-    // adormecido → normal → bom → info → atenção → alerta → crítico
-    readonly property color stAsleep:    verdigris
+    // A escala de estado: adormecido → normal → bom → atenção →
+    // alerta → crítico.
+    //
+    // "Bom" não é verde. Sob "ouro só em foco e ativo", pintar de verde
+    // uma máquina que está apenas funcionando gasta uma cor com a
+    // informação menos interessante que existe — e o olho aprende a
+    // ignorar a barra inteira. O que está bem simplesmente não chama.
+    readonly property color stAsleep:    dim
     readonly property color stNormal:    parchment
-    readonly property color stGood:      moss
-    readonly property color stInfo:      moat
+    readonly property color stGood:      ash
+    readonly property color stInfo:      cinza
     readonly property color stWarn:      gold
     readonly property color stAlert:     ember
-    readonly property color stCrit:      blood
+    readonly property color stCrit:      scar        // legível; o blood é de preenchimento
     readonly property color stSpectral:  wraith
 
     // ═══ CORES VIVAS ═══════════════════════════════════════════════
-    // Derivadas do clima. Quanto mais quente o torreão, mais as
-    // tochas puxam para brasa. Na hora das bruxas, tudo esfria.
 
-    /// A primária do momento — ouro em repouso, brasa sob carga.
-    readonly property color accent: witching
-        ? mix(gold, wraith, 0.55)
-        : mix(gold, ember, heat * 0.7)
+    /// A primária do momento: ouro, e espectral na hora das bruxas.
+    ///
+    /// O ACCENT DESACOPLOU DO CLIMA, e é uma correção de significado,
+    /// não de gosto. Ele escorregava para brasa conforme a carga da
+    /// máquina — mas ouro é a cor de FOCO e de ATIVO. Com a máquina a
+    /// meio gás, um workspace em foco e uma CPU quente passavam a
+    /// dividir a mesma cor, e aí o ouro não queria dizer mais nada.
+    ///
+    /// O clima não perdeu voz: ele fala pelo gradiente de brasa da
+    /// ameia e pela escala de gauge(), que são inequivocamente sobre
+    /// severidade. Ganhamos de quebra uma classe inteira de repintura:
+    /// o accent parou de mudar sozinho a cada degrau de carga, e ele é
+    /// citado em dezesseis lugares.
+    readonly property color accent: witching ? spectral : gold
 
     /// O realce aceso (workspace ativo, foco, tocha).
-    readonly property color accentLit: witching
-        ? mix(torch, wraith, 0.6)
-        : mix(torch, ember, heat * 0.55)
+    readonly property color accentLit: witching ? wraith : torch
 
     /// Intensidade do brilho de tocha: pulsa mais forte sob carga.
     readonly property real glowStrength: 0.55 + heat * 0.45
@@ -342,11 +406,22 @@ Singleton {
 
     /// Cor de um valor 0..1 na escala de estado. Para medidores,
     /// barras de temperatura e qualquer coisa que possa piorar.
+    ///
+    /// MONOCROMÁTICA ATÉ IMPORTAR. A rampa antiga corria verde → ouro →
+    /// brasa → sangue, então uma máquina ociosa ficava verde e uma a
+    /// 50% ficava DOURADA. Sob "ouro só em foco e ativo" isso era
+    /// violação direta: metade da barra vestia a cor do foco o tempo
+    /// todo, e a cor do foco parava de significar foco.
+    ///
+    /// Agora nada acontece até 60%. Entre 60 e 85 o ouro entra, e daí
+    /// para cima ele apodrece em sangue. Quem olha a muralha de canto
+    /// de olho vê cinza enquanto está tudo bem — que é quase sempre — e
+    /// só é interrompido quando há motivo.
     function gauge(t) {
         const k = Math.max(0, Math.min(1, t));
-        if (k < 0.5)  return mix(moss,  gold,  k / 0.5);
-        if (k < 0.8)  return mix(gold,  ember, (k - 0.5) / 0.3);
-        return mix(ember, blood, (k - 0.8) / 0.2);
+        if (k < 0.60) return cinza;
+        if (k < 0.85) return mix(cinza, gold, (k - 0.60) / 0.25);
+        return mix(gold, scar, (k - 0.85) / 0.15);
     }
 
     /// Cor de temperatura em °C, com limiares de silício.

@@ -22,7 +22,10 @@ hl.config({
                 colors = { c.rgba(c.gold, 0.93), c.rgba(c.torch, 0.93) },
                 angle = 45,
             },
-            inactive_border = c.rgba(c.wood, 0.72),
+            -- O `wood` virou `rim` no Theme.qml: e o mesmo fio de luz
+            -- de 1px que contorna sprite escuro, e serve de moldura
+            -- para a janela que nao esta em foco.
+            inactive_border = c.rgba(c.rim, 0.72),
         },
 
         resize_on_border = false,

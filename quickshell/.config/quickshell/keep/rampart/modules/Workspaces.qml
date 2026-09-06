@@ -97,7 +97,7 @@ Item {
                     font.letterSpacing: Theme.graven(Theme.size.large)
                     font.weight: flag.focused ? Font.Bold : Font.Normal
 
-                    color: flag.urgent   ? Theme.blood
+                    color: flag.urgent   ? Theme.scar
                          : flag.focused  ? Theme.accentLit
                          : flag.occupied ? Theme.ash
                                          : Theme.fgDim

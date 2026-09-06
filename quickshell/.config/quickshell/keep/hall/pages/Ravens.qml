@@ -155,7 +155,7 @@ Column {
             font.family: Theme.font.carved
             font.italic: true
             font.pixelSize: Theme.size.small
-            color: Theme.blood
+            color: Theme.scar
             renderType: Text.NativeRendering
         }
     }
