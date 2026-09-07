@@ -26,8 +26,38 @@ Item {
     readonly property int focusedId:
         Hyprland.focusedWorkspace ? Hyprland.focusedWorkspace.id : -1
 
-    /// Os que existem, mais os fixos, mais o que está em foco.
-    readonly property var slots: {
+    /// Quais salas aparecem: as que existem, mais as fixas, mais a
+    /// que está em foco.
+    ///
+    /// ISTO NÃO É O MODELO DO REPEATER, e essa é a correção inteira.
+    ///
+    /// Era. E como modelo, custava a fila de flâmulas ser DESTRUÍDA e
+    /// reconstruída sempre que a lista mudasse de conteúdo — porque o
+    /// Repeater troca o modelo por identidade, e um array novo é um
+    /// modelo novo. Não é só o pano que morre e nasce: é o algarismo,
+    /// é o TorchGlow com o framebuffer dele, é o MouseArea.
+    ///
+    /// Medido com uma sonda no onPaint do Banner, indo para uma sala
+    /// que ainda não existia:
+    ///
+    ///     I → VII    4 repaints — e dois deles, o do II e o do III,
+    ///                com a cor EXATAMENTE igual à que já tinham
+    ///
+    /// Agora o modelo é uma CONTAGEM, e contagem não muda quando você
+    /// troca de sala. Os delegates nascem uma vez e ficam; quem some é
+    /// a largura e a visibilidade de cada um. E `slots` vira só a
+    /// resposta para "esta aparece?", com a guarda de conteúdo abaixo
+    /// para nem isso ser reavaliado à toa.
+    property var slots: []
+
+    /// O tamanho da fila. Constante na vida real: o Hyprland só tem
+    /// atalho até o X, e o teto não se mexe. O max() é o caso raro de
+    /// alguém despachar à mão para uma sala acima do teto — aí a fila
+    /// cresce, e só aí ela é reconstruída.
+    readonly property int slotCount: Math.max(maxWorkspace, focusedId)
+
+
+    function computeSlots() {
         const seen = ({});
         const out = [];
 
@@ -36,8 +66,9 @@ Item {
             out.push(root.persistent[i]);
         }
 
-        for (let i = 0; i < root.live.length; i++) {
-            const w = root.live[i];
+        const l = root.live;
+        for (let i = 0; i < l.length; i++) {
+            const w = l[i];
             if (w.id < 1 || w.id > root.maxWorkspace) continue;   // especiais têm id negativo
             if (seen[w.id]) continue;
             seen[w.id] = true;
@@ -47,8 +78,24 @@ Item {
         if (root.focusedId >= 1 && !seen[root.focusedId]) out.push(root.focusedId);
 
         out.sort((a, b) => a - b);
-        return out;
+
+        // A guarda. Mesmo conteúdo, mesmo array: o Repeater não vê
+        // nada acontecer, e nada é reconstruído.
+        const atual = root.slots;
+        if (atual.length === out.length) {
+            let igual = true;
+            for (let i = 0; i < out.length; i++)
+                if (atual[i] !== out[i]) { igual = false; break; }
+            if (igual) return;
+        }
+
+        root.slots = out;
     }
+
+    onLiveChanged: root.computeSlots()
+    onFocusedIdChanged: root.computeSlots()
+    onPersistentChanged: root.computeSlots()
+    Component.onCompleted: root.computeSlots()
 
     function workspaceOf(id) {
         const l = root.live;
@@ -70,27 +117,38 @@ Item {
         spacing: 0
 
         Repeater {
-            model: root.slots
+            // Contagem, não lista. Ver a doutrina em `slots`.
+            model: root.slotCount
 
             Item {
                 id: flag
 
-                required property int modelData
+                required property int index
 
-                readonly property var ws: root.workspaceOf(modelData)
-                readonly property bool focused: modelData === root.focusedId
+                /// `wsId` e não `id`: `id` é palavra do QML.
+                readonly property int wsId: index + 1
+
+                /// Esta sala está na fila agora?
+                readonly property bool shown: root.slots.indexOf(wsId) >= 0
+
+                readonly property var ws: root.workspaceOf(wsId)
+                readonly property bool focused: wsId === root.focusedId
                 readonly property bool occupied:
                     ws !== null && ws.toplevels.values.length > 0
                 readonly property bool urgent: ws !== null && ws.urgent
 
-                width: numeral.implicitWidth + Theme.pad.base
+                // Quem sai da fila encolhe a zero em vez de morrer. A
+                // Row reflui igual; o que não acontece é o delegate ser
+                // reconstruído.
+                width: shown ? numeral.implicitWidth + Theme.pad.base : 0
+                visible: shown
                 height: root.height
 
                 Text {
                     id: numeral
 
                     anchors.centerIn: parent
-                    text: Theme.roman(flag.modelData)
+                    text: Theme.roman(flag.wsId)
 
                     // Silkscreen, na grade dela: 8 px lógicos = 16 de
                     // dispositivo em scale 2, inteiro e sem meio-tom.
@@ -155,7 +213,7 @@ Item {
                 MouseArea {
                     anchors.fill: parent
                     cursorShape: Qt.PointingHandCursor
-                    onClicked: Wm.workspace(flag.modelData)
+                    onClicked: Wm.workspace(flag.wsId)
                 }
             }
         }
