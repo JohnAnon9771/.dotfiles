@@ -171,13 +171,24 @@ Item {
                 return false;
             }
 
+            // O SCRATCHPAD NÃO É SOBRENATURAL, é só especial.
+            //
+            // Ele vestia Theme.royal, que hoje aponta para o spectral —
+            // e a terceira lei do Theme.qml não abre exceção: violeta é
+            // do sobrenatural, e nunca decorativo. Com o brasão
+            // recebendo o fantasma às 03:00 em wraith, a barra tinha
+            // dois violetas ao mesmo tempo querendo dizer coisas
+            // diferentes, e um deles era decoração.
+            //
+            // Ash é a cor de item do castelo, e é o que ele é: uma
+            // janela guardada que existe.
             Text {
                 id: scratch
                 anchors.centerIn: parent
                 text: Theme.glyph.scratch
                 font.family: Theme.font.mono
                 font.pixelSize: Theme.size.base
-                color: Theme.royal
+                color: Theme.ash
                 renderType: Text.NativeRendering
             }
 
