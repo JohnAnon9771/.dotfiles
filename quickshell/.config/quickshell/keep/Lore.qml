@@ -145,23 +145,20 @@ Singleton {
     function isLongVigil(seconds) { return seconds > 2592000; }
 
     // ═══ ALGARISMOS ROMANOS ════════════════════════════════════════
-    // Ⅰ..Ⅹ como caracteres únicos (U+2160+). O X faltava na waybar.
-
-    readonly property var numerals: [
-        "Ⅰ", "Ⅱ", "Ⅲ", "Ⅳ", "Ⅴ",
-        "Ⅵ", "Ⅶ", "Ⅷ", "Ⅸ", "Ⅹ"
-    ]
-
-    function numeral(n) {
-        if (n >= 1 && n <= 10) return numerals[n - 1];
-        // Acima de X, compõe à moda antiga.
-        const vals = [100, 90, 50, 40, 10, 9, 5, 4, 1];
-        const syms = ["C", "XC", "L", "XL", "X", "IX", "V", "IV", "I"];
-        let out = "", v = n;
-        for (let i = 0; i < vals.length; i++)
-            while (v >= vals[i]) { out += syms[i]; v -= vals[i]; }
-        return out;
-    }
+    //
+    // MORAM NO THEME.ROMAN, e este arquivo não tem mais opinião.
+    //
+    // Aqui viviam um `numerals[]` com os Ⅰ..Ⅹ do Unicode (U+2160) e um
+    // `numeral()` que os servia. Ninguém chamava nenhum dos dois: os
+    // dois pontos de uso do castelo — a flâmula da Muralha e a linha de
+    // janela do Grimório — chamam Theme.roman(), que compõe com o I, o
+    // V e o X do ALFABETO, para os romanos existirem em toda voz.
+    //
+    // Era código morto, e código morto que contradiz a doutrina é pior
+    // que código morto: os dez caracteres estavam ausentes das quatro
+    // fontes do repositório, então quem os reusasse ganhava reserva do
+    // fontconfig sem aviso. O glyph-audit.py agora varre string de
+    // módulo e acusava os dez — e o certo era apagar, não silenciar.
 
     // ═══ MESES DO ALMANAQUE ════════════════════════════════════════
 

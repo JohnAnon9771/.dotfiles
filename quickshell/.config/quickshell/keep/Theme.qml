@@ -427,6 +427,16 @@ Singleton {
         readonly property string play:     "\u{f040a}"
         readonly property string pause:    "\u{f03e4}"
 
+        // Teclas — as dicas do rodapé do Grimório e do Ossuário.
+        //
+        // Eram ↵ (U+21B5) e ⇅ (U+21C5), escritos direto na string do
+        // módulo, e NENHUM dos dois existe na JetBrainsMono Nerd Font.
+        // Ficavam a cargo do fontconfig, cada um numa reserva, no
+        // rodapé que o castelo mais mostra. Mesma doença do Ceifador,
+        // e o mesmo remédio: codepoint conferido, e aqui.
+        readonly property string enter:    "\u{f0311}"   // md-keyboard_return
+        readonly property string updown:   "\u{f0e79}"   // md-arrow_up_down
+
         // Identidade — estes ficam numa voz de texto, não na mono.
         readonly property string cross:    "†"      // o brasão
         readonly property string skull:    "\u{f068c}"
