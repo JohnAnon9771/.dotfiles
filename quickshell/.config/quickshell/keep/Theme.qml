@@ -117,10 +117,43 @@ Singleton {
     // Use SEMPRE estes nos widgets. Trocar um token acima repinta
     // o castelo inteiro sem caçar hex espalhado.
 
-    readonly property color bg:          stone
-    readonly property color bgDeep:      crypt
-    readonly property color bgPanel:     hall
-    readonly property color bgRaised:    timber
+    /// O CARVÃO É DA HORA DAS BRUXAS, e de mais nada.
+    ///
+    /// Em expediente o fundo é pedra. Das 03:00 às 04:00 ele cai para o
+    /// #0a0908 do spec — o castelo esfria para o preto de verdade junto
+    /// com o accent, que já troca de ouro para espectral na mesma hora.
+    /// É a mesma chave, então o torreão inteiro vira de uma vez em vez
+    /// de meio sobrenatural.
+    ///
+    /// SEM Behavior, de propósito. `motion.haunt` é 0: o sobrenatural
+    /// não faz transição, quem não estava olhando não vê acontecer. E
+    /// como `witching` já vem filtrado pelos easterEggs no shell.qml,
+    /// quem desligou os ovos de páscoa nunca vê o fundo mudar.
+    readonly property color bg:          witching ? coal : stone
+
+    /// O FUNDO É UM SÓ, e os três seguem o `bg` de propósito.
+    ///
+    /// A muralha, o Salão inteiro (corrimão incluído), o grimório, todo
+    /// popup e todo balão são a MESMA parede vista em lugares diferentes
+    /// — não uma pilha de superfícies de tons vizinhos.
+    ///
+    /// Quem separa uma da outra é a JUNTA, e não a tinta: o `Panel` tem
+    /// moldura de ferro e fio de madeira, e a glosa dos Sigilos e o
+    /// balão do corrimão têm cada um a sua borda de `borderInner` mais o
+    /// filete da cor do sigilo. Nenhum deles precisava de fundo próprio
+    /// para se destacar — tinham um, e era o que fazia o balão parecer
+    /// de outro castelo.
+    ///
+    /// E é o que faz a hora das bruxas valer para o torreão inteiro:
+    /// amarrados ao `bg`, painel, corrimão e balão viram carvão junto
+    /// com a muralha em vez de ficarem para trás em pedra.
+    ///
+    /// Continuam existindo como papéis separados porque são o contrato:
+    /// se um dia o fundo do popup precisar divergir, ele diverge aqui e
+    /// em nenhum outro lugar.
+    readonly property color bgDeep:      bg
+    readonly property color bgPanel:     bg
+    readonly property color bgRaised:    bg
     readonly property color bgScrim:     alpha(vespers, 0.82)
 
     readonly property color fg:          parchment
