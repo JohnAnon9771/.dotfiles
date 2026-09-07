@@ -188,6 +188,50 @@ Scope {
                 }
             }
 
+            // ═══ AS PILASTRAS ══════════════════════════════════
+            //
+            // A barra tem três grupos — identidade, vigília, serviços —
+            // e até aqui não havia nada entre eles: três Row de
+            // spacing 0 encostadas, separadas só pelo realce de hover,
+            // que só existe quando o mouse está lá.
+            //
+            // O ui/Divider já resolvia isto e nunca tinha subido na
+            // muralha: ele é usado em sete lugares, todos painel ou
+            // popup. Aqui ele ancora nas bordas da Row do centro, que é
+            // a única com âncora fixa — as outras duas correm com o
+            // conteúdo.
+            //
+            // FERRO FRIO, e é decisão de lei e não de gosto. O elo do
+            // Divider é ouro a 50%, o que passa numa lista de popup e
+            // não passa repetido na parede: ouro é foco e ativo, e duas
+            // pilastras douradas acesas o dia inteiro gastariam a cor
+            // do foco com decoração. A única tocha acesa do castelo
+            // continua sendo o numeral do workspace em que você está.
+
+            Divider {
+                anchors {
+                    right: middle.left
+                    rightMargin: Theme.pad.roomy
+                    verticalCenter: wall.verticalCenter
+                }
+                vertical: true
+                implicitHeight: Theme.metric.barHeight - Theme.pad.snug * 2
+                wire: Theme.borderOuter
+                link: Theme.iron
+            }
+
+            Divider {
+                anchors {
+                    left: middle.right
+                    leftMargin: Theme.pad.roomy
+                    verticalCenter: wall.verticalCenter
+                }
+                vertical: true
+                implicitHeight: Theme.metric.barHeight - Theme.pad.snug * 2
+                wire: Theme.borderOuter
+                link: Theme.iron
+            }
+
             // ═══ DIREITA ═══════════════════════════════════════
 
             Row {
