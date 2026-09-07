@@ -8,6 +8,7 @@ pragma Singleton
 
 import QtQuick
 import Quickshell
+import Quickshell.Io
 
 Singleton {
     id: root
@@ -31,6 +32,42 @@ Singleton {
     /// Noite de verdade (para escurecer levemente a névoa).
     readonly property bool nocturnal: clock.date.getHours() >= 22
                                    || clock.date.getHours() < 6
+
+    // ═══ A VIGÍLIA ═════════════════════════════════════════════════
+    //
+    // Há quanto tempo o castelo está de pé, em segundos, sem poll.
+    //
+    // O caminho óbvio seria Sys.uptime, e ele NÃO SERVE: o /proc/uptime
+    // só é relido quando `Sys.detailed` é verdadeiro, isto é, enquanto
+    // algum popup está aberto. Fora disso o valor fica congelado no que
+    // era da última vez que alguém olhou, e vale zero até o primeiro
+    // popup da sessão. É a decisão certa lá — uptime nunca aparece na
+    // muralha, só no Epitáfio e no Salão — e a errada aqui.
+    //
+    // Então: o instante do boot é lido UMA VEZ, e o resto é subtração.
+    // Quem conta o tempo passar é o SystemClock que este arquivo já
+    // paga para saber a hora, e ele bate de minuto em minuto. Custo
+    // marginal de saber a idade do castelo: zero leitura, zero timer.
+
+    /// Milissegundos desde a época no instante do boot. 0 até ler.
+    property real bootAt: 0
+
+    FileView {
+        path: "/proc/uptime"
+        printErrors: false
+        onLoaded: {
+            const s = parseFloat(text().split(" ")[0]);
+            if (isFinite(s)) root.bootAt = Date.now() - s * 1000;
+        }
+    }
+
+    /// Segundos de vigília. Anda sozinho, na batida do relógio.
+    readonly property real vigilSeconds:
+        bootAt > 0 ? Math.max(0, (clock.date.getTime() - bootAt) / 1000) : 0
+
+    /// Dias INTEIROS de vigília — muda uma vez por dia, e é de propósito.
+    /// Quem se pendura aqui repinta uma vez por dia, não uma por minuto.
+    readonly property int vigilDays: Math.floor(vigilSeconds / 86400)
 
     // ═══ A LUA ═════════════════════════════════════════════════════
     // Lua nova de referência: 2000-01-06 18:14 UTC.

@@ -53,6 +53,62 @@ Scope {
                 height: Theme.metric.barHeight
                 color: Theme.bg
 
+                // A cantaria. Pintada uma vez: em repouso este Canvas
+                // não é tocado. Ver ui/Masonry.qml para por que ela não
+                // reage à carga.
+                //
+                // Sem z negativo, e isso não é detalhe: no Qt Quick um
+                // item com z < 0 vai para trás DO PRÓPRIO PAI, não para
+                // trás dos irmãos. Com `z: -1` a cantaria ficava atrás
+                // do Rectangle opaco da parede — desenhada, custando o
+                // Canvas inteiro, e invisível. Aqui a ordem de
+                // declaração já basta: ela vem antes do fio de ferro, e
+                // as três Row são irmãs da parede e vêm depois.
+                Masonry {
+                    anchors.fill: parent
+                }
+
+                // ═══ OS CONTRAFORTES ═══════════════════════════
+                //
+                // As duas pontas eram corte seco: a parede simplesmente
+                // acabava contra a borda da tela. Aqui elas ganham
+                // cantaria de canto — as pedras alternadas com que se
+                // fecha a quina de uma torre.
+                //
+                // É a MESMA Crenellation da borda de baixo, virada para
+                // o lado, que é como o Grande Salão já desenha a quina
+                // dele. Numa borda vertical o motivo deixa de ler como
+                // ameia e passa a ler como cantaria, e por isso vale a
+                // mesma regra de lá: cantaria é REGULAR — nada de
+                // merlão desabado — e mais rasa, senão vira zíper.
+                //
+                // Passo de 22 em 34 px de parede dá pedra sim, pedra
+                // não, e é a gárgula que senta em cima.
+
+                Crenellation {
+                    anchors { left: parent.left; top: parent.top; bottom: parent.bottom }
+                    edge: Qt.LeftEdge
+                    stone: Theme.mix(Theme.bg, Theme.rim, 0.30)
+                    rim: Theme.borderOuter
+                    ruined: false
+                    depth: 5
+                    merlon: 11
+                    gap: 11
+                    heat: 0
+                }
+
+                Crenellation {
+                    anchors { right: parent.right; top: parent.top; bottom: parent.bottom }
+                    edge: Qt.RightEdge
+                    stone: Theme.mix(Theme.bg, Theme.rim, 0.30)
+                    rim: Theme.borderOuter
+                    ruined: false
+                    depth: 5
+                    merlon: 11
+                    gap: 11
+                    heat: 0
+                }
+
                 // Moldura de ferro, herdada da barra antiga.
                 Rectangle {
                     anchors { left: parent.left; right: parent.right; top: parent.top }

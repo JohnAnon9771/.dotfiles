@@ -299,6 +299,17 @@ Singleton {
         readonly property int crenelHeight:   9   // altura dos dentes da ameia
         readonly property int crenelWidth:    15  // largura do merlão
         readonly property int crenelGap:      11  // vão entre merlões
+
+        /// Altura de uma fiada de cantaria. Onze dá três fiadas nos 34
+        /// da parede e deixa os 9 da ameia lendo como a quarta,
+        /// começada — que é o que faz a ameia parecer parte da parede
+        /// em vez de um enfeite pregado embaixo dela.
+        readonly property int course:         11
+
+        /// Largura de uma pedra: um passo de merlão, exatamente.
+        /// É o que amarra a cantaria à ameia — cada dente nasce na
+        /// junta de uma pedra em vez de cair onde calhar.
+        readonly property int stone:          crenelWidth + crenelGap
         readonly property int hallWidth:      420
         readonly property int grimoireWidth:  760
         readonly property int grimoireHeight: 460
