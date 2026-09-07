@@ -20,6 +20,7 @@
 //  COMO USAR
 //
 //      Behavior on opacity { Motion.Hover { entering: root.hovered } }
+//      Behavior on color   { Motion.HoverColor { entering: root.hovered } }
 //      Behavior on opacity { Motion.Panel { opening: root.open } }
 //      Motion.Press   { target: tile; property: "scale"; to: 0.97 }
 //      Motion.Release { target: tile; property: "scale"; to: 1.0 }
@@ -35,6 +36,19 @@ QtObject {
     /// Passar o mouse. Ligue `entering` ao próprio estado de hover: a
     /// entrada responde, a saída suaviza.
     component Hover: NumberAnimation {
+        property bool entering: true
+        duration: entering ? Theme.motion.hoverIn : Theme.motion.hoverOut
+        easing.type: Easing.OutCubic
+    }
+
+    /// A mesma coisa, para cor — e NÃO é um luxo de simetria.
+    ///
+    /// Um `Behavior on color` com NumberAnimation dentro não avisa e não
+    /// falha: o Qt converte a cor para número, não consegue, e assenta a
+    /// propriedade em PRETO OPACO. Era o que pintava de preto cada pedra
+    /// da muralha sob o mouse. Cor anima com ColorAnimation; a regra vale
+    /// para os dois pares daqui.
+    component HoverColor: ColorAnimation {
         property bool entering: true
         duration: entering ? Theme.motion.hoverIn : Theme.motion.hoverOut
         easing.type: Easing.OutCubic

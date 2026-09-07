@@ -43,7 +43,7 @@ Item {
         anchors.fill: parent
         color: Theme.alpha(root.hoverTint, root.active ? 0.16
                                           : root.hovered ? 0.10 : 0)
-        Behavior on color { Motion.Hover { entering: root.hovered || root.active } }
+        Behavior on color { Motion.HoverColor { entering: root.hovered || root.active } }
     }
 
     // Fio de luz embaixo quando o painel do módulo está aberto.
