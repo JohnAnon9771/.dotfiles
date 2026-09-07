@@ -151,22 +151,40 @@ O shell recarrega sozinho ao salvar um arquivo.
 ## O tema
 
 A paleta canônica vive em `quickshell/.config/quickshell/keep/Theme.qml`
-e é espelhada em `hypr/.config/hypr/theme.lua`.
+e é espelhada, por gerador, no Hyprland, no kitty, no starship, no btop
+e no opencode. Dessincronizar dá erro: `tools/theme-sync.py`.
+
+São **nove**, e são os únicos hexes escritos à mão no castelo inteiro:
 
 | | | |
 |---|---|---|
-| `#15120f` pedra | `#dcd4c4` pergaminho | `#c2a35a` **ouro envelhecido** |
-| `#1b1813` salão | `#f4f0e6` marfim | `#e1c97a` ouro aceso |
-| `#3a3127` madeira | `#6f6559` pedra gasta | `#c9743a` **brasa** |
-| `#7a736b` ferro | `#4f6b4a` musgo | `#b04b4b` **sangue seco** |
-| `#3b2f45` véspera | `#86b39a` **fogo-fátuo** | `#8b6f9b` roxo realeza |
-| `#4a6b66` azinhavre | `#3a8f8f` teal | `#1e9fb4` água do fosso |
+| `#0a0908` carvão | `#6d6a63` cinza | `#c9a24a` **ouro velho** |
+| `#1c1a17` pedra | `#6e1420` **sangue seco** | `#e8dcc0` pergaminho |
+| `#241a12` madeira | `#3a3630` fio de luz | `#8b6bd9` **espectral** |
 
-Escala de estado, do sono ao pânico:
+Todo o resto é derivado deles por `mix()`, para nada entrar na família
+por acidente:
+
+| | | |
+|---|---|---|
+| `#201a14` salão | `#44423d` adormecido | `#e3c37a` ouro aceso |
+| `#56544e` ferro | `#b1a996` cinza claro | `#a06237` **brasa** |
+| `#261f36` véspera | `#f1ead9` marfim | `#9f6460` sangue legível |
+| | | `#ac93d0` espectral aceso |
+
+**Três leis, e são leis.** Ouro só em foco e estado ativo. Vermelho só
+em risco real. Violeta é do sobrenatural, e nunca decorativo.
+
+Não há verde nem azul. Uma máquina ociosa pintada de verde e um link
+pintado de azul dizem *isto aqui é um dashboard*, e o castelo deixa de
+ser um castelo.
+
+Escala de estado, do sono ao pânico — e monocromática até 60%, porque o
+que está bem simplesmente não chama:
 
 ```
-adormecido → normal → bom → info → atenção → alerta → crítico
-verdigris   parchment  moss   moat    gold     ember    blood
+adormecido → bom  → info  → normal    → atenção → alerta → crítico
+dim          ash    cinza   parchment   gold      ember    scar
 ```
 
 **Quatro vozes tipográficas.** UnifrakturMaguntia só para capitulares e

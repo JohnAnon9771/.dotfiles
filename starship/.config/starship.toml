@@ -1,5 +1,7 @@
+# GERADO por tools/theme-sync.py a partir do Theme.qml. NAO EDITE.
+
 format = """
-[ archlinux](bold #1e6a88) $directory$git_branch$git_status$rust$ruby$nodejs$golang$package$docker_context$time
+[ archlinux](bold #6d6a63) $directory$git_branch$git_status$rust$ruby$nodejs$golang$package$docker_context$time
 $character"""
 
 add_newline = false
@@ -11,66 +13,61 @@ add_newline = false
 command_timeout = 100
 scan_timeout = 10
 
-# Directory: Clean blue/cyan
 [directory]
-style = "bold #3a8f8f"
-read_only = " "
+style = "bold #b1a996"
+read_only = "󰌾 "
 truncation_length = 3
 truncation_symbol = "../"
 format = "[$path]($style) "
 
-# Git: Minimalist purple
 [git_branch]
 symbol = " "
-style = "bold #8b6f9b"
+style = "bold #6d6a63"
 format = "[$symbol$branch]($style) "
 
+# Sujo é atenção, e brasa é a cor da atenção na escala de estado.
 [git_status]
-style = "bold #b04b4b"
+style = "bold #a06237"
 format = '([$all_status$ahead_behind]($style) )'
 # $all_status obriga um `git status` completo a cada prompt. Pular os
 # submódulos é o corte que a própria doc do starship recomenda.
 ignore_submodules = true
 
-# Rust: Official Rust Orange/Red (#ce412b)
 [rust]
 symbol = " "
-style = "bold #ce412b"
+style = "bold #44423d"
 format = "[$symbol($version )]($style)"
 
-# Ruby: Official Ruby Red (#CC342D)
 [ruby]
 symbol = " "
-style = "bold #CC342D"
+style = "bold #44423d"
 format = "[$symbol($version )]($style)"
 
-# Node: Standard Green
 [nodejs]
 symbol = " "
-style = "bold #4f6b4a"
+style = "bold #44423d"
 format = "[$symbol($version )]($style)"
 
-# Go: Cyan
 [golang]
 symbol = " "
-style = "bold #3a8f8f"
+style = "bold #44423d"
 format = "[$symbol($version )]($style)"
 
-# Package version (shows up if reading package.json/Cargo.toml)
+# Era um emoji colorido de caixa de papelão, que quebra a voz
+# única e não tem cor nenhuma da paleta.
 [package]
-symbol = "📦 "
-style = "bold #c2a35a"
+symbol = "󰏖 "
+style = "bold #44423d"
 format = "[$symbol$version]($style) "
 
-# Time: Dimmed yellow, discreet
 [time]
 disabled = false
 time_format = "%R"
-style = "#c2a35a"
+style = "#6d6a63"
 format = '[$time]($style) '
 
-# Character: The "Arch Arch" (Arch Blue Arrow)
+# O ÚNICO OURO DA LINHA. Onde você digita é o que está ativo.
 [character]
-success_symbol = "[❯](bold #1e6a88)"
-error_symbol = "[❯](bold #b04b4b)"
-vicmd_symbol = "[❮](bold #4f6b4a)"
+success_symbol = "[❯](bold #c9a24a)"
+error_symbol = "[❯](bold #9f6460)"
+vicmd_symbol = "[❮](bold #6d6a63)"
