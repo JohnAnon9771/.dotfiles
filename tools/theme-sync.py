@@ -122,9 +122,228 @@ def kitty(c):
     return "\n".join(L) + "\n"
 
 
+def starship(c):
+    # O PROMPT ERA O ÓRFÃO DO SISTEMA DE TEMA.
+    #
+    # O docstring aqui em cima já prometia o starship desde que este
+    # arquivo existe, e o dict ALVOS só tinha o hypr e o kitty. Nesse
+    # meio-tempo o commit c0fb725 trocou a paleta pelos Nove, e o
+    # starship.toml ficou com seis hexes que saíram do castelo:
+    # #4f6b4a, #3a8f8f, #1e6a88, #c2a35a, #b04b4b, #8b6f9b.
+    #
+    # O resultado era visível: o prompt pintava node de VERDE num
+    # terminal em que o color2 é bege — porque o paleta.conf, este sim
+    # gerado, já traduzia verde e azul para neutro, e o starship passava
+    # por cima com hex cru.
+    #
+    # AS TRÊS LEIS VALEM AQUI TAMBÉM, e o mapa abaixo é o que elas
+    # deixam:
+    #
+    #   · OURO fica com o `character` de sucesso, e com mais nada. Ele é
+    #     o ponto ATIVO do prompt — é onde você digita. Pintar o cwd de
+    #     ouro em toda linha seria a mesma violação que a rampa antiga
+    #     do gauge(): a cor do foco vestida por algo que está sempre lá.
+    #   · VERMELHO fica com o prompt de erro, que é risco real.
+    #   · VIOLETA não aparece. Não há nada sobrenatural num prompt.
+    #
+    # O PESO NÃO MUDA. O arquivo antigo era bold em tudo menos o
+    # [time], e isso é escolha de quem usa o prompt — aqui só a COR
+    # entra no espelho. Um gerador que aproveita a passagem para
+    # redesenhar o que não lhe pediram é um gerador em que não se
+    # confia.
+    #
+    # E as versões de linguagem perdem a cor própria, todas. Rust
+    # laranja, Go ciano e Node verde eram a definição de dashboard: seis
+    # matizes competindo para dizer a coisa menos interessante da linha.
+    # Em `dim` elas continuam legíveis e param de gritar.
+    # OS GLIFOS SAEM POR ESCAPE, e não literais.
+    #
+    # Eles vivem na área de uso privado da Nerd Font, e caractere de PUA
+    # atravessa pipe, editor e clipboard sem garantia nenhuma: na
+    # primeira escrita deste gerador três deles chegaram ao arquivo como
+    # ESPAÇO, e um TOML com um espaço a mais não reclama de nada.
+    #
+    # E um deles nunca existiu: o `read_only` era U+F83D, que NÃO ESTÁ
+    # no cmap da JetBrainsMono Nerd Font — conferido. O prompt caía em
+    # reserva do fontconfig naquele cadeado desde sempre, exatamente
+    # como o rótulo do Ceifador na muralha. Vai para md-lock, que é o
+    # mesmo cadeado que a Theme.glyph já usa no Ossuário.
+    ARCH   = "\uf303"       # linux-archlinux
+    CADEADO = "\U000f033e"  # md-lock  (era U+F83D, ausente)
+    RAMO   = "\uf418"       # oct-git_branch
+    PACOTE = "\U000f03d6"   # md-package_variant  (era um emoji colorido)
+
+    L = [AVISO_HASH, "",
+         "format = \"\"\"",
+         f'[{ARCH} archlinux](bold {c["cinza"]}) $directory$git_branch$git_status'
+         "$rust$ruby$nodejs$golang$package$docker_context$time",
+         "$character\"\"\"", "",
+         "add_newline = false", "",
+         "# Tetos de tempo por prompt. Sem eles o starship usa 500 ms por",
+         "# comando e 30 ms de varredura: um repositório grande, ou um `node -v`",
+         "# lento, seguram o prompt inteiro. 100 ms é mais do que suficiente",
+         "# para todo detector daqui, e o que estourar simplesmente não aparece.",
+         "command_timeout = 100",
+         "scan_timeout = 10", "",
+         "[directory]",
+         f'style = "bold {c["ash"]}"',
+         f'read_only = "{CADEADO} "',
+         "truncation_length = 3",
+         'truncation_symbol = "../"',
+         'format = "[$path]($style) "', "",
+         "[git_branch]",
+         f'symbol = "{RAMO} "',
+         f'style = "bold {c["cinza"]}"',
+         'format = "[$symbol$branch]($style) "', "",
+         "# Sujo é atenção, e brasa é a cor da atenção na escala de estado.",
+         "[git_status]",
+         f'style = "bold {c["ember"]}"',
+         "format = '([$all_status$ahead_behind]($style) )'",
+         "# $all_status obriga um `git status` completo a cada prompt. Pular os",
+         "# submódulos é o corte que a própria doc do starship recomenda.",
+         "ignore_submodules = true", ""]
+
+    # As linguagens, todas na mesma voz apagada.
+    # dev-rust, dev-ruby, dev-nodejs_small, seti-go — os mesmos do
+    # arquivo antigo, menos o ruby: lá ele era U+E791, que é o
+    # `dev-ruby_rough`, um rubi lascado. O inteiro é o U+E739.
+    for secao, simbolo in (("rust", "\ue7a8"), ("ruby", "\ue739"),
+                           ("nodejs", "\ue718"), ("golang", "\ue627")):
+        L += [f"[{secao}]",
+              f'symbol = "{simbolo} "',
+              f'style = "bold {c["dim"]}"',
+              'format = "[$symbol($version )]($style)"', ""]
+
+    L += ["# Era um emoji colorido de caixa de papelão, que quebra a voz",
+          "# única e não tem cor nenhuma da paleta.",
+          "[package]",
+          f'symbol = "{PACOTE} "',
+          f'style = "bold {c["dim"]}"',
+          'format = "[$symbol$version]($style) "', "",
+          "[time]",
+          "disabled = false",
+          'time_format = "%R"',
+          f'style = "{c["cinza"]}"',
+          "format = '[$time]($style) '", "",
+          "# O ÚNICO OURO DA LINHA. Onde você digita é o que está ativo.",
+          "[character]",
+          f'success_symbol = "[❯](bold {c["gold"]})"',
+          f'error_symbol = "[❯](bold {c["scar"]})"',
+          f'vicmd_symbol = "[❮](bold {c["cinza"]})"', ""]
+    return "\n".join(L)
+
+
+def btop(c):
+    # Os gradientes seguem o Theme.gauge(): MONOCROMÁTICO até importar.
+    # A rampa antiga corria musgo → teal → ouro, então um btop aberto
+    # numa máquina ociosa ficava verde e azul — e era o mesmo erro que o
+    # c0fb725 tirou da muralha, só que numa janela ao lado dela.
+    #
+    # Agora: cinza enquanto está tudo bem, ouro quando começa a pesar,
+    # brasa quando esquenta, sangue quando é risco. É a mesma leitura da
+    # barra, na mesma máquina, na mesma hora.
+    def g(*nomes):
+        return [c[n] for n in nomes]
+
+    L = [AVISO_HASH,
+         "# Tema do btop. A paleta canônica vive no Theme.qml.", "",
+         f'theme[main_bg]="{c["stone"]}"',
+         f'theme[main_fg]="{c["parchment"]}"',
+         f'theme[title]="{c["gold"]}"',
+         f'theme[hi_fg]="{c["torch"]}"',
+         f'theme[selected_bg]="{c["timber"]}"',
+         f'theme[selected_fg]="{c["ivory"]}"',
+         f'theme[inactive_fg]="{c["dim"]}"',
+         f'theme[graph_text]="{c["ash"]}"',
+         f'theme[proc_misc]="{c["cinza"]}"', "",
+         "# Molduras: madeira.",
+         f'theme[cpu_box]="{c["timber"]}"',
+         f'theme[mem_box]="{c["timber"]}"',
+         f'theme[net_box]="{c["timber"]}"',
+         f'theme[proc_box]="{c["timber"]}"',
+         f'theme[div_line]="{c["rim"]}"', "",
+         "# ── Gradientes: a escala de estado do castelo ──"]
+
+    rampas = [
+        ("temp",      g("cinza", "ember", "scar")),
+        ("cpu",       g("cinza", "gold", "scar")),
+        ("free",      g("dim", "cinza", "ash")),
+        ("cached",    g("dim", "cinza", "parchment")),
+        ("available", g("dim", "cinza", "ash")),
+        ("used",      g("cinza", "gold", "scar")),
+        ("download",  g("dim", "cinza", "ash")),
+        ("upload",    g("dim", "cinza", "ash")),
+        ("process",   g("cinza", "gold", "scar")),
+    ]
+    for nome, (a, b, d) in rampas:
+        L += [f'theme[{nome}_start]="{a}"',
+              f'theme[{nome}_mid]="{b}"',
+              f'theme[{nome}_end]="{d}"']
+    return "\n".join(L) + "\n"
+
+
+def opencode(c):
+    # O tema do agente de código. Mesmo problema, mesma correção.
+    #
+    # Aqui a lei do violeta é a que mais dói: `syntaxKeyword` e
+    # `syntaxOperator` estavam em roxo, que num arquivo de código é a
+    # coisa MAIS comum da tela. Violeta é do sobrenatural, e nada num
+    # buffer é sobrenatural — keyword vai para ouro, que é o realce
+    # legítimo, e operador para a voz apagada.
+    #
+    # Verde e ciano somem do mesmo jeito que sumiram da muralha. O que
+    # sobrevive de cor é: ouro para o que se destaca, brasa para aviso,
+    # sangue para erro, e três neutros para o resto.
+    import json
+    defs = {
+        "bg":          c["stone"],
+        "bg-light":    c["hall"],
+        "bg-lighter":  c["timber"],
+        "fg":          c["parchment"],
+        "fg-strong":   c["ivory"],
+        "fg-muted":    c["ash"],
+        "fg-dim":      c["cinza"],
+        "rim":         c["rim"],
+        "gold":        c["gold"],
+        "torch":       c["torch"],
+        "ember":       c["ember"],
+        "scar":        c["scar"],
+        "dim":         c["dim"],
+    }
+    tema = {
+        "primary": "gold", "secondary": "fg-muted", "accent": "torch",
+        "error": "scar", "warning": "ember", "success": "fg-muted",
+        "info": "fg-dim",
+        "text": "fg", "textMuted": "fg-muted",
+        "background": "bg", "backgroundPanel": "bg-light",
+        "backgroundElement": "bg-lighter",
+        "border": "rim", "borderActive": "gold", "borderSubtle": "bg-light",
+        "diffAdded": "fg-muted", "diffRemoved": "scar", "diffContext": "dim",
+        "markdownText": "fg", "markdownHeading": "gold",
+        "markdownLink": "torch", "markdownCode": "fg-muted",
+        "markdownBlockQuote": "dim", "markdownEmph": "fg-muted",
+        "markdownStrong": "fg-strong",
+        "syntaxComment": "dim", "syntaxKeyword": "gold",
+        "syntaxFunction": "fg-strong", "syntaxVariable": "fg",
+        "syntaxString": "fg-muted", "syntaxNumber": "torch",
+        "syntaxType": "fg-muted", "syntaxOperator": "fg-dim",
+    }
+    doc = {
+        "$schema": "https://opencode.ai/theme.json",
+        "//": AVISO_HASH.removeprefix("# "),
+        "name": "Dark Medieval",
+        "defs": defs,
+        "theme": tema,
+    }
+    return json.dumps(doc, indent=2, ensure_ascii=False) + "\n"
+
+
 ALVOS = {
     "hypr/.config/hypr/theme.lua": lua,
     "kitty/.config/kitty/paleta.conf": kitty,
+    "starship/.config/starship.toml": starship,
+    "btop/.config/btop/themes/dark-medieval.theme": btop,
+    "opencode/.config/opencode/themes/dark-medieval.json": opencode,
 }
 
 

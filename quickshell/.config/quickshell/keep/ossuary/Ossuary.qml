@@ -254,8 +254,10 @@ Scope {
                     Text {
                         anchors.horizontalCenter: parent.horizontalCenter
                         text: win.doors[win.chosen].hold
-                            ? "segure ↵ ou o clique até o selo lacrar   ·   esc cancela"
-                            : "↵ para " + win.doors[win.chosen].hint + "   ·   esc cancela"
+                            ? "segure " + Theme.glyph.enter
+                                + " ou o clique até o selo lacrar   ·   esc cancela"
+                            : Theme.glyph.enter + " para "
+                                + win.doors[win.chosen].hint + "   ·   esc cancela"
                         font.family: Theme.font.mono
                         font.pixelSize: Theme.size.tiny
                         color: Theme.alpha(Theme.fgDim, 0.8)

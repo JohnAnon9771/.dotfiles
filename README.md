@@ -37,7 +37,7 @@ fonts/       Cormorant, Silkscreen e UnifrakturMaguntia (SIL OFL)
 hypr/        Hyprland, em Lua (0.55+)
 kitty/       terminal
 opencode/    tema do agente de código
-quickshell/  o torreão
+quickshell/  o torreão, com art/ — o atlas de sprites, gerado
 scripts/     gamer-vt, gamer-mode, keep-shot, keep-session
 starship/    prompt
 systemd/     a unit do torreao, ligada em graphical-session.target
@@ -151,22 +151,40 @@ O shell recarrega sozinho ao salvar um arquivo.
 ## O tema
 
 A paleta canônica vive em `quickshell/.config/quickshell/keep/Theme.qml`
-e é espelhada em `hypr/.config/hypr/theme.lua`.
+e é espelhada, por gerador, no Hyprland, no kitty, no starship, no btop
+e no opencode. Dessincronizar dá erro: `tools/theme-sync.py`.
+
+São **nove**, e são os únicos hexes escritos à mão no castelo inteiro:
 
 | | | |
 |---|---|---|
-| `#15120f` pedra | `#dcd4c4` pergaminho | `#c2a35a` **ouro envelhecido** |
-| `#1b1813` salão | `#f4f0e6` marfim | `#e1c97a` ouro aceso |
-| `#3a3127` madeira | `#6f6559` pedra gasta | `#c9743a` **brasa** |
-| `#7a736b` ferro | `#4f6b4a` musgo | `#b04b4b` **sangue seco** |
-| `#3b2f45` véspera | `#86b39a` **fogo-fátuo** | `#8b6f9b` roxo realeza |
-| `#4a6b66` azinhavre | `#3a8f8f` teal | `#1e9fb4` água do fosso |
+| `#0a0908` carvão | `#6d6a63` cinza | `#c9a24a` **ouro velho** |
+| `#1c1a17` pedra | `#6e1420` **sangue seco** | `#e8dcc0` pergaminho |
+| `#241a12` madeira | `#3a3630` fio de luz | `#8b6bd9` **espectral** |
 
-Escala de estado, do sono ao pânico:
+Todo o resto é derivado deles por `mix()`, para nada entrar na família
+por acidente:
+
+| | | |
+|---|---|---|
+| `#201a14` salão | `#44423d` adormecido | `#e3c37a` ouro aceso |
+| `#56544e` ferro | `#b1a996` cinza claro | `#a06237` **brasa** |
+| `#261f36` véspera | `#f1ead9` marfim | `#9f6460` sangue legível |
+| | | `#ac93d0` espectral aceso |
+
+**Três leis, e são leis.** Ouro só em foco e estado ativo. Vermelho só
+em risco real. Violeta é do sobrenatural, e nunca decorativo.
+
+Não há verde nem azul. Uma máquina ociosa pintada de verde e um link
+pintado de azul dizem *isto aqui é um dashboard*, e o castelo deixa de
+ser um castelo.
+
+Escala de estado, do sono ao pânico — e monocromática até 60%, porque o
+que está bem simplesmente não chama:
 
 ```
-adormecido → normal → bom → info → atenção → alerta → crítico
-verdigris   parchment  moss   moat    gold     ember    blood
+adormecido → bom  → info  → normal    → atenção → alerta → crítico
+dim          ash    cinza   parchment   gold      ember    scar
 ```
 
 **Quatro vozes tipográficas.** UnifrakturMaguntia só para capitulares e
@@ -188,13 +206,38 @@ passa de 60% ela desliza para a escala de estado, as tochas queimam mais
 forte e a brasa sobe pelas ameias. Às três da manhã a paleta esfria em
 direção ao espectral.
 
+**E a parede é parede.** A Muralha era um retângulo de cor chapada com
+um fio de ferro no topo. Hoje ela tem cantaria em três fiadas, com a
+pedra na largura exata de um passo de merlão — cada dente de ameia nasce
+numa junta. As pontas fecham em cantaria de canto, e em cada uma senta
+uma gárgula de pixel art: a da direita é a bica dos Pergaminhos, e abre
+o olho quando há o que ler. Entre os três grupos de módulos pende uma
+corrente de ferro frio. E de cada sala ocupada desce um estandarte, que
+drapeja por cima do parapeito e cai 14 px **fora** da zona exclusiva —
+sobre as janelas, sem roubar um pixel de layout.
+
+Nada disso se mexe. A parede é pintada uma vez e envelhece pela vigília:
+escorridos descem do topo e líquen entra nas juntas das pontas conforme
+o uptime cresce, e o boot devolve a parede limpa. Com a barra parada, o
+torreão continua renderizando **zero** frames — medido, não suposto.
+
 ## Ferramentas
 
 ```sh
 ./tools/lint-qml.sh       # valida o QML contra os tipos reais do Quickshell
 ./tools/test-parsers.sh   # 70+ testes dos parsers de /proc e da busca
 lua tools/test-hypr.lua   # executa a config do Hyprland e imprime cada bind
+./tools/glyph-audit.py    # nenhum glifo cai em fonte de reserva
+./tools/theme-sync.py     # os espelhos da paleta batem com o Theme.qml
+./tools/atlas-gen.py      # o atlas de sprites bate com a arte
+./tools/measure-idle.sh   # o torreão parado, medido (--diff compara)
 ```
+
+Os três últimos geram arquivos **commitados** — `hypr/theme.lua`,
+`kitty/paleta.conf`, `starship.toml`, o tema do `btop`, o do `opencode`
+e o `art/atlas.png`. É de propósito: o Hyprland arranca antes de
+qualquer ferramenta, e um clone limpo tem que subir sem python. Rodar
+sem `--write` **confere** e sai diferente de zero se divergiu.
 
 O `lint-qml.sh` monta uma árvore-espelho em `/tmp` com os `qmldir` que o
 Quickshell sintetizaria em tempo de execução — escrever um `qmldir` no

@@ -299,6 +299,25 @@ Singleton {
         readonly property int crenelHeight:   9   // altura dos dentes da ameia
         readonly property int crenelWidth:    15  // largura do merlão
         readonly property int crenelGap:      11  // vão entre merlões
+
+        /// Altura de uma fiada de cantaria. Onze dá três fiadas nos 34
+        /// da parede e deixa os 9 da ameia lendo como a quarta,
+        /// começada — que é o que faz a ameia parecer parte da parede
+        /// em vez de um enfeite pregado embaixo dela.
+        readonly property int course:         11
+
+        /// Largura de uma pedra: um passo de merlão, exatamente.
+        /// É o que amarra a cantaria à ameia — cada dente nasce na
+        /// junta de uma pedra em vez de cair onde calhar.
+        readonly property int stone:          crenelWidth + crenelGap
+        /// Quanto o estandarte pende ABAIXO da ameia, sobre o desktop.
+        ///
+        /// Não entra na zona exclusiva: a janela da Muralha cresce, a
+        /// exclusiveZone fica presa em barHeight + crenelHeight, e o
+        /// pano passa por cima das janelas sem roubar um pixel de
+        /// layout. Ver rampart/Rampart.qml.
+        readonly property int bannerDrop:     14
+
         readonly property int hallWidth:      420
         readonly property int grimoireWidth:  760
         readonly property int grimoireHeight: 460
@@ -426,6 +445,16 @@ Singleton {
         readonly property string music:    "\u{f075a}"
         readonly property string play:     "\u{f040a}"
         readonly property string pause:    "\u{f03e4}"
+
+        // Teclas — as dicas do rodapé do Grimório e do Ossuário.
+        //
+        // Eram ↵ (U+21B5) e ⇅ (U+21C5), escritos direto na string do
+        // módulo, e NENHUM dos dois existe na JetBrainsMono Nerd Font.
+        // Ficavam a cargo do fontconfig, cada um numa reserva, no
+        // rodapé que o castelo mais mostra. Mesma doença do Ceifador,
+        // e o mesmo remédio: codepoint conferido, e aqui.
+        readonly property string enter:    "\u{f0311}"   // md-keyboard_return
+        readonly property string updown:   "\u{f0e79}"   // md-arrow_up_down
 
         // Identidade — estes ficam numa voz de texto, não na mono.
         readonly property string cross:    "†"      // o brasão

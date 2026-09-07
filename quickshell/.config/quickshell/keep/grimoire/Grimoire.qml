@@ -540,7 +540,9 @@ Scope {
                                 left: parent.left; leftMargin: Theme.pad.wide
                                 verticalCenter: parent.verticalCenter
                             }
-                            text: "↵ invocar   ⇅ escolher   ? sigilos   esc fechar"
+                            text: Theme.glyph.enter + " invocar   "
+                                + Theme.glyph.updown + " escolher   "
+                                + "? sigilos   esc fechar"
                             font.family: Theme.font.mono
                             font.pixelSize: Theme.size.tiny
                             color: Theme.fgDim

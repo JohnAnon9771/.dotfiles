@@ -17,6 +17,21 @@ quatro vozes carregando texto — e a segunda coisa que este programa pega
 baixo. Um "IX" desenhado por uma fonte de reserva com outro peso é
 exatamente o tipo de remendo que ninguém vê e todo mundo sente.
 
+A TERCEIRA COISA É A STRING SOLTA, e ela custou um achado.
+
+Por dois anos este programa conferiu a GlyphSet e mais nada — mas a
+GlyphSet é só a tabela. O Ceifador da muralha escrevia "𝙳Ǝ⊲⊢𝙷 𝙽𝟎⊢𝙴"
+direto no Reaper.qml, e SETE dos oito codepoints não existem na Nerd
+Font: um D de Mathematical Monospace, um E virado do pan-nigeriano, dois
+sinais de lógica, um zero matemático. Cada letra caía numa reserva
+diferente. Passou por aqui limpo todas as vezes, porque não era um
+`\\u{...}` do Theme.qml — era uma aspa num módulo.
+
+Então agora todo .qml é varrido atrás de caractere não-ASCII em STRING
+LITERAL (comentário não conta: a prosa do castelo é em português e não
+vai para a tela). O que não existir nem na voz dos dados nem na voz do
+escriba é remendo garantido, seja qual for a voz que o desenhe.
+
     tools/glyph-audit.py [--quiet]
 """
 import re
@@ -138,6 +153,122 @@ def auditar_vozes(quiet):
     return faltou
 
 
+# ═══ A VARREDURA DAS STRINGS ═══════════════════════════════════════
+
+KEEP = REPO / "quickshell/.config/quickshell/keep"
+
+# As duas vozes que carregam texto ARBITRÁRIO. A Silkscreen e a
+# UnifrakturMaguntia têm alfabeto restrito por doutrina — romanos,
+# microrrótulo, capitular — e já são conferidas pelo que se pede delas
+# em VOZES. Um caractere que não está em nenhuma destas duas cai em
+# reserva não importa quem o desenhe.
+ARBITRARIAS = [
+    (FAMILY, None),                                  # resolvida por fc-match
+    ("Cormorant Garamond", "CormorantGaramond[wght].ttf"),
+]
+
+
+def literais(src):
+    """(linha, texto) de cada string literal do QML, sem os comentários.
+
+    Um regex não dá conta: `"//"` é string e `// "isto"` é comentário, e
+    os dois aparecem no castelo. São quatro estados e uma passada.
+    """
+    achados = []
+    i, linha, n = 0, 1, len(src)
+    while i < n:
+        c = src[i]
+        if c == "\n":
+            linha += 1
+            i += 1
+        elif src.startswith("//", i):
+            i = src.find("\n", i)
+            if i < 0:
+                break
+        elif src.startswith("/*", i):
+            fim = src.find("*/", i + 2)
+            fim = n if fim < 0 else fim + 2
+            linha += src.count("\n", i, fim)
+            i = fim
+        elif c in "\"'`":
+            aspa, ini, j = c, linha, i + 1
+            buf = []
+            while j < n:
+                if src[j] == "\\" and j + 1 < n:
+                    buf.append(src[j:j + 2])
+                    j += 2
+                    continue
+                if src[j] == aspa:
+                    j += 1
+                    break
+                if src[j] == "\n":
+                    linha += 1
+                buf.append(src[j])
+                j += 1
+            achados.append((ini, "".join(buf)))
+            i = j
+        else:
+            i += 1
+    return achados
+
+
+def desescapar(txt):
+    """`\\u{f0ee0}` e `\\u2019` viram o caractere que vão desenhar."""
+    out, i, n = [], 0, len(txt)
+    while i < n:
+        if txt.startswith("\\u{", i):
+            fim = txt.find("}", i)
+            if fim > 0:
+                try:
+                    out.append(chr(int(txt[i + 3:fim], 16)))
+                    i = fim + 1
+                    continue
+                except ValueError:
+                    pass
+        if txt.startswith("\\u", i) and len(txt) >= i + 6:
+            try:
+                out.append(chr(int(txt[i + 2:i + 6], 16)))
+                i += 6
+                continue
+            except ValueError:
+                pass
+        if txt[i] == "\\" and i + 1 < n:
+            i += 2          # \n, \t, \" — nada que vá para a fonte
+            continue
+        out.append(txt[i])
+        i += 1
+    return "".join(out)
+
+
+def auditar_strings(quiet):
+    """Todo não-ASCII escrito em string de .qml existe em alguma voz?"""
+    cobre = set()
+    for familia, arquivo in ARBITRARIAS:
+        caminho = VENDOR / arquivo if arquivo else Path(font_path(familia))
+        if caminho.exists():
+            cobre |= cobertura(caminho)
+
+    orfaos = {}
+    arquivos = sorted(KEEP.rglob("*.qml"))
+    for f in arquivos:
+        for linha, txt in literais(f.read_text(encoding="utf-8")):
+            for ch in desescapar(txt):
+                if ord(ch) < 128 or ord(ch) in cobre:
+                    continue
+                onde = f"{f.relative_to(REPO)}:{linha}"
+                orfaos.setdefault(ch, []).append(onde)
+
+    for ch, ondes in sorted(orfaos.items(), key=lambda kv: ord(kv[0])):
+        vistos = list(dict.fromkeys(ondes))
+        print(f"  \033[31mU+{ord(ch):05X} {ch!r:<10} SEM VOZ — "
+              f"{', '.join(vistos[:3])}"
+              f"{f' (+{len(vistos) - 3})' if len(vistos) > 3 else ''}\033[0m")
+
+    if not orfaos and not quiet:
+        print(f"  {len(arquivos)} arquivos varridos, todo caractere tem voz")
+    return len(orfaos)
+
+
 def cmap12(data, tabs):
     """codepoint -> glyph id, só o subtable formato 12 (o que cobre o plano 15)."""
     off, _ = tabs["cmap"]
@@ -174,6 +305,9 @@ def main():
     print("── As vozes ──────────────────────────────────────────")
     faltou = auditar_vozes(quiet)
     print()
+    print("── As strings ────────────────────────────────────────")
+    soltos = auditar_strings(quiet)
+    print()
     print("── Os ícones ─────────────────────────────────────────")
 
     data = Path(font_path(FAMILY)).read_bytes()
@@ -207,11 +341,14 @@ def main():
             print(f"  {prop:<12} U+{cp:05X}  {name}")
 
     print()
-    if missing or faltou:
+    if missing or faltou or soltos:
         if missing:
             print(f"\033[31m{len(missing)} glifo(s) ausente(s) na {FAMILY}.\033[0m")
         if faltou:
             print(f"\033[31m{faltou} voz(es) de texto com buraco.\033[0m")
+        if soltos:
+            print(f"\033[31m{soltos} caractere(s) escrito(s) em string sem "
+                  f"voz que os desenhe.\033[0m")
         return 1
     print(f"\033[32m{len(rows)} glifos, todos presentes na {FAMILY}.\033[0m")
     print("Confira os NOMES acima: um codepoint errado existe na fonte e "

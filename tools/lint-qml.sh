@@ -43,6 +43,11 @@ IGNORE="$IGNORE|PostReloadHook was not found"
 IGNORE="$IGNORE|Type GlobalShortcut is used but it is not resolved"
 IGNORE="$IGNORE|unknown grouped property scope margins"
 IGNORE="$IGNORE|Type margins is used but it is not resolved"
+# A glosa do Salão sobe a árvore procurando o conteúdo do Flickable, e
+# a parada É a ausência da propriedade: `it.parent.contentItem === it`
+# dá falso em Item comum justamente porque Item comum não tem
+# contentItem. O qmllint chama de missing-property; aqui é o teste.
+IGNORE="$IGNORE|Member \"contentItem\" not found on type \"QQuickItem\""
 
 trap 'rm -rf "$SHADOW"' EXIT
 
