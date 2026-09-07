@@ -423,17 +423,26 @@ Singleton {
     // ═══ FERRAMENTAS ═══════════════════════════════════════════════
 
     /// Mistura linear entre duas cores. t = 0 → a, t = 1 → b.
+    ///
+    /// O Qt.color() na entrada não é zelo: uma STRING não tem `.r`, e em
+    /// JavaScript `undefined - undefined` é NaN, que o Qt.rgba() aterra
+    /// em zero sem reclamar — inclusive no alfa. Um `mix(parchment,
+    /// "#ffffff", 0.4)` devolvia #00000000, e o marfim, que é o texto
+    /// forte do castelo inteiro, era transparente. Cor que entra por
+    /// argumento passa por aqui antes de ser lida.
     function mix(a, b, t) {
+        const x = Qt.color(a), y = Qt.color(b);
         const k = Math.max(0, Math.min(1, t));
-        return Qt.rgba(a.r + (b.r - a.r) * k,
-                       a.g + (b.g - a.g) * k,
-                       a.b + (b.b - a.b) * k,
-                       a.a + (b.a - a.a) * k);
+        return Qt.rgba(x.r + (y.r - x.r) * k,
+                       x.g + (y.g - x.g) * k,
+                       x.b + (y.b - x.b) * k,
+                       x.a + (y.a - x.a) * k);
     }
 
     /// Mesma cor, outra opacidade. Substitui todo rgba() hardcoded.
     function alpha(c, a) {
-        return Qt.rgba(c.r, c.g, c.b, a);
+        const x = Qt.color(c);
+        return Qt.rgba(x.r, x.g, x.b, a);
     }
 
     /// Cor de um valor 0..1 na escala de estado. Para medidores,
