@@ -310,6 +310,14 @@ Singleton {
         /// É o que amarra a cantaria à ameia — cada dente nasce na
         /// junta de uma pedra em vez de cair onde calhar.
         readonly property int stone:          crenelWidth + crenelGap
+        /// Quanto o estandarte pende ABAIXO da ameia, sobre o desktop.
+        ///
+        /// Não entra na zona exclusiva: a janela da Muralha cresce, a
+        /// exclusiveZone fica presa em barHeight + crenelHeight, e o
+        /// pano passa por cima das janelas sem roubar um pixel de
+        /// layout. Ver rampart/Rampart.qml.
+        readonly property int bannerDrop:     14
+
         readonly property int hallWidth:      420
         readonly property int grimoireWidth:  760
         readonly property int grimoireHeight: 460

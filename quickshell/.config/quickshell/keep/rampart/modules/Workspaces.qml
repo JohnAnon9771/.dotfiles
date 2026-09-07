@@ -180,18 +180,73 @@ Item {
                     strength: flag.focused ? 0.55 * Theme.glowStrength : 0
                 }
 
-                // A flâmula: fio embaixo de quem tem janelas.
-                Rectangle {
+                // O ESTANDARTE.
+                //
+                // Aqui havia um Rectangle de 1 px chamado "a flâmula",
+                // e o nome prometia mais do que ele entregava. Agora é
+                // pano de verdade: pende da vara de ferro, drapeja POR
+                // CIMA das ameias — que é o que um estandarte de
+                // castelo faz com o parapeito — e cai 14 px sobre o
+                // desktop, fora da zona exclusiva. Ver o cabeçalho da
+                // Rampart para a janela e a máscara.
+                //
+                // Ele mora AQUI e não na Rampart porque só a flâmula
+                // sabe onde o algarismo dela caiu: a fila é medida pelo
+                // texto, não por grade.
+                //
+                // A LEI SE CUMPRE SOZINHA: só o pano em foco é ouro. O
+                // ocupado é cinza de item a 35% e o urgente é sangue —
+                // e sangue puro é legítimo aqui porque o Theme.qml diz
+                // que ele é cor de PREENCHIMENTO, não de texto, e isto
+                // é preenchimento.
+                //
+                // A LARGURA SEGUE O ALGARISMO, e não uma grade. Houve
+                // uma passada em que todos os panos tinham a largura do
+                // merlão, para a fila não ler como gráfico de barras —
+                // mas o "I" e o "VIII" ocupam larguras diferentes na
+                // muralha de qualquer jeito, e o pano estreito sobre a
+                // sala estreita é mais honesto que um pano que não
+                // cabe no que anuncia.
+                Item {
+                    id: pole
+
                     anchors {
                         horizontalCenter: parent.horizontalCenter
-                        bottom: parent.bottom
-                        bottomMargin: Theme.pad.tight
+                        top: parent.bottom
                     }
-                    width: numeral.implicitWidth
-                    height: 1
-                    color: flag.focused ? Theme.accentLit : Theme.alpha(Theme.ash, 0.5)
+                    width: numeral.implicitWidth + Theme.pad.tight
+                    height: Theme.metric.crenelHeight + Theme.metric.bannerDrop
+
+                    // Some por completo quando a sala está vazia: um
+                    // castelo não hasteia estandarte de salão vazio.
                     opacity: flag.occupied || flag.focused ? 1 : 0
+                    visible: opacity > 0.01
                     Behavior on opacity { NumberAnimation { duration: Theme.anim.base } }
+
+                    Banner {
+                        anchors.fill: parent
+                        cloth: flag.urgent  ? Theme.alpha(Theme.blood, 0.90)
+                             : flag.focused ? Theme.alpha(Theme.accent, 0.90)
+                                            : Theme.alpha(Theme.ash, 0.35)
+                    }
+
+                    // O pano é clicável, e tem que ser.
+                    //
+                    // A tira da Rampart abre o buraco na máscara de
+                    // input para os 14 px que pendem sobre o desktop —
+                    // mas abrir buraco é só deixar o ponteiro CHEGAR.
+                    // Sem uma área aqui, o clique chegava e não
+                    // encontrava ninguém: o MouseArea da flâmula cobre
+                    // a flâmula, que acaba na linha da ameia.
+                    //
+                    // Um estandarte pendurado sobre a tela pedindo para
+                    // ser clicado e não respondendo é pior do que não
+                    // existir.
+                    MouseArea {
+                        anchors.fill: parent
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: Wm.workspace(flag.wsId)
+                    }
                 }
 
                 // Pulsação de urgência: cinco vezes, e para.

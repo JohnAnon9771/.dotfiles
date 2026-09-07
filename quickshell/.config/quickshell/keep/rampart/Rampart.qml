@@ -40,7 +40,44 @@ Scope {
             color: "transparent"
 
             anchors { left: true; right: true; top: true }
-            implicitHeight: Theme.metric.barHeight + Theme.metric.crenelHeight
+
+            // ═══ A JANELA CRESCE, A EXCLUSIVA NÃO ══════════════
+            //
+            // Os estandartes pendem abaixo da ameia, sobre o desktop.
+            // Para isso a janela precisa de mais 14 px de altura — mas
+            // se a zona exclusiva crescesse junto, toda janela do
+            // sistema desceria 14 px para acomodar um pano.
+            //
+            // Então a exclusiva fica presa no que a muralha realmente
+            // OCUPA (parede + ameia) e o resto é sobreposição. Sem o
+            // exclusionMode explícito o Quickshell derivaria a zona da
+            // altura da janela, que é justamente o que não se quer.
+            readonly property int solid: Theme.metric.barHeight
+                                       + Theme.metric.crenelHeight
+
+            implicitHeight: solid + Theme.metric.bannerDrop
+            exclusionMode: ExclusionMode.Normal
+            exclusiveZone: solid
+
+            // ═══ E A MÁSCARA, QUE É O PREÇO ════════════════════
+            //
+            // Uma janela de layer-shell recebe ponteiro na área
+            // inteira. Sem máscara, os 14 px de folga virariam uma
+            // faixa invisível atravessando a tela que engole clique de
+            // quem está embaixo — o pior tipo de bug, porque não se vê.
+            //
+            // Então o que aceita ponteiro é declarado: a parede, as
+            // ameias, e a tira dos estandartes. O resto é buraco.
+            //
+            // A tira cobre também os VÃOS entre um pano e outro, e isso
+            // é de propósito e não tolerância: ali a roda do mouse
+            // troca de sala, igual à faixa dos algarismos lá em cima.
+            // O que seria acidente vira função.
+            mask: Region {
+                Region { item: wall }
+                Region { item: crenels }
+                Region { item: bannerStrip }
+            }
 
             Component.onCompleted: if (!root.primaryBar) root.primaryBar = bar
 
@@ -120,10 +157,30 @@ Scope {
             // ═══ AS AMEIAS ═════════════════════════════════════
 
             Crenellation {
+                id: crenels
+
                 anchors { left: parent.left; right: parent.right; top: wall.bottom }
                 stone: Theme.bg
                 rim: Theme.borderOuter
                 heat: Settings.data.weather ? Theme.heat : 0
+            }
+
+            // A área de ponteiro dos estandartes. Invisível: quem
+            // desenha pano é cada flâmula, lá dentro do Workspaces,
+            // porque só ela sabe onde cada algarismo caiu.
+            Item {
+                id: bannerStrip
+
+                x: leftSide.x + flags.x
+                y: bar.solid
+                width: flags.width
+                height: Theme.metric.bannerDrop
+
+                MouseArea {
+                    anchors.fill: parent
+                    acceptedButtons: Qt.NoButton
+                    onWheel: e => Wm.workspaceStep(e.angleDelta.y > 0 ? -1 : 1)
+                }
             }
 
             // ═══ ESQUERDA ══════════════════════════════════════
