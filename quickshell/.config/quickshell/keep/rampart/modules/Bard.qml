@@ -31,7 +31,7 @@ Segment {
 
     visible: player !== null
     spacing: Theme.pad.tight
-    hoverTint: Theme.royal
+    hoverTint: Theme.gold
 
     onActivated: if (player && player.canTogglePlaying) player.togglePlaying()
     onSecondary: if (player && player.canQuit) player.quit()
@@ -78,17 +78,24 @@ Segment {
         text: root.playing ? Theme.glyph.music : Theme.glyph.pause
         font.family: Theme.font.mono
         font.pixelSize: Theme.size.base
-        color: root.playing ? Theme.royal : Theme.verdigris
+        color: root.playing ? Theme.fg : Theme.dim
         renderType: Text.NativeRendering
 
-        // Pulsa devagar enquanto toca — o bardo respirando.
-        SequentialAnimation on opacity {
-            running: root.playing
-            loops: Animation.Infinite
-            alwaysRunToEnd: true
-            NumberAnimation { to: 0.62; duration: 1400; easing.type: Easing.InOutSine }
-            NumberAnimation { to: 1.0;  duration: 1400; easing.type: Easing.InOutSine }
-        }
+        // AQUI RESPIRAVA O BARDO, e era a última animação permanente
+        // do torreão.
+        //
+        // Um SequentialAnimation infinito na opacidade, `running:
+        // playing`. Parece inofensivo até você notar o que é o estado
+        // "tocando": música no fone é o modo de repouso de quem usa a
+        // máquina o dia inteiro. Enquanto houvesse som, a muralha
+        // desenhava a 60 fps — a GPU nunca dormia, e a Regra de Ouro
+        // valia para tudo menos para o único módulo que fica ligado
+        // por horas.
+        //
+        // A informação já estava dita sem custo nenhum: o glifo troca
+        // entre nota e pausa, e a cor entre royal e verdigris. Duas
+        // mudanças discretas, zero frame em repouso.
+        Behavior on color { ColorAnimation { duration: Theme.anim.slow } }
     }
 
     Text {

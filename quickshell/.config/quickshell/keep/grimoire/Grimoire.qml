@@ -486,7 +486,7 @@ Scope {
                                         : Lore.empty(win.sigil === "/" ? "files"
                                                    : win.sigil === ":" ? "windows"
                                                                        : "grimoire")
-                                font.family: Theme.font.carved
+                                font.family: Theme.font.quill
                                 font.pixelSize: Theme.size.large
                                 font.italic: true
                                 color: Theme.fgDim
@@ -516,7 +516,7 @@ Scope {
                             Text {
                                 anchors.horizontalCenter: parent.horizontalCenter
                                 text: Lore.anyLatin()
-                                font.family: Theme.font.carved
+                                font.family: Theme.font.quill
                                 font.italic: true
                                 font.pixelSize: Theme.size.base
                                 color: Theme.wraith

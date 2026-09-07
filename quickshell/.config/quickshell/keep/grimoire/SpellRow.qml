@@ -85,7 +85,7 @@ Item {
 
             Text {
                 text: root.result.title || ""
-                font.family: root.result.mono ? Theme.font.mono : Theme.font.carved
+                font.family: root.result.mono ? Theme.font.mono : Theme.font.quill
                 font.pixelSize: Theme.size.base
                 font.letterSpacing: root.result.mono ? 0 : Theme.graven(Theme.size.base)
                 color: root.chosen ? Theme.ivory : Theme.ash

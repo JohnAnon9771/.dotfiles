@@ -92,12 +92,14 @@ Item {
                     anchors.centerIn: parent
                     text: Theme.roman(flag.modelData)
 
-                    font.family: Theme.font.carved
-                    font.pixelSize: Theme.size.large
-                    font.letterSpacing: Theme.graven(Theme.size.large)
+                    // Silkscreen, na grade dela: 8 px lógicos = 16 de
+                    // dispositivo em scale 2, inteiro e sem meio-tom.
+                    font.family: Theme.font.pixel
+                    font.pixelSize: Theme.size.pixelLarge
+                    font.letterSpacing: Theme.graven(Theme.size.pixelLarge)
                     font.weight: flag.focused ? Font.Bold : Font.Normal
 
-                    color: flag.urgent   ? Theme.blood
+                    color: flag.urgent   ? Theme.scar
                          : flag.focused  ? Theme.accentLit
                          : flag.occupied ? Theme.ash
                                          : Theme.fgDim
@@ -134,10 +136,17 @@ Item {
                     Behavior on opacity { NumberAnimation { duration: Theme.anim.base } }
                 }
 
-                // Pulsação de urgência.
+                // Pulsação de urgência: cinco vezes, e para.
+                //
+                // A urgência do Hyprland dura até você VISITAR o
+                // workspace — pode ser meia hora. Infinito aqui era
+                // meia hora de scale a 60 fps, na mesma muralha de
+                // onde a chama foi embora (ver o rodapé deste arquivo).
+                // Cinco pulsos chamam o olho; depois a cor de sangue
+                // do numeral segura o recado sozinha.
                 SequentialAnimation on scale {
                     running: flag.urgent
-                    loops: Animation.Infinite
+                    loops: 5
                     alwaysRunToEnd: true
                     NumberAnimation { to: 1.12; duration: 420; easing.type: Easing.OutQuad }
                     NumberAnimation { to: 1.0;  duration: 420; easing.type: Easing.InQuad }

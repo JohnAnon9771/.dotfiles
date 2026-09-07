@@ -19,7 +19,7 @@ Segment {
     readonly property bool cursed: Settings.data.easterEggs && Lore.cursedDay
     readonly property string mark: cursed ? Theme.glyph.skull : Theme.glyph.cross
 
-    hoverTint: Theme.royal
+    hoverTint: Theme.gold
     padding: Theme.pad.roomy
     spacing: Theme.pad.snug
 
@@ -30,10 +30,10 @@ Segment {
     Text {
         anchors.verticalCenter: parent.verticalCenter
         text: root.mark
-        // A adaga vive na Cinzel, junto do nome; a caveira é Nerd Font.
-        font.family: root.cursed ? Theme.font.mono : Theme.font.carved
+        // A adaga vive na voz do nome; a caveira é Nerd Font.
+        font.family: root.cursed ? Theme.font.mono : Theme.font.quill
         font.pixelSize: Theme.size.base
-        color: root.cursed ? Theme.blood : Theme.royal
+        color: root.cursed ? Theme.scar : Theme.gold
         renderType: Text.NativeRendering
 
         Behavior on color { ColorAnimation { duration: Theme.anim.slow } }
@@ -42,21 +42,21 @@ Segment {
     Text {
         anchors.verticalCenter: parent.verticalCenter
         text: root.hostName
-        font.family: Theme.font.carved
+        font.family: Theme.font.quill
         font.pixelSize: Theme.size.base
         font.letterSpacing: Theme.runic(Theme.size.base)
         font.capitalization: Font.AllUppercase
         font.weight: Font.DemiBold
-        color: Theme.royal
+        color: Theme.gold
         renderType: Text.NativeRendering
     }
 
     Text {
         anchors.verticalCenter: parent.verticalCenter
         text: root.mark
-        font.family: root.cursed ? Theme.font.mono : Theme.font.carved
+        font.family: root.cursed ? Theme.font.mono : Theme.font.quill
         font.pixelSize: Theme.size.base
-        color: root.cursed ? Theme.blood : Theme.royal
+        color: root.cursed ? Theme.scar : Theme.gold
         renderType: Text.NativeRendering
     }
 

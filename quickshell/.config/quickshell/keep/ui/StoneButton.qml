@@ -16,12 +16,12 @@ Rectangle {
     implicitHeight: 28
 
     color: area.containsMouse
-        ? Theme.alpha(root.primary ? Theme.moss : Theme.blood, 0.30)
+        ? Theme.alpha(root.primary ? Theme.gold : Theme.scar, 0.30)
         : Theme.alpha(Theme.timber, 0.85)
 
     border.width: 1
     border.color: area.containsMouse
-        ? (root.primary ? Theme.moss : Theme.blood)
+        ? (root.primary ? Theme.gold : Theme.scar)
         : Theme.borderInner
 
     Behavior on color { ColorAnimation { duration: Theme.anim.instant } }

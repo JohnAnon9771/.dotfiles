@@ -13,12 +13,15 @@ Readout {
 
     glyph: Theme.glyph.ram
     value: Fmt.bytes(Sys.memUsed)
-    tint: Theme.royal
+    reserve: "88.8G"
+    tint: Theme.ash
     level: Sys.memUsage
 
     popup: Component {
         DetailCard {
             title: "Despensa"
+
+            Attention { service: Sys }
 
             DetailRow {
                 label: "em uso"
@@ -32,7 +35,7 @@ Readout {
             DetailRow {
                 label: "cache"
                 value: Fmt.bytes(Sys.memCached)
-                tint: Theme.verdigris
+                tint: Theme.cinza
             }
             DetailRow {
                 visible: Sys.swapTotal > 0

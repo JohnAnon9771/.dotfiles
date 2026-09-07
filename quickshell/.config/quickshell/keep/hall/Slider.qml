@@ -31,7 +31,7 @@ Item {
         text: root.glyph
         font.family: Theme.font.mono
         font.pixelSize: Theme.size.base
-        color: root.muted ? Theme.blood : root.tint
+        color: root.muted ? Theme.scar : root.tint
         renderType: Text.NativeRendering
 
         Behavior on color { ColorAnimation { duration: Theme.anim.quick } }

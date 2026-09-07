@@ -87,4 +87,22 @@ Singleton {
         const n = steps || 20;
         return Math.round(clamp01(v) * n) / n;
     }
+
+    /// O ruído de ócio empoleirado na primeira fronteira do degrau.
+    ///
+    /// O Fmt.step() resolveu a AMPLITUDE do tremor, e o comentário do
+    /// ui/Crenellation.qml dizia que, com ele, em repouso o heat não
+    /// mudava. Não é bem assim: com o torreão parado a CPU fica em
+    /// torno de 4%, e `cpuUsage * 0.85` dá ~0,034 — em cima da primeira
+    /// fronteira, que é 0,025. Qualquer tarefa de fundo empurrava a
+    /// amostra para os dois lados dela. Cada travessia abria os 1400 ms
+    /// de Behavior do Theme.heat, e isso repintava um Canvas de merlões
+    /// de 3840 px de largura A CADA FRAME, por um segundo e meio.
+    ///
+    /// Um torreão adormecido tem heat ZERO, não "um vigésimo". Abaixo
+    /// de 15% não há brasa nenhuma para mostrar, e é onde a máquina
+    /// passa a maior parte da vida.
+    function clima(bruto) {
+        return step(clamp01((bruto - 0.15) / 0.85));
+    }
 }

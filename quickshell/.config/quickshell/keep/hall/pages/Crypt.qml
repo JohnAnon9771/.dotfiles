@@ -80,7 +80,7 @@ Column {
                 anchors { left: parent.left; top: parent.top; bottom: parent.bottom }
                 anchors.bottomMargin: Theme.pad.snug
                 width: 2
-                color: bone.critical ? Theme.blood
+                color: bone.critical ? Theme.scar
                      : bone.modelData.urgency === NotificationUrgency.Low
                         ? Theme.dust : Theme.gold
             }

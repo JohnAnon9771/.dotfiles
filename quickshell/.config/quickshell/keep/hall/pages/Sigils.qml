@@ -164,7 +164,7 @@ Column {
             width: parent.width
             text: "Ossuário"
             glyph: Theme.glyph.power
-            tint: Theme.blood
+            tint: Theme.scar
             hint: "Onde se desliga, reinicia, suspende e encerra a "
                 + "sessão. Cada osso exige segurar para confirmar."
             onPicked: root.action("ossuary")

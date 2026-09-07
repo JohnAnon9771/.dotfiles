@@ -16,7 +16,7 @@ Segment {
     signal openHall()
 
     spacing: Theme.pad.tight
-    hoverTint: Theme.moss
+    hoverTint: Theme.gold
 
     onActivated: root.openHall()
     onMiddle: Audio.toggleMute()
@@ -35,14 +35,14 @@ Segment {
                 label: "volume"
                 labelWidth: 60
                 value: Audio.muted ? "silenciado" : Fmt.pct(Audio.volume)
-                tint: Audio.muted ? Theme.blood : Theme.fg
+                tint: Audio.muted ? Theme.scar : Theme.fg
             }
             DetailRow {
                 visible: Audio.source !== null
                 label: "entrada"
                 labelWidth: 60
                 value: Audio.micMuted ? "silenciado" : Audio.sourceName
-                tint: Audio.micMuted ? Theme.verdigris : Theme.fg
+                tint: Audio.micMuted ? Theme.dim : Theme.fg
             }
 
             Item { height: Theme.pad.snug; width: 1; visible: Audio.streams.length > 0 }
@@ -69,7 +69,7 @@ Segment {
         text: Audio.glyph(Audio.volume, Audio.muted)
         font.family: Theme.font.mono
         font.pixelSize: Theme.size.base
-        color: Audio.muted ? Theme.blood : Theme.moss
+        color: Audio.muted ? Theme.scar : Theme.fg
         renderType: Text.NativeRendering
 
         Behavior on color { ColorAnimation { duration: Theme.anim.quick } }

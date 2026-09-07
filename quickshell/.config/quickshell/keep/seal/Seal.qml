@@ -87,7 +87,7 @@ Scope {
                     Text {
                         width: parent.width
                         text: "O castelo exige o selo do senhor."
-                        font.family: Theme.font.carved
+                        font.family: Theme.font.quill
                         font.italic: true
                         font.pixelSize: Theme.size.base
                         color: Theme.fgMuted
@@ -153,11 +153,11 @@ Scope {
                         width: parent.width
                         visible: text.length > 0
                         text: win.flow ? win.flow.supplementaryMessage : ""
-                        font.family: Theme.font.carved
+                        font.family: Theme.font.quill
                         font.italic: true
                         font.pixelSize: Theme.size.small
                         color: win.flow && win.flow.supplementaryIsError
-                            ? Theme.blood : Theme.fgDim
+                            ? Theme.scar : Theme.fgDim
                         wrapMode: Text.WordWrap
                         renderType: Text.NativeRendering
                     }

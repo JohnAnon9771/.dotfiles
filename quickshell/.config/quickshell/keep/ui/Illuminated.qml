@@ -29,7 +29,7 @@ Item {
         anchors.bottom: parent.bottom
 
         text: root.text.substring(1)
-        font.family: Theme.font.carved
+        font.family: Theme.font.quill
         font.pixelSize: root.restSize
         font.letterSpacing: Theme.runic(root.restSize)
         font.capitalization: Font.AllUppercase

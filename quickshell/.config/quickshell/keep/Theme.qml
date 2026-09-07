@@ -25,49 +25,135 @@ Singleton {
     // Transições lentas: você sente, não vê piscar.
     Behavior on heat { NumberAnimation { duration: 1400; easing.type: Easing.OutCubic } }
 
-    // ═══ PEDRA E MADEIRA ═══════════════════════════════════════════
-    readonly property color crypt:     "#11100d"  // fundo mais profundo
-    readonly property color stone:     "#15120f"  // fundo principal
-    readonly property color hall:      "#1b1813"  // painel elevado
-    readonly property color timber:    "#2a231d"  // superfície 2 / selecionado
-    readonly property color wood:      "#3a3127"  // madeira escura / bordas
-    readonly property color iron:      "#7a736b"  // ferro velho (era #808080, cinza morto)
+    // ═══ OS NOVE ══════════════════════════════════════════════════
+    // A paleta do spec, literal. Estes são os únicos hexes escritos à
+    // mão no castelo inteiro; todo o resto abaixo é derivado deles por
+    // mix(), para nada entrar na família por acidente.
+    //
+    // As três leis, e elas são leis:
+    //   · OURO só em foco e estado ativo.
+    //   · VERMELHO só em risco real.
+    //   · VIOLETA é do sobrenatural, e nunca decorativo.
 
-    // ═══ PERGAMINHO ════════════════════════════════════════════════
-    readonly property color dust:      "#6f6559"  // pedra gasta — texto inativo
-    readonly property color ash:       "#b6b0a4"  // texto de item
-    readonly property color linen:     "#b0a79b"  // texto abafado
-    readonly property color parchment: "#dcd4c4"  // pergaminho gasto — fg padrão
-    readonly property color ivory:     "#f4f0e6"  // marfim — fg forte
+    readonly property color coal:      "#0a0908"  // carvão — o fundo de tudo
+    readonly property color stone:     "#1c1a17"  // pedra — superfícies
+    readonly property color timber:    "#241a12"  // madeira — superfície quente
+    readonly property color rim:       "#3a3630"  // o fio de luz do sprite escuro
+    readonly property color cinza:     "#6d6a63"  // texto secundário
+    readonly property color blood:     "#6e1420"  // sangue seco
+    readonly property color gold:      "#c9a24a"  // ouro velho
+    readonly property color parchment: "#e8dcc0"  // pergaminho — texto primário
+    readonly property color spectral:  "#8b6bd9"  // o que não devia estar aqui
 
-    // ═══ FOGO E SANGUE ═════════════════════════════════════════════
-    readonly property color gold:      "#c2a35a"  // ouro envelhecido — primária
-    readonly property color torch:     "#e1c97a"  // ouro aceso
-    readonly property color ember:     "#c9743a"  // brasa — atenção térmica
-    readonly property color blood:     "#b04b4b"  // sangue seco — destrutivo
-    readonly property color clot:      "#5b2222"  // sangue coalhado
+    // ═══ DERIVADOS ════════════════════════════════════════════════
+    // Cada um é mix() dos nove. O hex ao lado é o resultado, e serve
+    // para o tools/theme-sync.py exportar sem ter que avaliar QML.
 
-    // ═══ MUSGO E FOSSO ═════════════════════════════════════════════
-    readonly property color moss:      "#4f6b4a"  // verde musgo — sucesso/seleção
-    readonly property color verdigris: "#4a6b66"  // azinhavre — adormecido
-    readonly property color teal:      "#3a8f8f"  // teal profundo
-    readonly property color storm:     "#1e6a88"  // céu tempestuoso
-    readonly property color moat:      "#1e9fb4"  // água do fosso — link
-    readonly property color frost:     "#26333a"  // seleção fria
+    /// Fundo de painel: pedra puxada para a madeira.
+    readonly property color hall:   mix(stone, timber, 0.5)        // #201a14
 
-    // ═══ ASSOMBRAÇÃO ═══════════════════════════════════════════════
-    readonly property color wraith:    "#86b39a"  // fogo-fátuo — o espectral
-    readonly property color royal:     "#8b6f9b"  // roxo realeza — identidade
-    readonly property color vespers:   "#3b2f45"  // véspera — sombra violeta
+    /// Ferro velho — a moldura externa.
+    readonly property color iron:   mix(cinza, stone, 0.28)        // #56544e
+
+    /// Adormecido: o que existe e não está acontecendo.
+    readonly property color dim:    mix(cinza, stone, 0.5)         // #44423d
+
+    /// Texto de item — entre o secundário e o primário.
+    readonly property color ash:    mix(cinza, parchment, 0.55)    // #b1a996
+
+    /// Marfim — o primário forte, para capitular e destaque.
+    readonly property color ivory:  mix(parchment, "#ffffff", 0.4) // #f1ead9
+
+    /// Ouro aceso: foco, tocha, o numeral em que você está.
+    /// É o `l` da paleta dos sprites — a mesma tinta em pixel e vetor.
+    readonly property color torch:  "#e3c37a"
+
+    /// SANGUE SOBRE PEDRA.
+    ///
+    /// O #6e1420 do spec é cor de PREENCHIMENTO: sobre o carvão ele dá
+    /// 1,69:1 de contraste, o que como texto é invisível. Ele está
+    /// certo onde o mockup o usa — selo de cera, quadrado de fechar,
+    /// rótulo sobre pergaminho claro, borda.
+    ///
+    /// Para letra e glifo sobre a muralha é preciso subir: este dá
+    /// 4,23:1, melhor que o #b04b4b que o castelo usava antes (3,75:1),
+    /// e continua na família do sangue seco em vez de virar tijolo.
+    readonly property color scar:   mix(blood, parchment, 0.4)     // #9f6460
+
+    /// Brasa — atenção térmica, entre o ouro e o sangue. É a única
+    /// matiz que o spec não tem e que a escala de estado exige: sem
+    /// ela, "quente mas ainda ok" teria que dividir cor com "risco".
+    readonly property color ember:  mix(gold, blood, 0.45)         // #a06237
+
+    /// Véspera — a sombra que a noite deixa. Carvão com um fio de
+    /// espectral dentro; nunca cor de objeto, só de ar.
+    readonly property color vespers: mix(coal, spectral, 0.22)     // #261f36
+
+    /// O espectral aceso, para quando ele precisa ser lido.
+    readonly property color wraith: mix(spectral, parchment, 0.35) // #ac93d0
+
+    // ── Em trânsito ───────────────────────────────────────────────
+    // Estes NÃO estão na doutrina e saem na próxima passada. Ficam
+    // apontando para o vizinho neutro certo, para o castelo já parar
+    // de ter verde e azul sem quebrar os ~44 pontos que os citam.
+    //
+    // Por que sair: sob "ouro só em foco, vermelho só em risco", uma
+    // máquina ociosa pintada de verde e um link pintado de azul dizem
+    // "isto aqui é um dashboard", e o castelo deixa de ser um castelo.
+    readonly property color moss:      ash        // era #4f6b4a
+    readonly property color verdigris: dim        // era #4a6b66
+    readonly property color teal:      cinza      // era #3a8f8f
+    readonly property color moat:      gold       // era #1e9fb4
+    readonly property color royal:     spectral   // era #8b6f9b
+    readonly property color crypt:     coal       // o nome antigo do carvão
+    readonly property color dust:      cinza
+    readonly property color linen:     ash
+    readonly property color wood:      rim
+    readonly property color storm:     cinza
+    readonly property color frost:     hall
+    readonly property color clot:      blood
 
     // ═══ PAPÉIS SEMÂNTICOS ═════════════════════════════════════════
     // Use SEMPRE estes nos widgets. Trocar um token acima repinta
     // o castelo inteiro sem caçar hex espalhado.
 
-    readonly property color bg:          stone
-    readonly property color bgDeep:      crypt
-    readonly property color bgPanel:     hall
-    readonly property color bgRaised:    timber
+    /// O CARVÃO É DA HORA DAS BRUXAS, e de mais nada.
+    ///
+    /// Em expediente o fundo é pedra. Das 03:00 às 04:00 ele cai para o
+    /// #0a0908 do spec — o castelo esfria para o preto de verdade junto
+    /// com o accent, que já troca de ouro para espectral na mesma hora.
+    /// É a mesma chave, então o torreão inteiro vira de uma vez em vez
+    /// de meio sobrenatural.
+    ///
+    /// SEM Behavior, de propósito. `motion.haunt` é 0: o sobrenatural
+    /// não faz transição, quem não estava olhando não vê acontecer. E
+    /// como `witching` já vem filtrado pelos easterEggs no shell.qml,
+    /// quem desligou os ovos de páscoa nunca vê o fundo mudar.
+    readonly property color bg:          witching ? coal : stone
+
+    /// O FUNDO É UM SÓ, e os três seguem o `bg` de propósito.
+    ///
+    /// A muralha, o Salão inteiro (corrimão incluído), o grimório, todo
+    /// popup e todo balão são a MESMA parede vista em lugares diferentes
+    /// — não uma pilha de superfícies de tons vizinhos.
+    ///
+    /// Quem separa uma da outra é a JUNTA, e não a tinta: o `Panel` tem
+    /// moldura de ferro e fio de madeira, e a glosa dos Sigilos e o
+    /// balão do corrimão têm cada um a sua borda de `borderInner` mais o
+    /// filete da cor do sigilo. Nenhum deles precisava de fundo próprio
+    /// para se destacar — tinham um, e era o que fazia o balão parecer
+    /// de outro castelo.
+    ///
+    /// E é o que faz a hora das bruxas valer para o torreão inteiro:
+    /// amarrados ao `bg`, painel, corrimão e balão viram carvão junto
+    /// com a muralha em vez de ficarem para trás em pedra.
+    ///
+    /// Continuam existindo como papéis separados porque são o contrato:
+    /// se um dia o fundo do popup precisar divergir, ele diverge aqui e
+    /// em nenhum outro lugar.
+    readonly property color bgDeep:      bg
+    readonly property color bgPanel:     bg
+    readonly property color bgRaised:    bg
     readonly property color bgScrim:     alpha(vespers, 0.82)
 
     readonly property color fg:          parchment
@@ -79,30 +165,41 @@ Singleton {
     readonly property color borderOuter: iron
     readonly property color borderLit:   accent
 
-    // A escala de estado que faltava:
-    // adormecido → normal → bom → info → atenção → alerta → crítico
-    readonly property color stAsleep:    verdigris
+    // A escala de estado: adormecido → normal → bom → atenção →
+    // alerta → crítico.
+    //
+    // "Bom" não é verde. Sob "ouro só em foco e ativo", pintar de verde
+    // uma máquina que está apenas funcionando gasta uma cor com a
+    // informação menos interessante que existe — e o olho aprende a
+    // ignorar a barra inteira. O que está bem simplesmente não chama.
+    readonly property color stAsleep:    dim
     readonly property color stNormal:    parchment
-    readonly property color stGood:      moss
-    readonly property color stInfo:      moat
+    readonly property color stGood:      ash
+    readonly property color stInfo:      cinza
     readonly property color stWarn:      gold
     readonly property color stAlert:     ember
-    readonly property color stCrit:      blood
+    readonly property color stCrit:      scar        // legível; o blood é de preenchimento
     readonly property color stSpectral:  wraith
 
     // ═══ CORES VIVAS ═══════════════════════════════════════════════
-    // Derivadas do clima. Quanto mais quente o torreão, mais as
-    // tochas puxam para brasa. Na hora das bruxas, tudo esfria.
 
-    /// A primária do momento — ouro em repouso, brasa sob carga.
-    readonly property color accent: witching
-        ? mix(gold, wraith, 0.55)
-        : mix(gold, ember, heat * 0.7)
+    /// A primária do momento: ouro, e espectral na hora das bruxas.
+    ///
+    /// O ACCENT DESACOPLOU DO CLIMA, e é uma correção de significado,
+    /// não de gosto. Ele escorregava para brasa conforme a carga da
+    /// máquina — mas ouro é a cor de FOCO e de ATIVO. Com a máquina a
+    /// meio gás, um workspace em foco e uma CPU quente passavam a
+    /// dividir a mesma cor, e aí o ouro não queria dizer mais nada.
+    ///
+    /// O clima não perdeu voz: ele fala pelo gradiente de brasa da
+    /// ameia e pela escala de gauge(), que são inequivocamente sobre
+    /// severidade. Ganhamos de quebra uma classe inteira de repintura:
+    /// o accent parou de mudar sozinho a cada degrau de carga, e ele é
+    /// citado em dezesseis lugares.
+    readonly property color accent: witching ? spectral : gold
 
     /// O realce aceso (workspace ativo, foco, tocha).
-    readonly property color accentLit: witching
-        ? mix(torch, wraith, 0.6)
-        : mix(torch, ember, heat * 0.55)
+    readonly property color accentLit: witching ? wraith : torch
 
     /// Intensidade do brilho de tocha: pulsa mais forte sob carga.
     readonly property real glowStrength: 0.55 + heat * 0.45
@@ -116,18 +213,62 @@ Singleton {
     // silencioso na tela.
 
     component FontSet: QtObject {
-        /// Cinzel — capitulares romanas. Títulos, algarismos, relógio.
-        readonly property string carved: "Cinzel"
-
-        /// UnifrakturMaguntia — blackletter. NUNCA abaixo de 20px,
+        /// UnifrakturMaguntia — blackletter. NUNCA abaixo de 18px,
         /// nunca em texto corrido. Só capitulares e brasões.
         readonly property string scribe: "UnifrakturMaguntia"
 
-        /// JetBrains Mono Nerd Font — todo o resto: dados, corpo, listas.
+        /// Cormorant Garamond — a mão do escriba. Relógio, prosa,
+        /// epitáfios, o corpo de tudo que é texto escrito e não dado.
+        readonly property string quill: "Cormorant Garamond"
+
+        /// JetBrains Mono Nerd Font — todo dado: números, listas,
+        /// caminhos, metadados. E os ícones, que são codepoints dela.
         readonly property string mono: "JetBrainsMono Nerd Font"
+
+        /// Silkscreen — os algarismos romanos e os microrrótulos que
+        /// encostam em pixel art.
+        ///
+        /// Desenhada em grade de 8: use SÓ em size.pixel e
+        /// size.pixelLarge. Em qualquer outro corpo ela sai com haste
+        /// de espessura irregular, que é o oposto do ponto dela.
+        readonly property string pixel: "Silkscreen"
+
+        /// ALGARISMO DE CAIXA ALTA, e alinhado em coluna.
+        ///
+        /// A Cormorant é uma garalda de verdade, então os algarismos
+        /// dela são ANTIGOS por padrão: o 1, o 2 e o 0 têm a altura do
+        /// x, e o 3, o 4, o 5, o 7 e o 9 descem abaixo da linha. Num
+        /// parágrafo isso é bonito; num relógio de 34 px é um número
+        /// que parece pequeno e balança de dígito para dígito.
+        ///
+        /// O `lnum` sobe todos para a altura de capitular — 0,66 em vez
+        /// de 0,42 do corpo — e o `tnum` dá a mesma largura a todos,
+        /// que é o que impede o "1" de encolher o relógio ao virar a
+        /// hora. Use nos ALGARISMOS de qualquer voz de texto; a mono
+        /// já nasce assim e não precisa.
+        readonly property var figures: ({ "lnum": 1, "tnum": 1 })
     }
 
+    //  POR QUE A CINZEL SAI
+    //
+    //  Ela e a Cormorant Garamond são as duas serifas de display do
+    //  conjunto, e se sobrepõem quase inteiras: capitular romana e
+    //  garalda old-style resolvem o mesmo problema. Carregar cinco
+    //  famílias para manter as duas não se defende.
+    //
+    //  Quem herda o quê: a prosa e o relógio vão para a `quill`, e os
+    //  ALGARISMOS ROMANOS vão para a `pixel`. Este segundo parece
+    //  estranho até você lembrar onde eles ficam — encostados nos
+    //  sprites da muralha. Um glifo de hastes inteiras é mais coerente
+    //  com a doutrina do pixel que uma capitular de inscrição, e de
+    //  quebra resolve a redundância num gesto só.
+
     component SizeSet: QtObject {
+        /// A grade da Silkscreen. Só estes dois corpos para ela: são
+        /// múltiplos de 8, e em scale 2 dão 16 e 32 px de dispositivo.
+        readonly property int pixel:      8
+        readonly property int pixelLarge: 16
+
         readonly property int tiny:     10
         readonly property int small:    11
         readonly property int base:     12
@@ -165,12 +306,56 @@ Singleton {
         readonly property int holdMs:         700 // segurar-para-confirmar
     }
 
+    // ═══ TEMPO ═════════════════════════════════════════════════
+    //
+    // Duas regras de sensação valem mais que qualquer número, e é por
+    // elas que os degraus abaixo foram retunados:
+    //
+    //   1. SAÍDA MAIS LENTA QUE ENTRADA. Entrada rápida faz a interface
+    //      parecer que responde; saída lenta faz ela parecer macia. O
+    //      contrário parece que ela está fugindo de você.
+    //
+    //   2. FECHAR É MAIS RÁPIDO QUE ABRIR. Quem fecha já decidiu. Fazer
+    //      essa pessoa esperar pela animação é a coisa mais irritante
+    //      que uma shell pode fazer.
+    //
+    // E uma regra de faixa: movimento útil é rápido (120–200 ms) e
+    // movimento atmosférico é lento a ponto de dar dúvida (segundos).
+    // Nada no meio — velocidade média parece bug. Era justamente onde
+    // o antigo `slow: 380` vivia.
+
     component AnimSet: QtObject {
-        readonly property int instant: 90
-        readonly property int quick:   150
-        readonly property int base:    220
-        readonly property int slow:    380
+        readonly property int instant: 60
+        readonly property int quick:   120
+        readonly property int base:    180
+        readonly property int slow:    220
         readonly property int languid: 900
+    }
+
+    /// A tabela canônica do movimento. Os NÚMEROS moram aqui; a FORMA
+    /// (curva, assimetria, overshoot) mora em Motion.qml, porque
+    /// entrada e saída não cabem num Behavior sem um condicional.
+    component MotionSet: QtObject {
+        readonly property int hoverIn:    120
+        readonly property int hoverOut:   180   // sai mais devagar do que entra
+        readonly property int press:       60
+        readonly property int release:    220
+        readonly property int focus:      100
+        readonly property int panelOpen:  180
+        readonly property int panelClose: 120   // fecha mais rápido do que abre
+
+        /// Corte seco. O sobrenatural não faz transição: quem não
+        /// estava olhando não vê acontecer.
+        readonly property int haunt: 0
+
+        /// Vinte minutos de relógio de parede. Dia virando noite não é
+        /// animação, é clima.
+        readonly property int dayNight: 1200000
+
+        /// O quanto o `release` passa do ponto antes de assentar. O
+        /// OutBack do Qt usa 1.70158 como padrão, que é elástico
+        /// demais para pedra.
+        readonly property real overshoot: 1.1
     }
 
     readonly property FontSet   font:   FontSet {}
@@ -179,6 +364,7 @@ Singleton {
     readonly property BorderSet border: BorderSet {}
     readonly property MetricSet metric: MetricSet {}
     readonly property AnimSet   anim:   AnimSet {}
+    readonly property MotionSet motion: MotionSet {}
 
     // ═══ GLIFOS ════════════════════════════════════════════════
     // Regra do castelo: nenhum glifo cai em fonte de reserva.
@@ -189,9 +375,10 @@ Singleton {
     // diferente — era a causa da barra parecer remendada.
     //
     // Então: ícone é sempre codepoint Nerd Font (conferido presente),
-    // e o que é letra fica em Cinzel. Os algarismos romanos passam a
-    // ser I, V, X do alfabeto: a Cinzel é uma capitular romana de
-    // inscrição, e "IV" nela é mais romano que o Ⅳ do Unicode.
+    // e o que é letra fica numa das vozes de texto. Os algarismos
+    // romanos são I, V, X do alfabeto e não os Ⅰ..Ⅹ do Unicode: assim
+    // eles existem em QUALQUER voz, e hoje moram na Silkscreen, onde a
+    // haste inteira encosta na pixel art sem destoar.
 
     component GlyphSet: QtObject {
         // Vigília
@@ -240,7 +427,7 @@ Singleton {
         readonly property string play:     "\u{f040a}"
         readonly property string pause:    "\u{f03e4}"
 
-        // Identidade — estes ficam em Cinzel, não na mono.
+        // Identidade — estes ficam numa voz de texto, não na mono.
         readonly property string cross:    "†"      // o brasão
         readonly property string skull:    "\u{f068c}"
         // U+F07F0 era md-surround_sound_2_0: o espectro do Portão e o
@@ -258,7 +445,8 @@ Singleton {
 
     readonly property GlyphSet glyph: GlyphSet {}
 
-    /// Algarismo romano em letras de verdade, para a Cinzel.
+    /// Algarismo romano em letras de verdade, e não nos Ⅰ..Ⅹ do
+    /// Unicode: I, V e X existem em toda voz do castelo.
     function roman(n) {
         const vals = [1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1];
         const syms = ["M", "CM", "D", "CD", "C", "XC", "L", "XL",
@@ -282,26 +470,46 @@ Singleton {
     // ═══ FERRAMENTAS ═══════════════════════════════════════════════
 
     /// Mistura linear entre duas cores. t = 0 → a, t = 1 → b.
+    ///
+    /// O Qt.color() na entrada não é zelo: uma STRING não tem `.r`, e em
+    /// JavaScript `undefined - undefined` é NaN, que o Qt.rgba() aterra
+    /// em zero sem reclamar — inclusive no alfa. Um `mix(parchment,
+    /// "#ffffff", 0.4)` devolvia #00000000, e o marfim, que é o texto
+    /// forte do castelo inteiro, era transparente. Cor que entra por
+    /// argumento passa por aqui antes de ser lida.
     function mix(a, b, t) {
+        const x = Qt.color(a), y = Qt.color(b);
         const k = Math.max(0, Math.min(1, t));
-        return Qt.rgba(a.r + (b.r - a.r) * k,
-                       a.g + (b.g - a.g) * k,
-                       a.b + (b.b - a.b) * k,
-                       a.a + (b.a - a.a) * k);
+        return Qt.rgba(x.r + (y.r - x.r) * k,
+                       x.g + (y.g - x.g) * k,
+                       x.b + (y.b - x.b) * k,
+                       x.a + (y.a - x.a) * k);
     }
 
     /// Mesma cor, outra opacidade. Substitui todo rgba() hardcoded.
     function alpha(c, a) {
-        return Qt.rgba(c.r, c.g, c.b, a);
+        const x = Qt.color(c);
+        return Qt.rgba(x.r, x.g, x.b, a);
     }
 
     /// Cor de um valor 0..1 na escala de estado. Para medidores,
     /// barras de temperatura e qualquer coisa que possa piorar.
+    ///
+    /// MONOCROMÁTICA ATÉ IMPORTAR. A rampa antiga corria verde → ouro →
+    /// brasa → sangue, então uma máquina ociosa ficava verde e uma a
+    /// 50% ficava DOURADA. Sob "ouro só em foco e ativo" isso era
+    /// violação direta: metade da barra vestia a cor do foco o tempo
+    /// todo, e a cor do foco parava de significar foco.
+    ///
+    /// Agora nada acontece até 60%. Entre 60 e 85 o ouro entra, e daí
+    /// para cima ele apodrece em sangue. Quem olha a muralha de canto
+    /// de olho vê cinza enquanto está tudo bem — que é quase sempre — e
+    /// só é interrompido quando há motivo.
     function gauge(t) {
         const k = Math.max(0, Math.min(1, t));
-        if (k < 0.5)  return mix(moss,  gold,  k / 0.5);
-        if (k < 0.8)  return mix(gold,  ember, (k - 0.5) / 0.3);
-        return mix(ember, blood, (k - 0.8) / 0.2);
+        if (k < 0.60) return cinza;
+        if (k < 0.85) return mix(cinza, gold, (k - 0.60) / 0.25);
+        return mix(gold, scar, (k - 0.85) / 0.15);
     }
 
     /// Cor de temperatura em °C, com limiares de silício.

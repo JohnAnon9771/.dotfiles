@@ -12,6 +12,10 @@ Column {
 
     spacing: Theme.pad.snug
 
+    // O Epitáfio conta a vigília e a carga: sensores que a muralha não
+    // desenha e que, por isso, só são lidos enquanto ele existe.
+    Attention { service: Sys }
+
     Illuminated {
         text: root.hostName
         initialSize: Theme.size.display
@@ -63,7 +67,7 @@ Column {
     Text {
         width: Math.max(180, parent.width)
         text: Lore.aphorism()
-        font.family: Theme.font.carved
+        font.family: Theme.font.quill
         font.pixelSize: Theme.size.small
         font.italic: true
         color: Theme.fgDim

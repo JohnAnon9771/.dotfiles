@@ -17,6 +17,21 @@ Segment {
     /// 0..1 — o quanto este medidor está sofrendo.
     property real level: -1
 
+    /// O texto MAIS LARGO que este medidor pode vir a mostrar.
+    ///
+    /// Sem isto o número reservava só a largura do valor do momento, e
+    /// "8%" virando "12%" mudava o implicitWidth do Segment. A Row do
+    /// centro da muralha então relayoutava e TODO módulo à direita
+    /// escorregava alguns pixels — seis medidores fazendo isso a cada
+    /// dois segundos, o dia inteiro.
+    ///
+    /// Era trabalho de layout recorrente e era feio: a §3.3 da doutrina
+    /// pede que nenhum estado mude posição ou tamanho dos módulos, e a
+    /// barra desobedecia sozinha, sem estado nenhum mudar.
+    ///
+    /// Reserve o pior caso, não o caso comum. "100%" e não "8%".
+    property string reserve: "100%"
+
     /// A cor do glifo guarda a identidade do módulo em repouso e só
     /// desliza para a escala de estado quando a coisa aperta. Pintar
     /// direto pela escala deixava a muralha inteira verde no ócio, e
@@ -41,9 +56,24 @@ Segment {
         Behavior on color { ColorAnimation { duration: Theme.anim.slow } }
     }
 
+    TextMetrics {
+        id: reserva
+        font: numero.font
+        text: root.reserve
+    }
+
     Text {
+        id: numero
+
         anchors.verticalCenter: parent.verticalCenter
         text: root.value
+
+        // O Math.max é a rede de segurança: se algum dia um valor
+        // passar da reserva, ele volta a alargar em vez de ser cortado.
+        // Reserva bem escolhida nunca chega lá.
+        width: Math.max(reserva.width, implicitWidth)
+        horizontalAlignment: Text.AlignRight
+
         font.family: Theme.font.mono
         font.pixelSize: Theme.size.base
         color: Theme.fg

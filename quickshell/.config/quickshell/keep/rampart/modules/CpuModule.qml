@@ -13,13 +13,16 @@ Readout {
 
     glyph: Theme.glyph.cpu
     value: Fmt.pct(Sys.cpuUsage)
-    tint: Theme.gold
+    reserve: "100%"
+    tint: Theme.ash
     level: Sys.cpuUsage
     samples: Sys.cpuHistory
 
     popup: Component {
         DetailCard {
             title: "Forja"
+
+            Attention { service: Sys }
 
             DetailRow {
                 label: "carga"

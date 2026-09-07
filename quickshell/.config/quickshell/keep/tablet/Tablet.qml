@@ -56,14 +56,14 @@ Variants {
             win.show(Audio.glyph(Audio.volume, Audio.muted),
                      Audio.muted ? "silenciado" : Fmt.pct(Audio.volume),
                      Audio.muted ? 0 : Audio.volume,
-                     Audio.muted ? Theme.blood : Theme.moss);
+                     Audio.muted ? Theme.scar : Theme.moss);
         }
 
         function showMic() {
             win.show(Audio.micMuted ? Theme.glyph.micOff : Theme.glyph.mic,
                      Audio.micMuted ? "mudo" : "escutando",
                      -1,
-                     Audio.micMuted ? Theme.blood : Theme.moss);
+                     Audio.micMuted ? Theme.scar : Theme.moss);
         }
 
         function showDnd() {
@@ -94,9 +94,9 @@ Variants {
             padding: Theme.pad.wide
             opacity: 0
 
-            Behavior on opacity {
-                NumberAnimation { duration: Theme.anim.base; easing.type: Easing.OutCubic }
-            }
+            // A lápide aparece por comando e some sozinha depois de 1,4 s:
+            // aparecer é abrir, o apagar do linger é fechar.
+            Behavior on opacity { Motion.Panel { opening: slab.opacity > 0 } }
 
             Column {
                 anchors.centerIn: parent

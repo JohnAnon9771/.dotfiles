@@ -150,9 +150,9 @@ Scope {
                 x: Math.round(slab.slide)
                 Component.onCompleted: slab.slide = 0
 
-                Behavior on slide {
-                    NumberAnimation { duration: Theme.anim.slow; easing.type: Easing.OutCubic }
-                }
+                // Só abre: o LazyLoader destrói o Salão ao fechar, então
+                // não há volta para animar. Ver Motion.qml.
+                Behavior on slide { Motion.Panel { opening: true } }
 
                 MouseArea { anchors.fill: parent }
 
@@ -288,11 +288,18 @@ Scope {
                                 width: rail.width
                                 height: 46
 
+                                // Só o realce do mouse. A aba acesa NÃO
+                                // pinta fundo: o corrimão e o corpo são
+                                // a mesma parede (ver Theme.bgDeep), e
+                                // pintar Theme.bg aqui era pintar a
+                                // parede por cima da parede. Quem diz
+                                // onde você está é o fio de ouro à
+                                // direita e a cor do glifo.
                                 Rectangle {
                                     anchors.fill: parent
-                                    color: banner.here ? Theme.bg
-                                         : tabArea.containsMouse ? Theme.alpha(Theme.gold, 0.08)
-                                                                 : "transparent"
+                                    color: tabArea.containsMouse && !banner.here
+                                         ? Theme.alpha(Theme.gold, 0.08)
+                                         : "transparent"
                                     Behavior on color { ColorAnimation { duration: Theme.anim.instant } }
                                 }
 

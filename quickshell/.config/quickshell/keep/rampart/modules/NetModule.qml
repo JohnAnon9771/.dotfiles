@@ -12,9 +12,18 @@ Segment {
     id: root
 
     spacing: Theme.pad.tight
-    hoverTint: Theme.wraith
+    hoverTint: Theme.gold
 
     readonly property bool linked: Net.activeNetwork !== null || Net.rxRate > 0
+
+    /// Reserva para as taxas. Mesma razão do Readout.reserve: "↓840k"
+    /// virando "↓1.2M" mudava a largura do módulo a cada dois segundos,
+    /// e o relógio à direita dançava junto.
+    TextMetrics {
+        id: reserva
+        font: descendo.font
+        text: "↓888.8M"
+    }
 
     popup: Component {
         DetailCard {
@@ -23,7 +32,7 @@ Segment {
             DetailRow {
                 label: "elo"
                 value: Net.label
-                tint: Net.online ? Theme.moss : Theme.ember
+                tint: Net.online ? Theme.fg : Theme.ember
             }
             DetailRow {
                 visible: Net.onWifi
@@ -34,7 +43,7 @@ Segment {
             DetailRow {
                 label: "descendo"
                 value: Fmt.rate(Net.rxRate)
-                tint: Theme.moat
+                tint: Theme.ash
             }
             DetailRow {
                 label: "subindo"
@@ -63,7 +72,7 @@ Segment {
         }
         font.family: Theme.font.mono
         font.pixelSize: Theme.size.base
-        color: Net.online ? Theme.wraith
+        color: Net.online ? Theme.fg
              : root.linked ? Theme.ember
                            : Theme.fgDim
         renderType: Text.NativeRendering
@@ -72,8 +81,12 @@ Segment {
     }
 
     Text {
+        id: descendo
+
         anchors.verticalCenter: parent.verticalCenter
         text: Theme.glyph.down + Fmt.rate(Net.rxRate)
+        width: Math.max(reserva.width, implicitWidth)
+        horizontalAlignment: Text.AlignRight
         font.family: Theme.font.mono
         font.pixelSize: Theme.size.base
         color: Theme.fgMuted
@@ -83,6 +96,8 @@ Segment {
     Text {
         anchors.verticalCenter: parent.verticalCenter
         text: Theme.glyph.up + Fmt.rate(Net.txRate)
+        width: Math.max(reserva.width, implicitWidth)
+        horizontalAlignment: Text.AlignRight
         font.family: Theme.font.mono
         font.pixelSize: Theme.size.base
         color: Theme.fgDim

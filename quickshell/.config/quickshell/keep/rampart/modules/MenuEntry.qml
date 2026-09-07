@@ -31,8 +31,8 @@ Item {
     Rectangle {
         anchors.fill: parent
         visible: !root.separator
-        color: root.opened ? Theme.alpha(Theme.moss, 0.28)
-             : area.containsMouse && root.usable ? Theme.alpha(Theme.moss, 0.20)
+        color: root.opened ? Theme.alpha(Theme.gold, 0.28)
+             : area.containsMouse && root.usable ? Theme.alpha(Theme.gold, 0.20)
                                                  : "transparent"
         Behavior on color { ColorAnimation { duration: Theme.anim.instant } }
     }

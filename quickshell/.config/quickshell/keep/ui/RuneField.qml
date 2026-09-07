@@ -44,7 +44,7 @@ FocusScope {
 
         font.family: Theme.font.mono
         font.pixelSize: root.fontSize
-        color: root.erring ? Theme.blood : Theme.fgStrong
+        color: root.erring ? Theme.scar : Theme.fgStrong
         selectionColor: Theme.alpha(Theme.moss, 0.7)
         selectedTextColor: Theme.ivory
         passwordCharacter: "▪"
@@ -73,7 +73,7 @@ FocusScope {
             verticalCenter: parent.verticalCenter
         }
         visible: field.text.length === 0
-        font.family: Theme.font.carved
+        font.family: Theme.font.quill
         font.pixelSize: root.fontSize - 1
         font.letterSpacing: Theme.runic(root.fontSize - 1)
         font.capitalization: Font.AllUppercase
@@ -85,7 +85,7 @@ FocusScope {
     Rectangle {
         anchors { left: parent.left; right: parent.right; bottom: parent.bottom }
         height: 1
-        color: root.erring ? Theme.blood
+        color: root.erring ? Theme.scar
              : field.activeFocus ? root.accent
              : Theme.alpha(Theme.borderInner, 0.9)
 

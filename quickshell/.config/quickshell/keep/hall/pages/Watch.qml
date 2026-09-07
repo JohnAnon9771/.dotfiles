@@ -12,6 +12,11 @@ import qs.services
 Column {
     id: root
 
+    // A página funda: aqui se vê tudo que o Sys e o Gpu sabem, então
+    // os dois passam a colher o conjunto completo enquanto ela existe.
+    Attention { service: Sys }
+    Attention { service: Gpu }
+
     spacing: Theme.pad.wide
 
     // ═══ AS FORJAS ═════════════════════════════════════════════
@@ -118,7 +123,7 @@ Column {
         Fact {
             label: "calor"
             value: Fmt.temp(Sys.cpuTemp) + "   " + (Probe.cpu.label || "")
-            tint: Sys.feverish ? Theme.blood : Theme.fg
+            tint: Sys.feverish ? Theme.scar : Theme.fg
         }
         Fact {
             label: "média de carga"

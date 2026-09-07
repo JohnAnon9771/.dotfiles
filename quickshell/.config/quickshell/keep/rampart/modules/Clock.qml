@@ -1,7 +1,7 @@
 pragma ComponentBehavior: Bound
 
 //  A AMPULHETA — as horas.
-//  Cinzel com espaçamento largo e a lua de verdade ao lado. Na hora
+//  Cormorant com espaçamento largo e a lua de verdade ao lado. Na hora
 //  das bruxas, blackletter.
 //
 //  Sem envelope: a primeira versão punha o relógio dentro de um Item
@@ -51,9 +51,20 @@ Segment {
             ? Fmt.pad2(clock.hours) + ":" + Fmt.pad2(clock.minutes)
             : Fmt.pad2(((clock.hours + 11) % 12) + 1) + ":" + Fmt.pad2(clock.minutes)
 
-        font.family: root.bewitched ? Theme.font.scribe : Theme.font.carved
-        font.pixelSize: root.bewitched ? Theme.size.title : Theme.size.base
-        font.letterSpacing: root.bewitched ? 0 : Theme.runic(Theme.size.base)
+        font.family: root.bewitched ? Theme.font.scribe : Theme.font.quill
+
+        // Algarismo de caixa alta e largura fixa. Ver Theme.font.figures:
+        // sem isto a Cormorant escreve a hora em algarismo ANTIGO, com o
+        // "1" e o "2" na altura do x e o "3" pendurado abaixo da linha.
+        font.features: Theme.font.figures
+
+        // E um corpo acima do resto da muralha. Mesmo com o `lnum` o
+        // algarismo da Cormorant mede 0,66 em contra os 0,72 da Cinzel
+        // que ele substituiu: em size.base o relógio nascia menor do que
+        // o que havia antes dele. Em size.large ele volta a ser a peça
+        // que ancora a fila, que é o papel dele.
+        font.pixelSize: root.bewitched ? Theme.size.title : Theme.size.large
+        font.letterSpacing: root.bewitched ? 0 : Theme.runic(Theme.size.large)
         color: root.bewitched ? Theme.wraith : Theme.fg
         renderType: Text.NativeRendering
     }

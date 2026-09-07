@@ -33,7 +33,7 @@ o que antes eram quatro programas:
 ```
 bash/        .bash_profile — o tty1 abre a sessao, o tty3 o modo jogo
 btop/        tema dark-medieval do monitor de recursos
-fonts/       Cinzel e UnifrakturMaguntia (SIL OFL), versionadas
+fonts/       Cormorant, Silkscreen e UnifrakturMaguntia (SIL OFL)
 hypr/        Hyprland, em Lua (0.55+)
 kitty/       terminal
 opencode/    tema do agente de código
@@ -169,11 +169,18 @@ adormecido → normal → bom → info → atenção → alerta → crítico
 verdigris   parchment  moss   moat    gold     ember    blood
 ```
 
-**Três vozes tipográficas.** Cinzel para o que é entalhado (títulos,
-algarismos romanos, relógio), UnifrakturMaguntia só para capitulares e
-brasões, JetBrains Mono para todo dado. Nenhum glifo cai em fonte de
-reserva: a iconografia usa codepoints Nerd Font conferidos, listados em
-`Theme.glyph`.
+**Quatro vozes tipográficas.** UnifrakturMaguntia só para capitulares e
+brasões, e nunca abaixo de 18px. Cormorant Garamond para o que é escrito
+— prosa, epitáfios, relógio. JetBrains Mono para todo dado. E Silkscreen
+para os algarismos romanos e os microrrótulos, porque eles encostam em
+pixel art e uma haste inteira encaixa ali melhor que uma serifa.
+
+Nenhum glifo cai em fonte de reserva, e isso é testado: o
+`tools/glyph-audit.py` lê o `cmap` de cada TTF versionado e confere tanto
+os codepoints da `Theme.glyph` quanto o alfabeto que cada voz precisa
+cobrir sozinha. Ele existe porque a tabela já errou em silêncio duas
+vezes — um codepoint errado na Nerd Font não vira tofu, vira o ícone
+errado.
 
 **O castelo tem clima.** As cores respondem à carga da máquina: em
 repouso cada módulo guarda a sua cor de identidade; conforme a pressão

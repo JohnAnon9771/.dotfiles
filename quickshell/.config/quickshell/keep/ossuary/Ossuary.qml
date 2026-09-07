@@ -82,9 +82,7 @@ Scope {
                 color: Theme.crypt
                 opacity: 0
                 Component.onCompleted: opacity = 0.94
-                Behavior on opacity {
-                    NumberAnimation { duration: Theme.anim.slow; easing.type: Easing.OutCubic }
-                }
+                Behavior on opacity { Motion.Panel { opening: true } }
             }
 
             Rectangle {
@@ -110,7 +108,7 @@ Scope {
                     gap: 7
                     initialSize: 46
                     restSize: 26
-                    initialColor: Theme.blood
+                    initialColor: Theme.scar
                     restColor: Theme.fgMuted
                 }
 
@@ -160,7 +158,7 @@ Scope {
                                     font.family: Theme.font.mono
                                     font.pixelSize: 38
                                     color: door.lit
-                                        ? (door.modelData.hold ? Theme.blood : Theme.accentLit)
+                                        ? (door.modelData.hold ? Theme.scar : Theme.accentLit)
                                         : Theme.fgDim
                                     renderType: Text.NativeRendering
 
@@ -216,7 +214,7 @@ Scope {
                                     top: parent.top; topMargin: Theme.pad.roomy
                                 }
                                 text: door.modelData.key
-                                font.family: Theme.font.carved
+                                font.family: Theme.font.quill
                                 font.pixelSize: Theme.size.tiny
                                 font.letterSpacing: Theme.runic(Theme.size.tiny)
                                 color: door.lit ? Theme.accent : Theme.alpha(Theme.fgDim, 0.6)

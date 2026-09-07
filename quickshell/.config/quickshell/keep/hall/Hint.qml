@@ -118,7 +118,7 @@ Rectangle {
 
     visible: opacity > 0.01
     opacity: root.shown ? 1 : 0
-    Behavior on opacity { NumberAnimation { duration: Theme.anim.quick } }
+    Behavior on opacity { Motion.Panel { opening: root.shown } }
 
     //  O fio da cor do sigilo, do mesmo lado em que a linha acende
     //  quando está ligada: a glosa pertence àquela linha, e não é um

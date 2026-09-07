@@ -16,6 +16,7 @@ Readout {
 
     glyph: Sys.feverish ? Theme.glyph.tempHot : Theme.glyph.temp
     value: Fmt.temp(Sys.cpuTemp)
+    reserve: "100°"
     tint: Theme.ember
     level: Sys.thermalPressure
 
@@ -23,7 +24,7 @@ Readout {
     TorchGlow {
         target: parent
         visible: Sys.feverish
-        glow: Theme.blood
+        glow: Theme.scar
         strength: Sys.feverish ? 0.6 : 0
         spread: 0.8
     }

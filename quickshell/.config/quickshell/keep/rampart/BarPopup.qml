@@ -59,7 +59,9 @@ PopupWindow {
         implicitHeight: loader.implicitHeight + padding * 2
 
         opacity: root.visible ? 1 : 0
-        Behavior on opacity { NumberAnimation { duration: Theme.anim.quick } }
+
+        // Abre em 180, fecha em 120. Quem tirou o mouse já decidiu.
+        Behavior on opacity { Motion.Panel { opening: root.visible } }
 
         Loader {
             id: loader

@@ -17,13 +17,16 @@ Readout {
 
     glyph: Theme.glyph.gpu
     value: Fmt.pct(Gpu.usage)
-    tint: Theme.moat
+    reserve: "100%"
+    tint: Theme.ash
     level: Math.max(Gpu.usage, Gpu.thermalPressure)
     samples: Gpu.history
 
     popup: Component {
         DetailCard {
             title: Gpu.name
+
+            Attention { service: Gpu }
 
             DetailRow {
                 label: "núcleo"
@@ -78,7 +81,7 @@ Readout {
                 visible: Gpu.has.fan === true
                 label: "ventoinha"
                 value: Gpu.fanIdle ? "em repouso" : Gpu.fanRpm + " rpm"
-                tint: Gpu.fanIdle ? Theme.verdigris : Theme.fg
+                tint: Gpu.fanIdle ? Theme.dim : Theme.fg
             }
             DetailRow {
                 visible: Gpu.has.sclk === true

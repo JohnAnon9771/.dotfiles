@@ -31,7 +31,7 @@ Segment {
                                     : Theme.glyph.bellNone
             font.family: Theme.font.mono
             font.pixelSize: Theme.size.base
-            color: Notifs.dnd ? Theme.verdigris
+            color: Notifs.dnd ? Theme.dim
                  : Notifs.unread > 0 ? Theme.gold
                                      : Theme.fgDim
             renderType: Text.NativeRendering

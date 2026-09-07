@@ -17,7 +17,7 @@ Segment {
     signal openOssuary()
 
     padding: Theme.pad.roomy
-    hoverTint: Theme.blood
+    hoverTint: Theme.scar
 
     onActivated: root.openOssuary()
 
@@ -41,7 +41,7 @@ Segment {
         text: "𝙳Ǝ⊲⊢𝙷 𝙽𝟎⊢𝙴"
         font.family: Theme.font.mono
         font.pixelSize: Theme.size.large
-        color: root.hovered ? Theme.ivory : Theme.blood
+        color: root.hovered ? Theme.ivory : Theme.scar
         renderType: Text.NativeRendering
 
         Behavior on color { ColorAnimation { duration: Theme.anim.quick } }
