@@ -118,6 +118,10 @@ Column {
                         anchors.centerIn: parent
                         text: day.number
                         font.family: Theme.font.quill
+                        // Uma grade de calendário não aceita algarismo
+                        // antigo: metade dos dias ficaria na altura do x
+                        // e a outra metade pendurada. Ver font.figures.
+                        font.features: Theme.font.figures
                         font.pixelSize: Theme.size.small
                         color: day.today ? Theme.accentLit
                              : day.weekend ? Theme.fgDim

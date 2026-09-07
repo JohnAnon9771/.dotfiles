@@ -200,6 +200,20 @@ Singleton {
         /// de espessura irregular, que é o oposto do ponto dela.
         readonly property string pixel: "Silkscreen"
 
+        /// ALGARISMO DE CAIXA ALTA, e alinhado em coluna.
+        ///
+        /// A Cormorant é uma garalda de verdade, então os algarismos
+        /// dela são ANTIGOS por padrão: o 1, o 2 e o 0 têm a altura do
+        /// x, e o 3, o 4, o 5, o 7 e o 9 descem abaixo da linha. Num
+        /// parágrafo isso é bonito; num relógio de 34 px é um número
+        /// que parece pequeno e balança de dígito para dígito.
+        ///
+        /// O `lnum` sobe todos para a altura de capitular — 0,66 em vez
+        /// de 0,42 do corpo — e o `tnum` dá a mesma largura a todos,
+        /// que é o que impede o "1" de encolher o relógio ao virar a
+        /// hora. Use nos ALGARISMOS de qualquer voz de texto; a mono
+        /// já nasce assim e não precisa.
+        readonly property var figures: ({ "lnum": 1, "tnum": 1 })
     }
 
     //  POR QUE A CINZEL SAI
