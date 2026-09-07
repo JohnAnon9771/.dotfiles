@@ -192,6 +192,11 @@ Scope {
                 height: Theme.metric.barHeight
                 spacing: 0
 
+                Gargoyle {
+                    id: leftGargoyle
+                    mirrored: true
+                }
+
                 Crest {
                     id: crest
                     host: hoverPopup
@@ -205,7 +210,12 @@ Scope {
                     // Não invade o centro: encolhe conforme sobra
                     // espaço. Depende só de coisas que não dependem
                     // dele, senão vira laço de vinculação.
-                    maxWidth: Math.max(0, middle.x - crest.width - flags.width
+                    //
+                    // A gárgula entra nesta conta porque ela também
+                    // ocupa a Row: sem descontá-la, o título ganhava 26
+                    // px que não existiam e ia encostar nela.
+                    maxWidth: Math.max(0, middle.x - leftGargoyle.width
+                                          - crest.width - flags.width
                                           - Theme.pad.vast)
                 }
             }
@@ -322,6 +332,10 @@ Scope {
 
                 Clock {
                     onOpenAlmanac: root.openAlmanac()
+                }
+
+                Gargoyle {
+                    spout: true
                 }
             }
 

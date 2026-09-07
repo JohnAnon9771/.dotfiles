@@ -37,7 +37,7 @@ fonts/       Cormorant, Silkscreen e UnifrakturMaguntia (SIL OFL)
 hypr/        Hyprland, em Lua (0.55+)
 kitty/       terminal
 opencode/    tema do agente de código
-quickshell/  o torreão
+quickshell/  o torreão, com art/ — o atlas de sprites, gerado
 scripts/     gamer-vt, gamer-mode, keep-shot, keep-session
 starship/    prompt
 systemd/     a unit do torreao, ligada em graphical-session.target
@@ -206,13 +206,38 @@ passa de 60% ela desliza para a escala de estado, as tochas queimam mais
 forte e a brasa sobe pelas ameias. Às três da manhã a paleta esfria em
 direção ao espectral.
 
+**E a parede é parede.** A Muralha era um retângulo de cor chapada com
+um fio de ferro no topo. Hoje ela tem cantaria em três fiadas, com a
+pedra na largura exata de um passo de merlão — cada dente de ameia nasce
+numa junta. As pontas fecham em cantaria de canto, e em cada uma senta
+uma gárgula de pixel art: a da direita é a bica dos Pergaminhos, e abre
+o olho quando há o que ler. Entre os três grupos de módulos pende uma
+corrente de ferro frio. E de cada sala ocupada desce um estandarte, que
+drapeja por cima do parapeito e cai 14 px **fora** da zona exclusiva —
+sobre as janelas, sem roubar um pixel de layout.
+
+Nada disso se mexe. A parede é pintada uma vez e envelhece pela vigília:
+escorridos descem do topo e líquen entra nas juntas das pontas conforme
+o uptime cresce, e o boot devolve a parede limpa. Com a barra parada, o
+torreão continua renderizando **zero** frames — medido, não suposto.
+
 ## Ferramentas
 
 ```sh
 ./tools/lint-qml.sh       # valida o QML contra os tipos reais do Quickshell
 ./tools/test-parsers.sh   # 70+ testes dos parsers de /proc e da busca
 lua tools/test-hypr.lua   # executa a config do Hyprland e imprime cada bind
+./tools/glyph-audit.py    # nenhum glifo cai em fonte de reserva
+./tools/theme-sync.py     # os espelhos da paleta batem com o Theme.qml
+./tools/atlas-gen.py      # o atlas de sprites bate com a arte
+./tools/measure-idle.sh   # o torreão parado, medido (--diff compara)
 ```
+
+Os três últimos geram arquivos **commitados** — `hypr/theme.lua`,
+`kitty/paleta.conf`, `starship.toml`, o tema do `btop`, o do `opencode`
+e o `art/atlas.png`. É de propósito: o Hyprland arranca antes de
+qualquer ferramenta, e um clone limpo tem que subir sem python. Rodar
+sem `--write` **confere** e sai diferente de zero se divergiu.
 
 O `lint-qml.sh` monta uma árvore-espelho em `/tmp` com os `qmldir` que o
 Quickshell sintetizaria em tempo de execução — escrever um `qmldir` no
